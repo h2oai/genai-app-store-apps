@@ -1,0 +1,42 @@
+[App]
+Name = "ai.h2o.wave.grammar_and_syntax_review"
+Version = "0.0.2"
+Title = "Grammar and Syntax Review"
+Description = "Empowering you to review your content, fast."
+Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "src.app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name= "LOGO"
+Value = "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"
+
+[[Env]]
+Name = "PRIMARY_COLOR"
+Value = "#FEC925"
+
+[[Env]]
+Name = "SECONDARY_COLOR"
+Value = "#E8E5E1"
+
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "grammar-syntax-and-review"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "grammar-syntax-and-review"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
