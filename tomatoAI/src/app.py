@@ -6,10 +6,8 @@ from h2o_wave import app, Q, handle_on, copy_expando, main
 
 from loguru import logger
 
-#from src.wave_utils import heap_analytics
 from src.handlers import handler
 from src.layout import layout
-from src.view import landing_page_view
 
 
 @app('/')
@@ -56,5 +54,3 @@ async def initialize_client(q: Q):
     await landing_page_view(q)
 
     q.client.initialized = True
-
-
