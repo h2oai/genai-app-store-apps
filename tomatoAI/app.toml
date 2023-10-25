@@ -1,0 +1,23 @@
+[App]
+Name = "ai.h2o.wave.tomatoAI"
+Version = "0.0.1"
+Title = "TomatoAI"
+Description = "Grow your own vegetables and fruits with AI support."
+Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "src.app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[H2OGPT]
+H2OGPT_URL = "https://gpt.h2o.ai/"
+
+[[Env]]
+Name = "H2OGPT_KEY"
+Secret = "h2ogpt"
+SecretKey = "h2ogpt-key"
+Optional = true
