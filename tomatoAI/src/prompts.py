@@ -1,15 +1,19 @@
-crop_rotation = "Can you tell me three suitable, fast-growing preceding and succeeding crops for each plant?"
-bed_planning = ("Can you help me with bed planning? Take into account optimal companion planning and nutrient supply.")
-fertilizer = "Tell me which organic fertilizer suites well for my plants. "
-pests = ("What are common pests and diseases of my plants. How can I prevent and control outbreaks without pesticides?")
-biodiversity = "How can I increase the biodiversity of my vegetable garden?"
+crop_rotation = ("Can you offer recommendations for three fast-growing preceding and succeeding crops for each plant,"
+                 " with a harvest time of approximately 30 days?. ")
+bed_planning = ("Could you assist me in devising a strategic bed plan that incorporates optimal companion planting and"
+                " ensures an effective supply of nutrients. Omit plants if there are insufficient"
+                " beds or if the bed size is inadequate.")
+fertilizer = "Kindly advise me on the most suitable organic fertilizer for my plants."
+pests = ("Could you identify the prevalent pests and diseases affecting my plants,"
+         " and offer guidance on prevention and control measures"
+         " without resorting to pesticides?")
+biodiversity = "How might I enhance the biodiversity of my vegetable garden?"
 composting = "Tell me more about composting. How can I start with it easily and how does it work?."
-climate = ("How can I reduce the effects of climate change on my vegetable garden? "
-           "Which methods can I use to reduce damage caused by extreme heat and heavy rain?")
-gardening_ai = ("How can I further use data science, machine learning and LLMs to improve my vegetable garden? "
-                "What could be interesting insights that I could gain?")
-agriculture_ai = ("How does home gardening differ from large-scale agriculture? "
-                  "How can data science, machine learning and LLMs be of use for professional farmers? ")
+climate = ("What strategies can I employ to mitigate the impact of climate change on my vegetable garden?")
+gardening_ai = ("In what ways can data science, machine learning and LLMs"
+                " to enhance the productivity of my vegetable garden?")
+agriculture_ai = ("In what ways can data science, machine learning, and large language models (LLMs)"
+                  " be valuable tools for professional farmers in optimizing their practices?")
 
 
 questions = {

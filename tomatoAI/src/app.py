@@ -7,7 +7,7 @@ from h2o_wave import app, Q, handle_on, copy_expando, main
 from loguru import logger
 
 from src.handlers import handler
-from src.layout import layout
+from src.layout import layout, landing_page_view
 
 
 @app('/')
