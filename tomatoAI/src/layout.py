@@ -4,6 +4,16 @@ from src.utils import heap_analytics
 from src.cards import *
 
 
+async def landing_page_view(q: Q, response=""):
+
+    q.page['header'] = header_card(q)
+    q.page['vegetables'] = vegetable_selection_card(q)
+    q.page['response'] = response_card(content=response)
+    q.page['user_questions'] = questions_card()
+    q.page['footer'] = footer_card()
+    q.page['device-not-supported'] = device_not_supported_card()
+
+
 def layout(q: Q):
     q.page['meta'] = ui.meta_card(
         box='',
