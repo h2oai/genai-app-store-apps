@@ -21,3 +21,8 @@ Name = "H2OGPT_KEY"
 Secret = "h2ogpt"
 SecretKey = "h2ogpt-key"
 Optional = true
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
