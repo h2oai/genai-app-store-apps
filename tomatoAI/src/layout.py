@@ -36,6 +36,15 @@ def layout(q: Q):
                              f"}}",
         ),
         theme="custom",
+        themes=[
+            ui.theme(
+                name='custom',
+                primary=os.getenv("PRIMARY_COLOR", "#a32424"),
+                text='#000000',
+                card='#ffffff',
+                page=os.getenv("SECONDARY_COLOR", "#e2e2e2"),
+            )
+        ],
         layouts=[
             # xs: portrait phones, s: landscape phones, m: tablets, l: desktop, xl: large desktop
             ui.layout(
@@ -57,11 +66,17 @@ def get_zones() -> List[ui.Zone]:
         ui.zone(
             "body",
             size="1",
-            direction=ui.ZoneDirection.COLUMN,
+            direction=ui.ZoneDirection.ROW,
             zones=[
-                ui.zone("body_top", size="370px"),
-                ui.zone("body_middle", size="100px"),
-                ui.zone("body_bottom", size="1"),
+                ui.zone("body_left", size="100px"),
+                ui.zone("body_center",
+                        size="1",
+                        zones=[
+                            ui.zone("body_top", size="370px"),
+                            ui.zone("body_middle", size="100px"),
+                            ui.zone("body_bottom", size="1"),
+                        ]),
+                ui.zone("body_right", size="100px"),
             ],
         ),
         ui.zone("footer", size="70px"),

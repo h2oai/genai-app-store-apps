@@ -17,6 +17,14 @@ MemoryReservation = "16Gi"
 H2OGPT_URL = "https://gpt.h2o.ai/"
 
 [[Env]]
+Name = "PRIMARY_COLOR"
+Value = "#a32424"
+
+[[Env]]
+Name = "SECONDARY_COLOR"
+Value = "#e2e2e2"
+
+[[Env]]
 Name = "H2OGPT_KEY"
 Secret = "h2ogpt"
 SecretKey = "h2ogpt-key"

@@ -1,3 +1,4 @@
+import os
 from h2o_wave import ui, Q
 from src.prompts import questions
 
@@ -7,7 +8,7 @@ def header_card(q: Q):
         box='header',
         title=q.app.toml['App']['Title'],
         subtitle=f"{q.app.toml['App']['Description']}",
-        icon=q.app.app_icon,
+        icon="Flower",
         items=[
             ui.persona(title='Guest User', initials_color="#000000", initials='G', size='xs'),
         ]
@@ -35,7 +36,7 @@ def questions_card():
                 name="questions",
                 label="",
                 choices=choices,
-                trigger=True
+                trigger=True,
             )
         ]
     )

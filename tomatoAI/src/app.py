@@ -34,10 +34,6 @@ async def initialize_app(q: Q):
     logger.info("Initializing the app for all users and sessions")
     q.app.toml = toml.load("app.toml")
 
-    if q.app.home_image is None:
-        (q.app.home_image,) = await q.site.upload(['./static/home.jpg'])
-    if q.app.app_icon is None:
-        (q.app.app_icon,) = await q.site.upload(['./static/icon.jpg'])
     if q.app.llm_url is None:
         q.app.llm_url = q.app.toml["H2OGPT"]["H2OGPT_URL"]
     if q.app.h2ogpt_key is None:
