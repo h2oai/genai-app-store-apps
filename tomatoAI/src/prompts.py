@@ -1,8 +1,7 @@
 crop_rotation = ("Can you offer recommendations for three fast-growing preceding and succeeding crops for each plant,"
-                 " with a harvest time of approximately 30 days?. ")
+                 " with a period from planting to harvest of approximately 30 days?. ")
 bed_planning = ("Could you assist me in devising a strategic bed plan that incorporates optimal companion planting and"
-                " ensures an effective supply of nutrients. Omit plants if there are insufficient"
-                " beds or if the bed size is inadequate.")
+                " ensures an effective supply of nutrients?")
 fertilizer = "Kindly advise me on the most suitable organic fertilizer for my plants."
 pests = ("Could you identify the prevalent pests and diseases affecting my plants,"
          " and offer guidance on prevention and control measures"

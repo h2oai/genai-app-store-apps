@@ -9,14 +9,12 @@ async def llm_query(llm_url: str,
                     h2ogpt_key: str,
                     user_message: str,
                     plants: str,
-                    num_beds: int = 4,
-                    width_bed: float = 1.2,
-                    length_bed: float = 2) -> str:
+                    num_beds: int = 4) -> str:
     logger.info("")
 
     system_prompt = ("You are an expert of planting vegetables and fruits in a kitchen"
-                     " or vegetable garden. You provide tips and assistance to unexperienced"
-                     " gardeners with easy to understand explanations. Don't give more than 8 tips. ")
+                     " or small vegetable garden. You provide tips and assistance to unexperienced"
+                     " gardeners with easy to understand explanations.")
 
     try:
         logger.debug(user_message)
@@ -24,8 +22,8 @@ async def llm_query(llm_url: str,
         llm = client.text_completion.create(
             visible_models=["h2oai/h2ogpt-4096-llama2-70b-chat"],
             system_prompt=system_prompt,
-            text_context_list=[f"{num_beds} beds of {width_bed} m width and {length_bed} m length. "
-                               f"The user wants to grow {plants}."]
+            text_context_list=[f"The user wants to grow {plants} and has {num_beds} small-sized beds."
+                               f""]
         )
         response = llm.complete_sync(user_message)
         return response.strip()
@@ -65,8 +63,6 @@ async def get_response(q: Q, choice: str):
         q.app.h2ogpt_key,
         prompt,
         selection,
-        q.client.num_beds,
-        q.client.bed_width,
-        q.client.bed_length
+        q.client.num_beds
     )
     return response

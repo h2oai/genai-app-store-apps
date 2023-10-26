@@ -6,7 +6,7 @@ from src.cards import *
 
 async def waiting_dialog(q):
     q.page["meta"].dialog = ui.dialog(
-        title="H2OGPT is creating the answer. Please wait.",
+        title="H2OGPT is generating the answer. Please wait.",
         items=[],
         blocking=True
     )

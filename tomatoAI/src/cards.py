@@ -150,24 +150,6 @@ def vegetable_selection_card(q: Q):
                         trigger=True,
                         label="Number of beds",
                         width="150px"),
-                    ui.spinbox(
-                        name="bed_width",
-                        min=0.6,
-                        max=3,
-                        value=1.2 if q.client.bed_width is None else q.client.bed_width,
-                        trigger=True,
-                        step=0.6,
-                        label="Bed width in m",
-                        width="150px"),
-                    ui.spinbox(
-                        name="bed_length",
-                        min=1,
-                        max=10,
-                        value=2 if q.client.bed_length is None else q.client.bed_length,
-                        trigger=True,
-                        step=1,
-                        label="Bed length in m",
-                        width="150px")
             ])
 
         ]
