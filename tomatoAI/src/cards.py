@@ -26,19 +26,10 @@ def response_card(content: str = ""):
 
 
 def questions_card():
-
-    choices = [ui.choice(name=key, label=value) for key, value in questions.items()]
-
+    items = [ui.button(name=key, label=f"> {value}", link=True) for key, value in questions.items()]
     return ui.form_card(
         box="body_middle",
-        items=[
-            ui.dropdown(
-                name="questions",
-                label="",
-                choices=choices,
-                trigger=True,
-            )
-        ]
+        items=items
     )
 
 
@@ -61,96 +52,73 @@ def footer_card():
 
 
 def vegetable_selection_card(q: Q):
-    solanum_choices = [
+    choices = [
         ui.choice(name="Potato", label="Potato"),
         ui.choice(name="Tomato", label="Tomato"),
         ui.choice(name="Bell_pepper", label="Bell pepper"),
         ui.choice(name="Egg_plant", label="Egg plant"),
-        ui.choice(name="Hot_pepper", label="Hot pepper")
-    ]
-
-    cucurbitaceae_choices = [
+        ui.choice(name="Hot_pepper", label="Hot pepper"),
         ui.choice(name="Zucchini", label="Zucchini"),
         ui.choice(name="Cucumber", label="Cucumber"),
         ui.choice(name="Pumpkin", label="Pumpkin"),
         ui.choice(name="Watermelon", label="Watermelon"),
-        ui.choice(name="Butternut", label="Butternut Squash")
-    ]
-
-    brassicaceae_choices = [
         ui.choice(name="Broccoli", label="Borccoli"),
         ui.choice(name="Cabbage", label="Cabbage"),
         ui.choice(name="Cauliflower", label="Cauliflower"),
         ui.choice(name="Kale", label="Kale"),
-        ui.choice(name="Radish", label="Radish")
-    ]
-
-    fabaceae_choices = [
+        ui.choice(name="Radish", label="Radish"),
         ui.choice(name="Peas", label="Peas"),
         ui.choice(name="Beans", label="Beans"),
         ui.choice(name="Lentils", label="Lentils"),
         ui.choice(name="Chickpeas", label="Chickpeas"),
-        ui.choice(name="Soybeans", label="Soybeans")
-    ]
-
-    alliaceae_choices = [
+        ui.choice(name="Soybeans", label="Soybeans"),
         ui.choice(name="Onions", label="Onions"),
         ui.choice(name="Garlic", label="Garlic"),
         ui.choice(name="Leek", label="Leek"),
         ui.choice(name="Shallot", label="Shallot"),
-        ui.choice(name="Chives", label="Chives")
+        ui.choice(name="Chives", label="Chives"),
+        ui.choice(name="Lettuce", label="Lettuce"),
+        ui.choice(name="Carrots", label="Carrots"),
+        ui.choice(name="Beets", label="Beets"),
+        ui.choice(name="Spinach", label="Spinach"),
+        ui.choice(name="Marigold", label="Marigold"),
+        ui.choice(name="Corn", label="Corn"),
     ]
 
     return ui.form_card(
         box="body_top",
         items=[
             ui.inline([
-                ui.checklist(
-                    name="solanum",
-                    label="Solanum",
-                    choices=solanum_choices,
+                ui.picker(
+                    name="plants",
+                    label="Your plants",
+                    choices=choices,
                     trigger=True,
-                    values=q.client.solanum if q.client.solanum is not None else ["Tomato"]
+                    values=list(q.client.plants) if q.client.plants is not None else None,
                 ),
-                ui.checklist(
-                    name="cucurbitaceae",
-                    label="Curcubitaceae",
-                    choices=cucurbitaceae_choices,
+                ui.dropdown(
+                    name="climate_zone",
+                    value="Temperate" if q.client.climate_zone is None else q.client.climate_zone,
                     trigger=True,
-                    values=q.client.cucurbitaceae if q.client.cucurbitaceae is not None else None
-                ),
-                ui.checklist(
-                    name="brassicaceae",
-                    label="Brassicaceae",
-                    choices=brassicaceae_choices,
-                    trigger=True,
-                    values=q.client.brassicaceae if q.client.brassicaceae is not None else None
-                ),
-                ui.checklist(
-                    name="fabaceae",
-                    label="Fabaceae",
-                    choices=fabaceae_choices,
-                    trigger=True,
-                    values=q.client.fabaceae if q.client.fabaceae is not None else None
-                ),
-                ui.checklist(
-                    name="alliaceae",
-                    label="Alliaceae",
-                    choices=alliaceae_choices,
-                    trigger=True,
-                    values=q.client.alliaceae if q.client.alliaceae is not None else None
-                ),
+                    choices=[
+                        ui.choice(name="Tropical", label="Tropical"),
+                        ui.choice(name="Dry", label="Dry"),
+                        ui.choice(name="Temperate", label="Temperate"),
+                        ui.choice(name="Continental", label="Continental"),
+                        ui.choice(name="Polar", label="Polar"),
+                    ],
+                    label="Climate Zone",
+                    width="200px"),
             ]),
-            ui.inline(
-                items=[
-                    ui.spinbox(
-                        name="num_beds",
-                        min=1,
-                        max=6,
-                        value=1 if q.client.num_beds is None else q.client.num_beds,
-                        trigger=True,
-                        label="Number of beds",
-                        width="150px"),
+            ui.inline([
+                ui.spinbox(
+                    name="num_beds",
+                    min=1,
+                    max=6,
+                    value=1 if q.client.num_beds is None else q.client.num_beds,
+                    trigger=True,
+                    label="Number of Beds",
+                    width="150px"),
             ])
 
         ]

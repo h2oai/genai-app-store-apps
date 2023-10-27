@@ -1,4 +1,5 @@
 from typing import List
+from loguru import logger
 
 from src.utils import heap_analytics
 from src.cards import *
@@ -8,7 +9,8 @@ async def waiting_dialog(q):
     q.page["meta"].dialog = ui.dialog(
         title="H2OGPT is generating the answer. Please wait.",
         items=[],
-        blocking=True
+        blocking=True,
+        width="400px"
     )
     await q.page.save()
     q.page["meta"].dialog = None
@@ -72,8 +74,8 @@ def get_zones() -> List[ui.Zone]:
                 ui.zone("body_center",
                         size="1",
                         zones=[
-                            ui.zone("body_top", size="370px"),
-                            ui.zone("body_middle", size="100px"),
+                            ui.zone("body_top", size="200px"),
+                            ui.zone("body_middle", size="300px"),
                             ui.zone("body_bottom", size="1"),
                         ]),
                 ui.zone("body_right", size="100px"),

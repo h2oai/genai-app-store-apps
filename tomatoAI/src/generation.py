@@ -1,20 +1,19 @@
-from h2o_wave import Q, ui
+from h2o_wave import Q
 from h2ogpt_client import Client
 from loguru import logger
-
-from src.prompts import questions
 
 
 async def llm_query(llm_url: str,
                     h2ogpt_key: str,
                     user_message: str,
                     plants: str,
-                    num_beds: int = 4) -> str:
+                    num_beds: int,
+                    climate: str) -> str:
     logger.info("")
 
-    system_prompt = ("You are an expert of planting vegetables and fruits in a kitchen"
-                     " or small vegetable garden. You provide tips and assistance to unexperienced"
-                     " gardeners with easy to understand explanations.")
+    system_prompt = ("You specialize in cultivating vegetables and fruits within kitchen spaces "
+                     "or small vegetable gardens. Offering guidance and easy-to-understand explanations,"
+                     " you assist inexperienced gardeners in their endeavors.")
 
     try:
         logger.debug(user_message)
@@ -22,8 +21,10 @@ async def llm_query(llm_url: str,
         llm = client.text_completion.create(
             visible_models=["h2oai/h2ogpt-4096-llama2-70b-chat"],
             system_prompt=system_prompt,
-            text_context_list=[f"The user wants to grow {plants} and has {num_beds} small-sized beds."
-                               f""]
+            text_context_list=[f"The user aspires to cultivate {plants} and currently owns {num_beds} beds,"
+                               f" each measuring 2 square meters. Residing in the {climate} climate zone,"
+                               f" they seek advice on growing vegetables tailored to "
+                               f"their specific climate conditions and a small bed-size."]
         )
         response = llm.complete_sync(user_message)
         return response.strip()
@@ -33,19 +34,11 @@ async def llm_query(llm_url: str,
         return ""
 
 
-async def get_response(q: Q, choice: str):
+async def get_response(q: Q, prompt: str):
 
     plants = []
-    if q.client.solanum is not None:
-        plants.extend(q.client.solanum)
-    if q.client.cucurbitaceae is not None:
-        plants.extend(q.client.cucurbitaceae)
-    if q.client.brassicaceae is not None:
-        plants.extend(q.client.brassicaceae)
-    if q.client.fabaceae is not None:
-        plants.extend(q.client.fabaceae)
-    if q.client.alliaceae is not None:
-        plants.extend(q.client.alliaceae)
+    if q.client.plants is not None:
+        plants.extend(q.client.plants)
 
     if len(plants) > 0:
         selection = plants[0]
@@ -53,9 +46,8 @@ async def get_response(q: Q, choice: str):
             selection += ", "
             selection += plants[n]
     else:
-        selection="Tomato"
+        selection = ["the top five most common plants found in a vegetable garden"]
 
-    prompt = questions[choice]
 
     response = await q.run(
         llm_query,
@@ -63,6 +55,7 @@ async def get_response(q: Q, choice: str):
         q.app.h2ogpt_key,
         prompt,
         selection,
-        q.client.num_beds
+        q.client.num_beds,
+        q.client.climate_zone
     )
     return response
