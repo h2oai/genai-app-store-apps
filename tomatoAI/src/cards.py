@@ -105,7 +105,6 @@ def vegetable_selection_card(q: Q):
                         ui.choice(name="Dry", label="Dry"),
                         ui.choice(name="Temperate", label="Temperate"),
                         ui.choice(name="Continental", label="Continental"),
-                        ui.choice(name="Polar", label="Polar"),
                     ],
                     label="Climate Zone",
                     width="200px"),
