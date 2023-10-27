@@ -62,7 +62,7 @@ def vegetable_selection_card(q: Q):
         ui.choice(name="Cucumber", label="Cucumber"),
         ui.choice(name="Pumpkin", label="Pumpkin"),
         ui.choice(name="Watermelon", label="Watermelon"),
-        ui.choice(name="Broccoli", label="Borccoli"),
+        ui.choice(name="Broccoli", label="Broccoli"),
         ui.choice(name="Cabbage", label="Cabbage"),
         ui.choice(name="Cauliflower", label="Cauliflower"),
         ui.choice(name="Kale", label="Kale"),
