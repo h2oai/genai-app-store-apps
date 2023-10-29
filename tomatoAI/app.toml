@@ -23,13 +23,13 @@ Value = "#e2e2e2"
 
 [[Env]]
 Name = "H2OGPT_API_TOKEN"
-Secret = "h2ogpt-laura"
-SecretKey = "gasr-api-token"
+Secret = "tomatoai"
+SecretKey = "h2ogpt-key"
 
 [[Env]]
 Name = "H2OGPT_URL"
-Secret = "h2ogpt-laura"
-SecretKey = "gasr-url"
+Secret = "tomatoai"
+SecretKey = "h2ogpt-url"
 
 [[Env]]
 Name = "HEAP_ID"
