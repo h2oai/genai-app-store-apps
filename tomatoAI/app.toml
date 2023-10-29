@@ -13,9 +13,6 @@ EnableOIDC = false
 MemoryLimit = "16Gi"
 MemoryReservation = "16Gi"
 
-[H2OGPT]
-H2OGPT_URL = "https://gpt.h2o.ai/"
-
 [[Env]]
 Name = "PRIMARY_COLOR"
 Value = "#a32424"
@@ -25,10 +22,14 @@ Name = "SECONDARY_COLOR"
 Value = "#e2e2e2"
 
 [[Env]]
-Name = "H2OGPT_KEY"
-Secret = "h2ogpt"
-SecretKey = "h2ogpt-key"
-Optional = true
+Name = "H2OGPT_API_TOKEN"
+Secret = "h2ogpt-laura"
+SecretKey = "gasr-api-token"
+
+[[Env]]
+Name = "H2OGPT_URL"
+Secret = "h2ogpt-laura"
+SecretKey = "gasr-url"
 
 [[Env]]
 Name = "HEAP_ID"

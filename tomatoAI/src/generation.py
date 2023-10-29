@@ -51,7 +51,7 @@ async def get_response(q: Q, prompt: str):
 
     response = await q.run(
         llm_query,
-        q.app.llm_url,
+        q.app.h2ogpt_url,
         q.app.h2ogpt_key,
         prompt,
         selection,

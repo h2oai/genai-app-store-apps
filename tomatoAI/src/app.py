@@ -34,10 +34,10 @@ async def initialize_app(q: Q):
     logger.info("Initializing the app for all users and sessions")
     q.app.toml = toml.load("app.toml")
 
-    if q.app.llm_url is None:
-        q.app.llm_url = q.app.toml["H2OGPT"]["H2OGPT_URL"]
+    if q.app.h2ogpt_url is None:
+        q.app.h2ogpt_url = os.getenv("H2OGPT_URL")
     if q.app.h2ogpt_key is None:
-        q.app.h2ogpt_key = os.getenv("H2OGPT_KEY", "H2OGPT_SECRET")
+        q.app.h2ogpt_key = os.getenv("H2OGPT_API_TOKEN")
 
     q.app.initialized = True
 
