@@ -1,4 +1,3 @@
-import os
 from h2o_wave import ui, Q
 from src.prompts import questions
 

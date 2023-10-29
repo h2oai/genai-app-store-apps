@@ -1,5 +1,4 @@
 from typing import List
-from loguru import logger
 
 from src.utils import heap_analytics
 from src.cards import *
