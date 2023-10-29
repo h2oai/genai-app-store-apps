@@ -9,7 +9,7 @@ async def llm_query(llm_url: str,
                     plants: str,
                     num_beds: int,
                     climate: str) -> str:
-    logger.info("")
+    logger.info("Prompting LLM with user query.")
 
     system_prompt = ("You specialize in cultivating vegetables and fruits within kitchen spaces "
                      "or small vegetable gardens. Offering guidance and easy-to-understand explanations,"
