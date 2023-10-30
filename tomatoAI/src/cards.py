@@ -1,7 +1,7 @@
-from h2o_wave import ui, Q
+from h2o_wave import ui, Q, data
 
 from src.prompts import questions
-from src.utils import get_climate_subzone
+from src.utils import get_climate_subzone, get_vegetable_choices
 
 
 def header_card(q: Q):
@@ -16,21 +16,29 @@ def header_card(q: Q):
     )
 
 
-def response_card(content: str = ""):
-    return ui.form_card(
-        box='body_bottom',
-        items=[
-            ui.text('Response:'),
-            ui.text(content, name='response')
-        ]
+def chat_card():
+    return ui.chatbot_card(
+        box="body_right",
+        name="chatbot",
+        placeholder="Curious about plants or puzzled by pots? Ask your quirky gardening questions here!",
+        data=data('content from_user', t='list', rows=[]),
     )
 
 
 def questions_card():
-    items = [ui.button(name=key, label=f"> {value}", link=True) for key, value in questions.items()]
+    choices = [
+        ui.choice(name=key, label=value["topic"]) for key, value in questions.items()
+    ]
     return ui.form_card(
-        box="body_middle",
-        items=items
+        box="middle",
+        items=[
+            ui.dropdown(
+                name="prompts",
+                choices=choices,
+                placeholder="Assist me with...",
+                trigger=True
+            )
+        ]
     )
 
 
@@ -52,42 +60,11 @@ def footer_card():
     )
 
 
-def vegetable_selection_card(q: Q):
-    choices = [
-        ui.choice(name="Potato", label="Potato"),
-        ui.choice(name="Tomato", label="Tomato"),
-        ui.choice(name="Bell_pepper", label="Bell pepper"),
-        ui.choice(name="Egg_plant", label="Egg plant"),
-        ui.choice(name="Hot_pepper", label="Hot pepper"),
-        ui.choice(name="Zucchini", label="Zucchini"),
-        ui.choice(name="Cucumber", label="Cucumber"),
-        ui.choice(name="Pumpkin", label="Pumpkin"),
-        ui.choice(name="Watermelon", label="Watermelon"),
-        ui.choice(name="Broccoli", label="Broccoli"),
-        ui.choice(name="Cabbage", label="Cabbage"),
-        ui.choice(name="Cauliflower", label="Cauliflower"),
-        ui.choice(name="Kale", label="Kale"),
-        ui.choice(name="Radish", label="Radish"),
-        ui.choice(name="Peas", label="Peas"),
-        ui.choice(name="Beans", label="Beans"),
-        ui.choice(name="Lentils", label="Lentils"),
-        ui.choice(name="Chickpeas", label="Chickpeas"),
-        ui.choice(name="Soybeans", label="Soybeans"),
-        ui.choice(name="Onions", label="Onions"),
-        ui.choice(name="Garlic", label="Garlic"),
-        ui.choice(name="Leek", label="Leek"),
-        ui.choice(name="Shallot", label="Shallot"),
-        ui.choice(name="Chives", label="Chives"),
-        ui.choice(name="Lettuce", label="Lettuce"),
-        ui.choice(name="Carrots", label="Carrots"),
-        ui.choice(name="Beets", label="Beets"),
-        ui.choice(name="Spinach", label="Spinach"),
-        ui.choice(name="Marigold", label="Marigold"),
-        ui.choice(name="Corn", label="Corn"),
-    ]
+def plants_card(q: Q):
+    choices = get_vegetable_choices()
 
     return ui.form_card(
-        box="body_top",
+        box="top",
         items=[
             ui.inline([
                 ui.dropdown(
@@ -101,6 +78,7 @@ def vegetable_selection_card(q: Q):
                         ui.choice(name="Continental", label="Continental"),
                         ui.choice(name="Polar", label="Polar"),
                     ],
+                    placeholder="Pick me!",
                     label="Climate Zone",
                     width="200px"),
                 ui.dropdown(
@@ -110,26 +88,28 @@ def vegetable_selection_card(q: Q):
                         if q.client.climate_zone is not None
                         else None,
                     width="200px",
+                    visible=True if q.client.climate_zone else False,
                     trigger=True,
+                    placeholder="Pick me!",
                     value=q.client.climate_subzone if q.client.climate_subzone is not None else None,
                 ),
-                ui.picker(
-                    name="plants",
-                    label="Your plants",
-                    choices=choices,
-                    trigger=True,
-                    values=list(q.client.plants) if q.client.plants is not None else None,
-                ),
             ]),
-            ui.inline([
-                ui.spinbox(
-                    name="num_beds",
-                    min=1,
-                    max=6,
-                    value=1 if q.client.num_beds is None else q.client.num_beds,
-                    trigger=True,
-                    label="Number of Beds",
-                    width="150px"),
-            ]),
+            ui.picker(
+                name="plants",
+                label="Your plants",
+                choices=choices,
+                trigger=True,
+                values=list(q.client.plants) if q.client.plants is not None else None,
+                tooltip="What about tomatoes? ;-)"
+            ),
+            ui.spinbox(
+                name="num_beds",
+                min=1,
+                max=6,
+                value=1 if q.client.num_beds is None else q.client.num_beds,
+                trigger=True,
+                label="Number of Beds",
+                tooltip="Approx. 2m² in size",
+                width="150px"),
         ]
     )

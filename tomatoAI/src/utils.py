@@ -73,3 +73,39 @@ def get_climate_subzone(climate_zone: str):
     else:
         choices = []
     return choices
+
+
+def get_vegetable_choices():
+    choices = [
+        ui.choice(name="Potato", label="Potato"),
+        ui.choice(name="Tomato", label="Tomato"),
+        ui.choice(name="Bell_pepper", label="Bell pepper"),
+        ui.choice(name="Egg_plant", label="Egg plant"),
+        ui.choice(name="Hot_pepper", label="Hot pepper"),
+        ui.choice(name="Zucchini", label="Zucchini"),
+        ui.choice(name="Cucumber", label="Cucumber"),
+        ui.choice(name="Pumpkin", label="Pumpkin"),
+        ui.choice(name="Watermelon", label="Watermelon"),
+        ui.choice(name="Broccoli", label="Broccoli"),
+        ui.choice(name="Cabbage", label="Cabbage"),
+        ui.choice(name="Cauliflower", label="Cauliflower"),
+        ui.choice(name="Kale", label="Kale"),
+        ui.choice(name="Radish", label="Radish"),
+        ui.choice(name="Peas", label="Peas"),
+        ui.choice(name="Beans", label="Beans"),
+        ui.choice(name="Lentils", label="Lentils"),
+        ui.choice(name="Chickpeas", label="Chickpeas"),
+        ui.choice(name="Soybeans", label="Soybeans"),
+        ui.choice(name="Onions", label="Onions"),
+        ui.choice(name="Garlic", label="Garlic"),
+        ui.choice(name="Leek", label="Leek"),
+        ui.choice(name="Shallot", label="Shallot"),
+        ui.choice(name="Chives", label="Chives"),
+        ui.choice(name="Lettuce", label="Lettuce"),
+        ui.choice(name="Carrots", label="Carrots"),
+        ui.choice(name="Beets", label="Beets"),
+        ui.choice(name="Spinach", label="Spinach"),
+        ui.choice(name="Marigold", label="Marigold"),
+        ui.choice(name="Corn", label="Corn"),
+    ]
+    return choices

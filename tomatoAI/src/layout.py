@@ -15,11 +15,11 @@ async def waiting_dialog(q):
     q.page["meta"].dialog = None
 
 
-async def landing_page_view(q: Q, response=""):
+async def landing_page_view(q: Q):
 
     q.page['header'] = header_card(q)
-    q.page['vegetables'] = vegetable_selection_card(q)
-    q.page['response'] = response_card(content=response)
+    q.page['chat'] = chat_card()
+    q.page['vegetables'] = plants_card(q)
     q.page['user_questions'] = questions_card()
     q.page['footer'] = footer_card()
     q.page['device-not-supported'] = device_not_supported_card()
@@ -69,15 +69,14 @@ def get_zones() -> List[ui.Zone]:
             size="1",
             direction=ui.ZoneDirection.ROW,
             zones=[
-                ui.zone("body_left", size="100px"),
-                ui.zone("body_center",
-                        size="1",
+                ui.zone(name="body_left",
                         zones=[
-                            ui.zone("body_top", size="200px"),
-                            ui.zone("body_middle", size="300px"),
-                            ui.zone("body_bottom", size="1"),
-                        ]),
-                ui.zone("body_right", size="100px"),
+                            ui.zone(name="top"),
+                            ui.zone(name="middle"),
+                            ui.zone(name="bottom")
+                        ],
+                        size="600px"),
+                ui.zone("body_right", size="1"),
             ],
         ),
         ui.zone("footer", size="70px"),
