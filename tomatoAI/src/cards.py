@@ -110,6 +110,7 @@ def plants_card(q: Q):
                 trigger=True,
                 label="Number of Beds",
                 tooltip="Approx. 2m² in size",
+
                 width="150px"),
         ]
     )

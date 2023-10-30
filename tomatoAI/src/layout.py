@@ -22,6 +22,7 @@ async def landing_page_view(q: Q):
     q.page['vegetables'] = plants_card(q)
     q.page['user_questions'] = questions_card()
     q.page['footer'] = footer_card()
+    q.page['chatbot'] = chat_card()
     q.page['device-not-supported'] = device_not_supported_card()
 
 
