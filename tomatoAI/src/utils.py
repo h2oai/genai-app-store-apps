@@ -1,7 +1,7 @@
 import os
 import hashlib
 
-from h2o_wave import ui, Q
+from h2o_wave import ui
 
 
 def heap_analytics(userid, event_properties=None) -> ui.inline_script:

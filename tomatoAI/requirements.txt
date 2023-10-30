@@ -2,3 +2,4 @@ https://s3.amazonaws.com/artifacts.h2o.ai/snapshots/ai/h2o/h2ogpt_client/0.1.0_2
 h2o_wave
 loguru
 toml
+random

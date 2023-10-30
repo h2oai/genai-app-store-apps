@@ -7,7 +7,12 @@ from h2o_wave import app, Q, handle_on, copy_expando, main
 from loguru import logger
 
 from src.handlers import handler
-from src.layout import layout, landing_page_view
+from src.layout import (
+    layout,
+    landing_page_view,
+    image_view
+)
+from src.cards import chat_card
 
 
 @app('/')
@@ -47,6 +52,8 @@ async def initialize_app(q: Q):
 async def initialize_client(q: Q):
     logger.info("Initializing the client")
     q.client.plants = set()
+    await image_view(q)
+    q.page['chat'] = chat_card()
 
     layout(q)
     await landing_page_view(q)

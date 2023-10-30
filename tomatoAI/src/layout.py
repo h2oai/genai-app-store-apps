@@ -1,5 +1,6 @@
 from typing import List
 import os
+import random
 
 from src.utils import heap_analytics
 from src.cards import *
@@ -18,10 +19,8 @@ async def waiting_dialog(q):
 async def landing_page_view(q: Q):
 
     q.page['header'] = header_card(q)
-    q.page['chat'] = chat_card()
     q.page['vegetables'] = plants_card(q)
     q.page['user_questions'] = questions_card()
-    q.page['image'] = image_card()
     q.page['footer'] = footer_card()
     q.page['device-not-supported'] = device_not_supported_card()
 
@@ -83,3 +82,15 @@ def get_zones() -> List[ui.Zone]:
         ui.zone("footer", size="70px"),
     ]
     return zones
+
+
+async def image_view(q):
+    paths = os.listdir("./static/images/")
+    path = random.choice(paths)
+    path = f"./static/images/{path}"
+    image, = await q.site.upload([path])
+
+    q.page['image'] = ui.form_card(
+        box='bottom',
+        items=[ui.image(title='', path=image, width="100%")]
+    )

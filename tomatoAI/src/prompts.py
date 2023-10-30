@@ -6,6 +6,7 @@ pests = ("Could you identify the prevalent pests and diseases affecting my plant
          " and offer guidance on prevention and control measures"
          " without resorting to pesticides?")
 biodiversity = "How might I enhance the biodiversity of my vegetable garden?"
+open_seeds = "What are open-pollinated seeds and why are they beneficial?"
 composting = "Tell me more about composting. How can I start with it easily and how does it work?."
 climate = ("What strategies can I employ to mitigate the impact of climate change on my vegetable garden?")
 gardening_ai = ("How can data science, machine learning, and large language models (LLMs) "
@@ -20,6 +21,7 @@ questions = {
     "fertilizer": {"prompt": fertilizer, "topic": "Fertilizer"},
     "pests": {"prompt": pests, "topic": "Pests & Diseases"},
     "biodiversity": {"prompt": biodiversity, "topic": "Biodiversity"},
+    "open_seeds": {"prompt": open_seeds, "topic": "Open-pollinated Seeds"},
     "composting": {"prompt": composting, "topic": "Composting"},
     "climate": {"prompt": climate, "topic": "Climate change"},
     "gardening_ai": {"prompt": gardening_ai, "topic": "Gardening AI"},

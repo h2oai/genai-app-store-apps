@@ -1,7 +1,10 @@
 from h2o_wave import ui, Q, data
 
 from src.prompts import questions
-from src.utils import get_climate_subzone, get_vegetable_choices
+from src.utils import (
+    get_climate_subzone,
+    get_vegetable_choices
+)
 
 
 def header_card(q: Q):
@@ -20,7 +23,7 @@ def chat_card():
     return ui.chatbot_card(
         box="body_right",
         name="chatbot",
-        placeholder="Curious about plants or puzzled by pots? Ask your quirky gardening questions here!",
+        placeholder="Got green queries? Ask away, including your climate subzone!",
         data=data('content from_user', t='list', rows=[]),
     )
 
@@ -114,9 +117,3 @@ def plants_card(q: Q):
                 width="150px"),
         ]
     )
-
-    def image_card():
-        return ui.form_card(
-            box='bottom',
-            ui.image(title='', path='./static/images/VegetableGarden.jpg')
-        )
