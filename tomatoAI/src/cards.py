@@ -1,5 +1,7 @@
 from h2o_wave import ui, Q
+
 from src.prompts import questions
+from src.utils import get_climate_subzone
 
 
 def header_card(q: Q):
@@ -88,13 +90,6 @@ def vegetable_selection_card(q: Q):
         box="body_top",
         items=[
             ui.inline([
-                ui.picker(
-                    name="plants",
-                    label="Your plants",
-                    choices=choices,
-                    trigger=True,
-                    values=list(q.client.plants) if q.client.plants is not None else None,
-                ),
                 ui.dropdown(
                     name="climate_zone",
                     value="Temperate" if q.client.climate_zone is None else q.client.climate_zone,
@@ -104,9 +99,25 @@ def vegetable_selection_card(q: Q):
                         ui.choice(name="Dry", label="Dry"),
                         ui.choice(name="Temperate", label="Temperate"),
                         ui.choice(name="Continental", label="Continental"),
+                        ui.choice(name="Polar", label="Polar"),
                     ],
                     label="Climate Zone",
                     width="200px"),
+                ui.dropdown(
+                    name="climate_subzone",
+                    label="Climate subzone",
+                    choices=get_climate_subzone(q.client.climate_zone)
+                        if q.client.climate_zone is not None
+                        else get_climate_subzone("Temperate"),
+                    width="200px"
+                ),
+                ui.picker(
+                    name="plants",
+                    label="Your plants",
+                    choices=choices,
+                    trigger=True,
+                    values=list(q.client.plants) if q.client.plants is not None else None,
+                ),
             ]),
             ui.inline([
                 ui.spinbox(
@@ -117,7 +128,6 @@ def vegetable_selection_card(q: Q):
                     trigger=True,
                     label="Number of Beds",
                     width="150px"),
-            ])
-
+            ]),
         ]
     )

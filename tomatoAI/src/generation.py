@@ -22,7 +22,7 @@ async def llm_query(llm_url: str,
             visible_models=["h2oai/h2ogpt-4096-llama2-70b-chat"],
             system_prompt=system_prompt,
             text_context_list=[f"The user aspires to cultivate {plants} and currently owns {num_beds} beds,"
-                               f" each measuring 2 square meters. Residing in the {climate} climate zone,"
+                               f" each measuring 2 square meters. Residing in the {climate} climate subzone,"
                                f" they seek advice on growing vegetables tailored to "
                                f"their specific climate conditions and a small bed-size."]
         )
@@ -56,6 +56,6 @@ async def get_response(q: Q, prompt: str):
         prompt,
         selection,
         q.client.num_beds,
-        q.client.climate_zone
+        q.client.climate_subzone
     )
     return response
