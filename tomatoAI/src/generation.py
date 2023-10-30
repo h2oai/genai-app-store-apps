@@ -19,7 +19,7 @@ async def llm_query(llm_url: str,
         logger.debug(user_message)
         client = Client(llm_url, h2ogpt_key=h2ogpt_key)
         llm = client.text_completion.create(
-            visible_models=["h2oai/h2ogpt-4096-llama2-70b-chat"],
+            visible_models=["gpt-3.5-turbo-0613"],
             system_prompt=system_prompt,
             text_context_list=[f"The user is passionate about cultivating {plants} and currently tends to "
                                f"{num_beds} beds, each with a size of 2 square meters. Located in the {climate} "
