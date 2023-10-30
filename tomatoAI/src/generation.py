@@ -26,7 +26,7 @@ async def llm_query(llm_url: str,
                                f"climate subzone, they are seeking advice on growing vegetables that are well-suited "
                                f"to their specific climate conditions and small bed size. "
                                f"Additionally, they are curious to know if the chosen plants thrive "
-                               f"in this particular climate subzone."]
+                               f"in this particular climate subzone and are open to exploring alternatives if needed."]
         )
         response = llm.complete_sync(user_message)
         return response.strip()
