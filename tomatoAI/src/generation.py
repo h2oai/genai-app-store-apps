@@ -21,10 +21,12 @@ async def llm_query(llm_url: str,
         llm = client.text_completion.create(
             visible_models=["h2oai/h2ogpt-4096-llama2-70b-chat"],
             system_prompt=system_prompt,
-            text_context_list=[f"The user aspires to cultivate {plants} and currently owns {num_beds} beds,"
-                               f" each measuring 2 square meters. Residing in the {climate} climate subzone,"
-                               f" they seek advice on growing vegetables tailored to "
-                               f"their specific climate conditions and a small bed-size."]
+            text_context_list=[f"The user is passionate about cultivating {plants} and currently tends to "
+                               f"{num_beds} beds, each with a size of 2 square meters. Located in the {climate} "
+                               f"climate subzone, they are seeking advice on growing vegetables that are well-suited "
+                               f"to their specific climate conditions and small bed size. "
+                               f"Additionally, they are curious to know if the chosen plants thrive "
+                               f"in this particular climate subzone."]
         )
         response = llm.complete_sync(user_message)
         return response.strip()

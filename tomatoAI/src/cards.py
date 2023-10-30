@@ -92,7 +92,7 @@ def vegetable_selection_card(q: Q):
             ui.inline([
                 ui.dropdown(
                     name="climate_zone",
-                    value="Temperate" if q.client.climate_zone is None else q.client.climate_zone,
+                    value=None if q.client.climate_zone is None else q.client.climate_zone,
                     trigger=True,
                     choices=[
                         ui.choice(name="Tropical", label="Tropical"),
@@ -108,8 +108,10 @@ def vegetable_selection_card(q: Q):
                     label="Climate subzone",
                     choices=get_climate_subzone(q.client.climate_zone)
                         if q.client.climate_zone is not None
-                        else get_climate_subzone("Temperate"),
-                    width="200px"
+                        else None,
+                    width="200px",
+                    trigger=True,
+                    value=q.client.climate_subzone if q.client.climate_subzone is not None else None,
                 ),
                 ui.picker(
                     name="plants",

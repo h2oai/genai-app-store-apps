@@ -1,6 +1,6 @@
 crop_rotation = ("Can you recommend three fast-growing crops before and after each plant?")
 bed_planning = ("Assist in planning beds with companion planting for optimal nutrient supply. "
-                "Can you also provide sketches for each bed in ASCII format?")
+                "Please take into account my climate subzone.")
 fertilizer = "Kindly advise me on the most suitable organic fertilizer for each of my plants."
 pests = ("Could you identify the prevalent pests and diseases affecting my plants,"
          " and offer guidance on prevention and control measures"

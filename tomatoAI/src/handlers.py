@@ -1,4 +1,4 @@
-from h2o_wave import Q
+from h2o_wave import Q, copy_expando
 
 from src.generation import get_response
 from src.layout import landing_page_view, waiting_dialog
