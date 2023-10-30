@@ -114,3 +114,9 @@ def plants_card(q: Q):
                 width="150px"),
         ]
     )
+
+    def image_card():
+        return ui.form_card(
+            box='bottom',
+            ui.image(title='', path='./static/images/VegetableGarden.jpg')
+        )
