@@ -8,9 +8,8 @@ from src.cards import *
 async def waiting_dialog(q):
     q.page["meta"].dialog = ui.dialog(
         title="H2OGPT is generating the answer. Please wait.",
-        items=[],
+        items=[ui.image(title="", path=q.app.load, width="550px")],
         blocking=True,
-        width="400px"
     )
     await q.page.save()
     q.page["meta"].dialog = None

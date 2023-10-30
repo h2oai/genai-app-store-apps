@@ -38,6 +38,8 @@ async def initialize_app(q: Q):
         q.app.h2ogpt_url = os.getenv("H2OGPT_URL")
     if q.app.h2ogpt_key is None:
         q.app.h2ogpt_key = os.getenv("H2OGPT_API_TOKEN")
+    if q.app.load is None:
+        q.app.load, = await q.site.upload(['./static/load.gif'])
 
     q.app.initialized = True
 
