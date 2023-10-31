@@ -1,0 +1,19 @@
+[App]
+Name = "wave-h2ogpt-audio-summarization"
+Version = "0.0.2"
+Title = "Audio Summarization"
+Description = "Upload your audio files and have them summarized"
+Tags = ["GENERATIVE_AI", "OSS"]
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "app"
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+EnableOIDC = true
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpt"
+SecretKey = "h2ogpt-key"
+
