@@ -1,10 +1,10 @@
-from h2o_wave import main, app, Q, ui, handle_on, copy_expando
+from h2o_wave import main, app, Q, ui, run_on, copy_expando
 import os
 import toml
 
 from loguru import logger
 
-from src.generate_content import side_nav_generate_content, initialize_generate_content_app, initialize_generate_content_client
+from src.generate_content import generate_content_ui, initialize_generate_content_app, update_system_prompt
 from src.wave_utils import heap_analytics
 
 
@@ -17,7 +17,7 @@ async def serve(q: Q):
     if not q.client.initialized:
         await initialize_session(q)
 
-    await handle_on(q)
+    await run_on(q)
     await q.page.save()
 
     logger.info("Ending user request")
@@ -39,10 +39,13 @@ async def initialize_session(q: Q):
         await initialize_app(q)
 
     q.client.cards = []
-    initialize_generate_content_client(q)
+    q.client.oxford_comma = True
+    q.client.case = "Sentence Case"
+    update_system_prompt(q)
+
     landing_page_layout(q)
 
-    await side_nav_generate_content(q)
+    await generate_content_ui(q)
     q.client.initialized = True
 
 
@@ -51,8 +54,7 @@ def landing_page_layout(q: Q):
     q.page['meta'] = ui.meta_card(
         box='',
         title=q.app.toml['App']['Title'],
-        icon=os.getenv("LOGO",
-                       "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"),
+        icon=os.getenv("LOGO"),
         theme="custom",
         script=heap_analytics(
             userid=q.auth.subject,
@@ -64,10 +66,10 @@ def landing_page_layout(q: Q):
         themes=[
             ui.theme(
                 name='custom',
-                primary=os.getenv("PRIMARY_COLOR", "#FEC925"),
+                primary=os.getenv("PRIMARY_COLOR"),
                 text='#000000',
                 card='#ffffff',
-                page=os.getenv("SECONDARY_COLOR", "#E8E5E1"),
+                page=os.getenv("SECONDARY_COLOR"),
             )
         ],
         layouts=[
@@ -88,9 +90,7 @@ def landing_page_layout(q: Q):
         box='header',
         title=f"{q.app.toml['App']['Title']}",
         subtitle=q.app.toml["App"]["Description"],
-        image=os.getenv("LOGO",
-                        "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"
-                        ),
+        image=os.getenv("LOGO"),
         items=[
             ui.persona(title="Guest User", initials_color="#000000", initials="G", size="xs"),
         ]

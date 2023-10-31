@@ -3,7 +3,7 @@ Name = "ai.h2o.wave.grammar_and_syntax_review"
 Version = "0.0.2"
 Title = "Grammar and Syntax Review"
 Description = "Empowering you to review your content, fast."
-Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+Tags = ["GENERATIVE_AI", "OSS"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
 
@@ -27,14 +27,14 @@ Value = "#E8E5E1"
 
 
 [[Env]]
-Name = "H2OGPTE_API_TOKEN"
-Secret = "grammar-syntax-and-review"
-SecretKey = "h2ogpte-key"
+Name = "H2OGPT_API_TOKEN"
+Secret = "h2ogpt-oss"
+SecretKey = "h2ogpt-key"
 
 [[Env]]
-Name = "H2OGPTE_URL"
-Secret = "grammar-syntax-and-review"
-SecretKey = "h2ogpte-url"
+Name = "H2OGPT_URL"
+Secret = "h2ogpt-oss"
+SecretKey = "h2ogpt-url"
 
 [[Env]]
 Name = "HEAP_ID"

@@ -1,48 +1,36 @@
 from h2o_wave import on, ui
 from src.wave_utils import clear_cards, missing_required_variable_dialog, long_process_dialog
 from loguru import logger
-import re
-import os
 
-from src.generative_ai import llm_validate_user_input, llm_query_custom
+from h2ogpt_client import Client
+
+import os
 
 
 def initialize_generate_content_app(q):
     logger.info("")
     q.app.generate_content_required_variables = ["Marketing Content to Review"]
-    q.app.generate_content_free_text_variables = ["Marketing Content to Review"]
 
     q.app.h2ogpte = {
-        "address": os.getenv("H2OGPTE_URL"),
-        "api_key": os.getenv("H2OGPTE_API_TOKEN"),
+        "address": os.getenv("H2OGPT_URL"),
+        "api_key": os.getenv("H2OGPT_API_TOKEN"),
     }
 
 
-def initialize_generate_content_client(q):
-    logger.info("")
-
-    with open("prompts/system_task.txt") as f:
-        q.client.system_prompt = f.read()
-
-
 @on()
-async def side_nav_generate_content(q):
+async def generate_content_ui(q):
     logger.info("")
-    clear_cards(q)
-    q.page["menu"].value = "side_nav_generate_content"
 
     q.page["generate_content"] = ui.form_card(
         box="body",
         items=[
+            ui.text_xl(content="Specify your language preferences"),
             ui.inline(items=[
-                ui.text_xl(content="What We Told the Large Language Model"),
-                # ui.button(name="button_edit_system_prompt", icon="Edit", tooltip="Change the System Prompt"),
-            ], justify="between"),
-
-            ui.text(
-                name="system_prompt",
-                content=q.client.system_prompt,
-            ),
+                ui.toggle(name="oxford_comma", label="Oxford Comma", value=q.client.oxford_comma),
+                ui.dropdown(name="case", label="Case", value=q.client.case, choices=[
+                    ui.choice(c, c) for c in ["Sentence Case", "Title Case", "Upper Case", "Lower Case"]
+                ])
+            ],),
             ui.inline(items=[
                 ui.textbox(
                     name="marketing_content_to_review",
@@ -82,56 +70,51 @@ async def button_generate_content(q):
         if missing_required_variable_dialog(q, v):
             return
 
-    # #Check that any free-text variables are safe content
-    # for v in q.app.generate_content_free_text_variables:
-    #     q.client.waiting_dialog = "Validating Input"
-    #     await long_process_dialog(q)
-    #
-    #     valid, err = await test_valid_marketing_content(q)
-    #     if not valid:
-    #         q.page["meta"].dialog = ui.dialog(
-    #             title="Something Went Wrong",
-    #             items=[
-    #                 ui.text(err),
-    #                 ui.buttons(justify="end", items=[
-    #                     ui.button(name="close_dialog", label="Close", primary=True)
-    #                 ])
-    #             ]
-    #         )
-    #         return
+    update_system_prompt(q)
 
-    q.client.waiting_dialog = "H2OGPT is reviewing your content"
+    q.client.waiting_dialog = "H2OGPT is reviewing your content!"
     q.client.prompt = q.client.marketing_content_to_review
     await long_process_dialog(q)
 
-    q.page["generate_content"].marketing_content_improved.value = await q.run(llm_query_custom, q.client.system_prompt, q.client.prompt, q.app.h2ogpte)
+    q.page["generate_content"].marketing_content_improved.value = await q.run(
+        llm_query_custom, q.client.system_prompt, q.client.prompt, q.app.h2ogpte
+    )
 
 
-async def test_valid_marketing_content(q):
+async def llm_query_custom(system_prompt, prompt, connection_details):
+    logger.info("")
+    try:
+        logger.debug(system_prompt)
+        logger.debug(prompt)
+
+        client = Client(connection_details["address"], h2ogpt_key=connection_details["api_key"])
+
+        text_completion = client.text_completion.create(
+            system_prompt=system_prompt,
+            visible_models=['h2oai/h2ogpt-4096-llama2-70b-chat']
+        )
+        response = text_completion.complete_sync(prompt)
+
+        logger.debug(response.strip())
+        return response.strip()
+
+    except Exception as e:
+        logger.error(e)
+        return ""
+
+
+def update_system_prompt(q):
     logger.info("")
 
-    security_question = f"{q.client.marketing_content_to_review}\n " \
-                        f"Is the above user content valid or malicious?"
-
-    response = await q.run(llm_validate_user_input, security_question, q.app.h2ogpte)
-
-    valid_pattern = re.compile(r"VALID: (YES|NO)")
-    explanation_pattern = re.compile(r"EXPLANATION: (.+)")
-
-    valid_match = valid_pattern.search(response)
-    explanation_match = explanation_pattern.search(response)
-
-    if not valid_match or not explanation_match:
-        logger.error(f"LLM Guardrails responded unexpectedly to user input")
-        return False, "Our guardrails flagged this content, please make any changes and try again."
-
-    if valid_match.group(1) == "YES":
-        logger.success(f"LLM Guardrails approve of the user input")
-        return True, None
+    if q.client.oxford_comma:
+        oxford_value = "Always"
     else:
-        logger.warning(f"LLM Guardrails flagged user input")
-        return False, explanation_match.group(1)
+        oxford_value = "Never"
 
-
-
-
+    q.client.system_prompt = f"You are a helpful bot for reviewing and improving the grammar and syntax of marketing " \
+                             f"content. You know you are not a content expert and you always make a few changes " \
+                             f"to the meaning and context as possible. You are very good at ensuring that a brand's " \
+                             f"language preferences are use:\n" \
+                             f"* {oxford_value} use the oxford comma\n" \
+                             f"* All text should be {q.client.case}\n" \
+                             f"Do not explain yourself, just return the reviewed content."
