@@ -13,7 +13,8 @@ async def llm_query(llm_url: str,
 
     system_prompt = ("Specializing in cultivating vegetables and fruits within kitchen spaces or "
                      "small vegetable gardens, you provide guidance and easy-to-understand explanations "
-                     "in a humorous manner, assisting inexperienced gardeners in their endeavors. ")
+                     "in a humorous manner, assisting inexperienced gardeners in their endeavors. "
+                     "You prefer to create lists using bullet points rather than text blocks.")
 
     if climate is None:
         context = [
@@ -21,9 +22,9 @@ async def llm_query(llm_url: str,
             f"{num_beds} beds, each with a size of 2 square meters. tThey are seeking advice on growing vegetables "
             f"that are well-suited to their specific climate conditions and small bed size. "
             f"Unfortunately they forgot to select a climate subzone. Remind them to do so! "
-            f"Additionally, they are curious to know if the chosen plants thrive "
-            f"in this particular climate subzone and are open to exploring alternatives if needed. "
-            f"They prefer to receive information with a subtle touch of humor. "
+            f"They are open to exploring alternatives if the plants do not fit "
+            f"are not optimal for preventing pests and diseases."
+            f"They prefer concise answers with a subtle touch of humor. "
         ]
     else:
         context = [
@@ -32,10 +33,11 @@ async def llm_query(llm_url: str,
             f"climate subzone, they are seeking advice on growing vegetables that are well-suited "
             f"to their specific climate conditions and small bed size. "
             f"Additionally, they are curious to know if the chosen plants thrive "
-            f"in this particular climate subzone and are open to exploring alternatives if needed."
-            f"They prefer to receive information with a subtle touch of humor."
+            f"in this particular climate subzone. They are open to exploring alternatives if the plants do not fit "
+            f"the climate subzone or are not optimal for preventing pests and diseases. "
+            f"They prefer concise answers with a subtle touch of humor. "
         ]
-        
+
     try:
         logger.debug(user_message)
         client = Client(llm_url, h2ogpt_key=h2ogpt_key)

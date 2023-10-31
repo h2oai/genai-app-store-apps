@@ -1,6 +1,6 @@
 from typing import List
 import os
-import random
+import numpy as np
 
 from src.utils import heap_analytics
 from src.cards import *
@@ -87,8 +87,8 @@ def get_zones() -> List[ui.Zone]:
 
 async def image_view(q):
     paths = os.listdir("./static/images/")
-    path = random.choice(paths)
-    path = f"./static/images/{path}"
+    path = np.random.choice(paths, size=1)
+    path = f"./static/images/{path[0]}"
     image, = await q.site.upload([path])
 
     q.page['image'] = ui.form_card(
