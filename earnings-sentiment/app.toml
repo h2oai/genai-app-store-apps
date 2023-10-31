@@ -1,0 +1,23 @@
+[App]
+Name = "wave-earnings-sentiment"
+Version = "0.0.2"
+Title = "Earnings Sentiment using Large Language Models"
+Description = "AI enhanced earnings analysis"
+Tags = ["GENERATIVE_AI", "DOCUMENT", "FINANCIAL_SERVICES"]
+LongDescription = "LongDescription.md"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
+
+[Runtime]
+Module = "app"
+<<<<<<< HEAD
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+=======
+MemoryLimit = "8Gi"
+MemoryReservation = "8Gi"
+>>>>>>> main
+EnableOIDC = true
