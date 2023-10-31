@@ -9,7 +9,7 @@ from src.layout import (
 from src.prompts import questions
 
 
-async def answer_question(q, prompt):
+async def answer_question(q: Q, prompt: str):
     q.page['chat'].data += [prompt, True]
     await q.page.save()
     await waiting_dialog(q)
@@ -21,37 +21,10 @@ async def answer_question(q, prompt):
 async def handler(q: Q):
 
     if q.args.chatbot:
-        await answer_question(q, q.args.chatbot)
+        await q.run(answer_question, q, q.args.chatbot)
         await image_view(q)
-    elif q.args["prompts"] == "bed_planning":
-        await answer_question(q, questions["bed_planning"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "open_seeds":
-        await answer_question(q, questions["open_seeds"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "crop_rotation":
-        await answer_question(q, questions["crop_rotation"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "fertilizer":
-        await answer_question(q, questions["fertilizer"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "pests":
-        await answer_question(q, questions["pests"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "biodiversity":
-        await answer_question(q, questions["biodiversity"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "composting":
-        await answer_question(q, questions["composting"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "agriculture_ai":
-        await answer_question(q, questions["agriculture_ai"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "climate":
-        await answer_question(q, questions["climate"]["prompt"])
-        await image_view(q)
-    elif q.args["prompts"] == "gardening_ai":
-        await answer_question(q, questions["gardening_ai"]["prompt"])
+    elif q.args["prompts"] is not None and q.args["prompts"] in list(questions.keys()):
+        await q.run(answer_question, q, questions[q.args["prompts"]]["prompt"])
         await image_view(q)
     else:
         await landing_page_view(q)

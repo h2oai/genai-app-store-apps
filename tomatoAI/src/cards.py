@@ -86,7 +86,7 @@ def plants_card(q: Q):
                     width="200px"),
                 ui.dropdown(
                     name="climate_subzone",
-                    label="Climate subzone",
+                    label="Climate Subzone",
                     choices=get_climate_subzone(q.client.climate_zone)
                         if q.client.climate_zone is not None
                         else None,
@@ -99,7 +99,7 @@ def plants_card(q: Q):
             ]),
             ui.picker(
                 name="plants",
-                label="Your plants",
+                label="Your Plants",
                 choices=choices,
                 trigger=True,
                 values=list(q.client.plants) if q.client.plants is not None else None,

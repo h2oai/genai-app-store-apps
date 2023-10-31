@@ -23,12 +23,12 @@ Value = "#e2e2e2"
 
 [[Env]]
 Name = "H2OGPT_API_TOKEN"
-Secret = "tomatoai"
+Secret = "h2ogpt-oss"
 SecretKey = "h2ogpt-key"
 
 [[Env]]
 Name = "H2OGPT_URL"
-Secret = "tomatoai"
+Secret = "h2ogpt-oss"
 SecretKey = "h2ogpt-url"
 
 [[Env]]

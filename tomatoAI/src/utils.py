@@ -30,7 +30,7 @@ def get_climate_subzone(climate_zone: str):
         choices += [
             ui.choice(name="Af - Rainforest climate", label="Af - Rainforest climate"),
             ui.choice(name="Am - Monsoon climate", label="Am - Monsoon climate"),
-            ui.choice(name="Af - Wet and dry or savanna climate", label="Af - Wet and dry or savanna climate")
+            ui.choice(name="Aw/As - Wet and dry or savanna climate", label="Aw/As - Wet and dry or savanna climate")
         ]
     elif climate_zone == "Dry":
         choices += [
@@ -44,11 +44,10 @@ def get_climate_subzone(climate_zone: str):
             ui.choice(name="Cfa - Humid subtropical climate", label="Cfa - Humid subtropical climate"),
             ui.choice(name="Cfb - Oceanic or maritime climate", label="Cfb - Oceanic or maritime climate"),
             ui.choice(name="Cfc - Subpolar oceanic climate", label="Cfc - Subpolar oceanic climate"),
-            ui.choice(name="Cfc - Subpolar oceanic climate", label="Cfc - Subpolar oceanic climate"),
+            ui.choice(name="Csa - Hot-summer Mediterranean climate", label="Csa - Hot summer Mediterranean climate"),
+            ui.choice(name="Csb - Warm-summer Mediterranean climate", label="Csb - Warm summer Mediterranean climate"),
             ui.choice(name="Cwa - Monsoon-influenced humid subtropical climate",
                       label="Cwa - Monsoon-influenced humid subtropical climate"),
-            ui.choice(name="Cwb - Subtropical highland climate",
-                      label="Cwb - Subtropical highland climate"),
         ]
     elif climate_zone == "Continental":
         choices += [
@@ -63,7 +62,15 @@ def get_climate_subzone(climate_zone: str):
             ui.choice(name="Dwb - Warm summer continental or hemiboreal climate with dry winters",
                       label="Dwb - Warm summer continental or hemiboreal climate with dry winters"),
             ui.choice(name="Dwc - Subarctic or boreal climate with dry winters",
-                      label="Dwc - Subarctic or boreal climate with dry winters")
+                      label="Dwc - Subarctic or boreal climate with dry winters"),
+            ui.choice(name="Dwd - Subarctic or boreal climate with extremely dry winters",
+                      label="Dwd: Subarctic or boreal climate with extremely dry winters"),
+            ui.choice(name="Dsa - Hot summer continental or hemiboreal climate with dry summers",
+                      label="Dsa - Hot summer continental or hemiboreal climate with dry summers"),
+            ui.choice(name="Dsb - Warm summer continental or hemiboreal climate with dry summers",
+                      label="Dsb - Warm summer continental or hemiboreal climate with dry summers"),
+            ui.choice(name="Dsc - Subarctic or boreal climate with dry summers",
+                      label="Dsc - Subarctic or boreal climate with dry summers")
         ]
     elif climate_zone == "Polar":
         choices += [
