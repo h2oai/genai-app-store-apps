@@ -14,7 +14,7 @@ async def answer_question(q, prompt):
     await q.page.save()
     await waiting_dialog(q)
     response = await get_response(q, prompt)
-    q.page['chat'].data += [response, True]
+    q.page['chat'].data += [response, False]
     await q.page.save()
 
 

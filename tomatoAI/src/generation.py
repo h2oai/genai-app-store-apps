@@ -11,9 +11,9 @@ async def llm_query(llm_url: str,
                     climate: str) -> str:
     logger.info("Prompting LLM with user query.")
 
-    system_prompt = ("You specialize in cultivating vegetables and fruits within kitchen spaces "
-                     "or small vegetable gardens. Offering guidance and easy-to-understand explanations,"
-                     " you assist inexperienced gardeners in their endeavors.")
+    system_prompt = ("Specializing in cultivating vegetables and fruits within kitchen spaces or "
+                     "small vegetable gardens, you provide guidance and easy-to-understand explanations "
+                     "in a humorous manner, assisting inexperienced gardeners in their endeavors.")
 
     try:
         logger.debug(user_message)
@@ -49,7 +49,6 @@ async def get_response(q: Q, prompt: str):
             selection += plants[n]
     else:
         selection = ["tomatoes"]
-
 
     response = await q.run(
         llm_query,
