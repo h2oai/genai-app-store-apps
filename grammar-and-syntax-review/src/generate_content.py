@@ -91,7 +91,7 @@ async def llm_query_custom(system_prompt, prompt, connection_details):
 
         text_completion = client.text_completion.create(
             system_prompt=system_prompt,
-            visible_models=['h2oai/h2ogpt-4096-llama2-70b-chat']
+            visible_models=['gpt-3.5-turbo-0613']
         )
         response = text_completion.complete_sync(prompt)
 
