@@ -1,0 +1,1 @@
+This app is designed to enable users to upload audio files, have them transcribed, then summarized.
