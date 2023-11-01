@@ -85,23 +85,6 @@ async def set_portuguese(q: Q):
     await get_home_items(q, flag="home")
     await q.page.save()
 
-
-@on()
-async def upload(q: Q):
-    q.client.path  = await q.site.download(q.client.upload[0], "./pdf")
-    await loading(q)
-    filename = os.path.splitext(os.path.basename(q.client.path))[0]
-    name_collection_peticao = f'collection_{filename}'
-    description_collection_peticao = f'Collection for {filename}'
-    q.client.collection_peticao_id = q.app.h2ogpte.create_collection(name_collection_peticao, description_collection_peticao)
-    q.client.qnamanager = QnAManager(q.app.h2ogpte, llm, q.client.collection_peticao_id, q.app.collection_temas_id)
-    q.client.peticao_chunks = await q.run(q.app.h2ogpte.ingest_filepath, q.client.path, q.client.collection_peticao_id)
-    q.page['meta'].dialog = None
-    await get_home_items(q, flag="uploaded")
-    await q.page.save()
-    delete_filepath(q.client.path)
-
-
 @on()
 async def submit_url(q: Q):
     if q.client.url == "":

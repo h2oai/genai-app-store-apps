@@ -111,9 +111,6 @@ async def display_chat_view(q: Q):
 def get_sidebar(q):
     sidebar_text = q.client.texts['sidebar']
     items = [
-        ui.text(text_heading.format(sidebar_text['heading'])),
-        ui.file_upload(name="upload", label=sidebar_text['label'], file_extensions=["pdf"]),
-        ui.separator(),
         ui.text(text_heading.format(sidebar_text['heading_2'])),
         ui.textbox(name='url', label=sidebar_text['label_2'], required=True),
         ui.button(name='submit_url', label=sidebar_text['button'], primary=True, icon='Upload'),
