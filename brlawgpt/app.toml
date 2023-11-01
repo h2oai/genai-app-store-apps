@@ -5,7 +5,7 @@ Title = "BrLawGPT"
 Description = "Chat with the legal petitions, ask for summaries and search for Supreme Court jurisprudence."
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
-Tags = ["Generative AI", "LLM"]
+Tags = ["GENERATIVE_AI", "LLM"]
 
 [Runtime]
 Module = "src.app"
