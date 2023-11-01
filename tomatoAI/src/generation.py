@@ -3,7 +3,7 @@ from h2ogpt_client import Client
 from loguru import logger
 
 
-async def llm_query(q: Q, prompt: str, plants: str) -> str:
+def llm_query(q: Q, prompt: str, plants: str) -> str:
     logger.info("Prompting LLM with user query.")
 
     system_prompt = ("Specializing in cultivating vegetables and fruits within kitchen spaces or "
@@ -53,7 +53,7 @@ async def llm_query(q: Q, prompt: str, plants: str) -> str:
         return ""
 
 
-async def get_response(q: Q, prompt: str) -> str:
+def get_response(q: Q, prompt: str) -> str:
     plants = []
     if q.client.plants is not None:
         plants.extend(q.client.plants)
@@ -66,5 +66,5 @@ async def get_response(q: Q, prompt: str) -> str:
     else:
         selection = ["tomatoes"]
 
-    response = await llm_query(q, prompt, selection)
+    response = llm_query(q, prompt, selection)
     return response
