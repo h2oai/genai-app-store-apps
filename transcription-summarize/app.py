@@ -7,6 +7,7 @@ from time import time
 
 import whisper
 from gradio_client import Client
+import hashlib
 from h2o_wave import app, Q, ui, main, on, run_on
 from loguru import logger
 
@@ -33,6 +34,13 @@ async def init(q: Q) -> None:
         box='',
         title='Wave Transcription Summarize',
         theme='h2o-dark',
+        script=heap_analytics(
+            userid=q.auth.subject,
+            event_properties=f"{{"
+                             f"version: '0.0.1', "
+                             f"product: 'Wave Transcription Summarize'"
+                             f"}}",
+        ),
         layouts=[
             ui.layout(
                 breakpoint='xs',
@@ -139,12 +147,42 @@ def create_summarize_ui(q):
         ]),
     ]
     if q.client.raw_text is not None:
-        items.append(ui.text('This is the transcribed text:<br>{}<br>'.format(q.client.raw_text)))
+        items.append(ui.copyable_text(label="Transcript", value=q.client.raw_text, multiline=True, height="200px"))
 
     if q.client.summarize is not None:
-        items.append(ui.text(q.client.summarize[0] + ':<br>' + q.client.summarize[1].strip()))
+        items.append(ui.copyable_text(
+            label="Summary",
+            value=q.client.summarize[1].strip(),
+            multiline=True,
+            height="200px"
+        ))
 
     if q.client.sentiment is not None:
-        items.append(ui.text('<br>' + q.client.sentiment[0] + ':<br>' + q.client.sentiment[1].strip()))
+        items.append(ui.copyable_text(
+            label="Sentiment",
+            value=q.client.sentiment[1].strip(),
+            multiline=True,
+            height="200px"
+        ))
 
     return items
+
+
+def heap_analytics(userid, event_properties=None) -> ui.inline_script:
+
+    if "HEAP_ID" not in os.environ:
+        return
+    heap_id = os.getenv("HEAP_ID")
+    script = f"""
+window.heap=window.heap||[],heap.load=function(e,t){{window.heap.appid=e,window.heap.config=t=t||{{}};var r=document.createElement("script");r.type="text/javascript",r.async=!0,r.src="https://cdn.heapanalytics.com/js/heap-"+e+".js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(r,a);for(var n=function(e){{return function(){{heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}}}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","removeEventProperty","setEventProperties","track","unsetEventProperty"],o=0;o<p.length;o++)heap[p[o]]=n(p[o])}};
+heap.load("{heap_id}"); 
+    """
+
+    if userid is not None:  # is OIDC Enabled? we do not want to identify all non-logged in users as "none"
+        identity = hashlib.sha256(userid.encode()).hexdigest()
+        script += f"heap.identify('{identity}');"
+
+    if event_properties is not None:
+        script += f"heap.addEventProperties({event_properties})"
+
+    return ui.inline_script(content=script)
