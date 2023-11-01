@@ -1,0 +1,1 @@
+Transcribe, summarize and extract the audio from public audio files with Whisper and H2OGPT!
