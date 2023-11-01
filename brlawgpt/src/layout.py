@@ -1,6 +1,7 @@
 from h2o_wave import Q, ui, data
 import toml
 import os
+import glob
 import hashlib
 from .utils import get_body, get_questions, loading
 from .constants import COMPANY, COMPANY_LOGO, APP_TITLE, THEME, BACKGROUND_IMAGE
@@ -109,8 +110,16 @@ async def display_chat_view(q: Q):
     await q.page.save()
 
 def get_sidebar(q):
+    files = glob.glob("demo_files/*.pdf")
+    filenames = [os.path.basename(file) for file in files]
     sidebar_text = q.client.texts['sidebar']
     items = [
+        ui.text(text_heading.format(sidebar_text['heading'])),
+        ui.dropdown(name='initial_petition_demo',
+                    label=sidebar_text['sub_heading'],
+                    choices=[ui.choice(name=filename, label=filename) for filename in filenames]),
+        ui.button(name='submit_demo', label=sidebar_text['label'], primary=True, icon='Upload'),
+        ui.separator(),
         ui.text(text_heading.format(sidebar_text['heading_2'])),
         ui.textbox(name='url', label=sidebar_text['label_2'], required=True),
         ui.button(name='submit_url', label=sidebar_text['button'], primary=True, icon='Upload'),

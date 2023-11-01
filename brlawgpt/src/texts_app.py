@@ -9,8 +9,9 @@ texts_app_ptbr = {
                 [" - Faça um resumo da petição inicial", False],
             ],
     'sidebar':{
-        'label':'Upload Petição Inicial',
-        'heading':'Faça o upload da Petição Inicial',
+        'label':'Confirmar',
+        'sub_heading':'Petição Inicial Demo',
+        'heading':'Escolha uma petição inicial exemplo',
         'heading_2':'Faça upload com URL',
         'label_2':'Insira a URL do documento',
         'button':'Enviar'},
@@ -44,8 +45,9 @@ texts_app_en = {
                 [" - Summarize the initial petition", False],
             ],
     'sidebar':{
-        'label':'Upload Initial Petition',
-        'heading':'Upload the Initial Petition',
+        'label':'Confirm',
+        'sub_heading':'Initial Petition Demo',
+        'heading':'Choose an example initial petition',
         'heading_2':'Upload through a URL',
         'label_2':'Insert the document URL',
         'button':'Submit'},
