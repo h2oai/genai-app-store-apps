@@ -1,4 +1,4 @@
-h2o-wave==0.26.2
+h2o-wave==1.0.0
 openai-whisper==20230918
 pandas==2.1.1
 glob2==0.7
