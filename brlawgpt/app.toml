@@ -1,0 +1,32 @@
+[App]
+Name = "ai.h2o.wave.brlaw-gpt"
+Version = "0.0.1"
+Title = "BrLawGPT"
+Description = "Chat with the legal petitions, ask for summaries and search for Supreme Court jurisprudence."
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+Tags = ["Generative AI", "LLM"]
+
+[Runtime]
+Module = "src.app"
+RoutingMode = "BASE_URL"
+RuntimeVersion = "deb11_py310_wlatest"
+MemoryLimit = "40Gi"
+MemoryReservation = "20Gi"
+CPULimit = "12"
+CPUReservation = "4"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpte-abaraldo"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-abaraldo"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
