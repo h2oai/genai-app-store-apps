@@ -14,12 +14,6 @@ MemoryLimit = "16Gi"
 MemoryReservation = "16Gi"
 
 [[Env]]
-Name = "H2O_DRIVE_ENDPOINT"
-Secret = "h2oai-drive-endpoints"
-SecretKey = "storage-endpoint"
-Optional = true
-
-[[Env]]
 Name = "PLATFORM_TOKEN_ENDPOINT"
 Secret = "platform-token"
 SecretKey = "token-endpoint"
@@ -39,9 +33,3 @@ SecretKey = "h2ogpte-api-token"
 Name = "H2OGPTE_URL"
 Secret = "callcenterapp"
 SecretKey = "h2ogpte-url"
-
-
-[[Env]]
-Name = "H2O_TRANSCRIPT_ENDPOINT"
-Secret = "callcenterapp"
-SecretKey = "mlops-whisper-url"

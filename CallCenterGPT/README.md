@@ -4,8 +4,6 @@
 
 ![alt text](static/screenshot.png)
 
-**Feedback:** contact audrey.leteve@h2o.ai with any questions, problems, or concerns
-
 ## Deploy in the AI Cloud
 
 ### Secrets
@@ -61,5 +59,3 @@ Run the app (be sure that you in the app directory):
 `wave run src/app.py`
 
 Access it by visiting `http://localhost:10101/` or `http://<ip/server dns>:10101/`
-
-Note that in order to run the app, wave server has to be running. 
