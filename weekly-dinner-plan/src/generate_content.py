@@ -21,7 +21,6 @@ def initialize_generate_content_client(q):
     q.client.cooking_instructions = True
     q.client.adults = '2'
     q.client.children = '2'
-    q.client.persona = "Young Professionals"
 
 
 @on()
@@ -29,10 +28,10 @@ async def side_input_generate_content(q):
     logger.info("")
     clear_cards(q)
 
-    # Options for listing
+    # Options for meal plan
     adults = range(1, 10)
     children = range(1, 10)
-    restrictions = ['Vegetarian', 'Vegan', 'Glutton Free', 'Halal', 'Kosher']
+    restrictions = ['Vegetarian', 'Vegan', 'Gluten Free', 'Halal', 'Kosher']
     meals = ['Breakfast', 'Lunch', 'Snack', 'Dinner']
 
     # User input form
