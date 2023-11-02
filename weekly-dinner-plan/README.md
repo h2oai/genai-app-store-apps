@@ -1,4 +1,4 @@
-# Weekly Dinner Plan
+# Weekly Meal Planning
 
 Eat well with less effort thanks to Generative AI.
 
