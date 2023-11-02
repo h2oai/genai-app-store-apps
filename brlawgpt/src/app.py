@@ -36,11 +36,11 @@ async def serve(q: Q):
 
 
 async def initialize_app(q):
-    q.app.h2ogpte = {
+    q.app.h2ogpte_keys = {
                 "address": os.getenv("H2OGPTE_URL", "https://internal.h2ogpte.h2o.ai"),
                 "api_key": os.getenv("H2OGPTE_API_TOKEN"),
             }
-    q.app.h2ogpte = H2OGPTEClient(q.app.h2ogpte['address'], q.app.h2ogpte['api_key'])
+    q.app.h2ogpte = H2OGPTEClient(q.app.h2ogpte_keys['address'], q.app.h2ogpte_keys['api_key'])
     q.app.collection_temas_id = q.app.h2ogpte.create_collection(name_collection_temas, description_collection_temas)
     q.app.h2ogpte.ingest_file_folder('temas_stf', q.app.collection_temas_id)
     q.app.loader, = await q.site.upload(['./static/loader_legal.gif'])
@@ -60,6 +60,8 @@ async def questions(q: Q):
 
 
 async def on_generating(q, question_prompt, doc_chunks):
+    q.app.h2ogpte = H2OGPTEClient(q.app.h2ogpte_keys['address'], q.app.h2ogpte_keys['api_key'])
+    q.client.qnamanager = QnAManager(q.app.h2ogpte, llm, q.client.collection_peticao_id, q.app.collection_temas_id)
     pdf_docs = [q.client.path]
     q.page["card_1"].data += [question_prompt, True]
     q.page["card_1"].data += ["<img src='{}' height='40px'/>".format(q.app.loader), False]

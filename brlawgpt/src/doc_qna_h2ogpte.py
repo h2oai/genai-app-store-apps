@@ -119,6 +119,9 @@ class H2OGPTEClient:
             logging.info(f'File {filename} ingested')
         else:
             logging.info(f'File {filename} already ingested')
+        
+        chunks = self._get_collection_chunks(collection_id)
+        return chunks
     
     def _get_collection_chunks(self, collection_id):
         chunk_sizes = 80
