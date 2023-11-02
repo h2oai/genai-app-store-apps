@@ -1,0 +1,35 @@
+[App]
+name = "ai.h2o.wave.h2o-demo-rfi"
+Title = "H2O Demo RFI"
+description = "H2O Demo RFI Q&A Using Company Data"
+LongDescription = "about.md"
+Tags = ["RFI QA", "DEMO", "INTERNAL"]
+Version = "0.0.2"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "src.app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+RoutingMode = "BASE_URL"
+RuntimeVersion = "ub2004_cuda114_cudnn8_py38_wlatest"
+
+[[Env]]
+Name= "COLLECTION_NAME"
+Value = "H2O_DEMO_RFI"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2o-rfi-qa"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "h2o-rfi-qa"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
