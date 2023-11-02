@@ -210,7 +210,6 @@ async def render_error_page(q: Q, err: str):
     """
     q.page['content'] = ui.form_card(box='content', items=[
         ui.text_xl("Uh oh. Something went wrong"),
-        ui.message_bar(type='info', text='Please contact support@h2o.ai for help.'),
         ui.message_bar(type='error', text=f'Error: {err}'),
     ])
 
