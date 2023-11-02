@@ -1,7 +1,7 @@
 from h2o_wave import Q, ui
 from src.utils import render_header, render_nav_bar, card_zones
 from src.log import log
-from src.config import Config
+from src.config import Config, h2ogpte_config
 
 """Initialize client / browser"""
 async def init_application(q:Q):
@@ -21,12 +21,7 @@ async def init_application(q:Q):
               - is_cloud: {q.app.global_config.is_cloud}
               """)
 
-    q.app.h2ogpte = {
-        "llm":"h2oai/h2ogpt-4096-llama2-70b-chat",
-        "issue_resolution_prompt": """In the following customer and agent exchange, Out of the issues raised by the customer which are outstanding(s) and require action(s) from the agent after the call (caveat they may need to to seek authorisation). List these next step(s).""",
-        "topics_associated_prompt":"""In the following customer and agent exchange, list the main topics discussed and associated customer's sentiment between 'Negative', 'Positive' and 'Neutral'. Format your answer as a Python dictionary where the key is a topic and the value is the associated sentiment, keep only the dictionary, REMOVE any explanation in your answer: {"topic 1":"sentiment 1", "topic 2":"sentiment 2",} :""",
-        "overall_sentiment_prompt": """Respond with one and only one word only between 'Negative', 'Positive' and 'Neutral' to describe the overall sentiment of the following. REMOVE any explanation in your answer: \n""",
-    }
+    q.app.h2ogpte = h2ogpte_config
 
     q.app.initialized = True
 
