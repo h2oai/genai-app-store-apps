@@ -1,4 +1,4 @@
-from h2o_wave import main, app, Q, ui, handle_on, copy_expando
+from h2o_wave import main, app, Q, ui, run_on, copy_expando
 import os
 import toml
 
@@ -17,7 +17,7 @@ async def serve(q: Q):
     if not q.client.initialized:
         await initialize_session(q)
 
-    await handle_on(q)
+    await run_on(q)
     await q.page.save()
 
     logger.info("Ending user request")
