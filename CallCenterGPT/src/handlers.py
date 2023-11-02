@@ -16,7 +16,7 @@ async def render_high_level_analysis_page(q):
     clean_cards(q, mode = "analysis")
 
     q.page['pie_chart'] = ui.wide_pie_stat_card(
-                            box='top_right',
+                            box=ui.box('down', size ='60%'),
                             title='Top 5 topics in calls, emails & chats',
                             pies=[
                                 ui.pie(label='Banking App', value='', fraction=0.30, color='$green', aux_value='30%'),
@@ -27,6 +27,17 @@ async def render_high_level_analysis_page(q):
                                 ui.pie(label='Other', value='', fraction=0.05, color='$grey', aux_value='5%'),
                             ]
                         )
+    
+    q.page['info_card'] = ui.tall_info_card(
+                                    box=ui.box('down', size ='40%'),
+                                    name='#audio_call',
+                                    title='',
+                                    caption='''The app helps you to analyse text and audio files giving you
+                                    \n a single view of what your customers are contacting you about from calls to emails.''',
+                                    category='Powered by H2oGPT Enterprise',
+                                    label='Analyse my text',
+                                    image='https://codigosdebonus.com.br/wp-content/uploads/2020/05/participant-support-webinar-20-638.jpg',
+                                )
 
     def generate_dollars(min=250, max=9000):
         d = max - min
@@ -41,7 +52,7 @@ async def render_high_level_analysis_page(q):
     sample_rating = ['9','8','6','4','5','7']
 
     q.page['table_topics'] = ui.stat_table_card(
-        box='top_left',
+        box='up',
         title='What your customers talk the most about...',
         subtitle='Transcripted calls analysed by LLM',
         columns=["Top Topics", "Avg. Customer Value", "Volume of touchpoints", "Avg. Rating (0-low, 10-high)"],
@@ -179,17 +190,16 @@ async def render_upload_analyse_calls_page(q):
             re.sub(' +', ' ', input_user)
             log.info(f"lenght of message: {len(input_user)}")
             if input_user.isalnum() or input_user==" " or len(input_user)<15:
-                await render_error_page(q, "Please provide a valid input (not space or numbers only, at least 15 characters)")
+                await render_error_page(q, "Please provide a valid input (no space or numbers only, 15+ characters) - if you need inspiration, check out our examples !")
                 return ""
             return input_user
 
         cleaned_input = await clean_and_check_input(q.client.transcript_multiline)
 
         from h2ogpte import H2OGPTE
-        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
-        valid = await q.run(llm_validate_message, cleaned_input, client) #too many false positive
-
-        log.info(f"validity of message: {valid}")        
+        # client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+        # valid = await q.run(llm_validate_message, cleaned_input, client) #too many false positive
+        # log.info(f"validity of message: {valid}")       
 
         try:
             log.info("Create Sentiment Analysis and topic analysis from Transcript")
@@ -198,9 +208,11 @@ async def render_upload_analyse_calls_page(q):
         except Exception as err:
             log.error(f"Unhandled Application Error: {str(err)}")
             log.error(traceback.format_exc())
-            # await render_error_page(q, str(err))
-            # return ""
-            overall_sentiment, topics_associated_sentiment, issue_resolution_outcome = "Non available", {"Non available": "Non available"}, "Please try again."
+            await render_error_page(q, "The input may be invalid or H2ogpt may be down, please try again. thanks !")
+            overall_sentiment, topics_associated_sentiment, issue_resolution_outcome = "Non available", {"Non available": "Non available"}, "The input may be invalid or H2ogpt may be down, please try again. thanks !"
+            return ""
+        
+        log.info(f"{overall_sentiment} --- {topics_associated_sentiment}")       
         
         add_card(q, name = "content/call_details")
         add_card(q, name = "content/transcript")

@@ -73,8 +73,8 @@ def header_zone() -> ui.Zone:
     """Returns the header zone"""
 
     zone = ui.zone(name='header',
-                   direction='row',
-                   size='120px')
+                   direction='row',)
+                #    size='120px')
 
     return zone
 
@@ -107,9 +107,9 @@ def card_zones(mode: Optional[str] = "home") -> List[ui.Zone]:
                 header_zone(),
                 ui.zone(name='body', direction='row', size='1', zones=[
                     navigation_zone(),
-                    ui.zone('top', direction=ui.ZoneDirection.COLUMN, size='100%', zones=[
-                         ui.zone('top_left',size='50%'),
-                         ui.zone('top_right', size='50%'),
+                    ui.zone('top', direction=ui.ZoneDirection.COLUMN, size='80%', zones=[
+                         ui.zone('up',size='50%'),
+                         ui.zone('down', size='50%', direction=ui.ZoneDirection.ROW),
                 ])
             ])
             ]
@@ -135,7 +135,7 @@ async def render_header(q: Q):
                                       image="https://cdn-icons-png.flaticon.com/512/4230/4230669.png",
                                       items=[ui.persona(title=q.auth.username,
                                                         subtitle='Customer Satisfaction Manager',
-                                                        size='xs',
+                                                        size='s',
                                                         image=None,
                                                         initials_color='Black')],
                                       )
