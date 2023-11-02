@@ -107,9 +107,9 @@ def card_zones(mode: Optional[str] = "home") -> List[ui.Zone]:
                 header_zone(),
                 ui.zone(name='body', direction='row', size='1', zones=[
                     navigation_zone(),
-                    ui.zone('top', direction=ui.ZoneDirection.ROW, size='100%', zones=[
+                    ui.zone('top', direction=ui.ZoneDirection.COLUMN, size='100%', zones=[
                          ui.zone('top_left',size='50%'),
-                         ui.zone('top_right', direction=ui.ZoneDirection.COLUMN, size='50%'),
+                         ui.zone('top_right', size='50%'),
                 ])
             ])
             ]
@@ -165,7 +165,7 @@ async def render_nav_bar(q: Q, tab):
                                         ui.nav_group('Help', items=[
                                                     ui.nav_item(name='#howtouse', label='Getting Started',
                                                                     icon='BookAnswers'),
-                                                    ui.nav_item(name='#help/contact', label='Contact Us', icon='Help'),
+                                                    ui.nav_item(name='#help/contact', label='Disclaimer', icon='Help'),
                                                 ])])
     else:
         q.page['nav_menu'].value = tab

@@ -310,9 +310,9 @@ async def render_howtouse_page(q: Q):
             items=[
                 ui.text_xl('''Welcome to the Call Center GPT app'''),
                 ui.text_l(f'''To get started:
-                                \n 1. Check H2o-generated transcript with sentiment and topic analysis in "Example calls analysis"
-                                \n 2. You can then analyse your own by clicking 'Analyse my transcript' on the navigation bar
-                                \n 3. The "Global Analytical report" section gives you a high level report of global customer service items (chats, emails, calls)
+                                \n 1. Check H2o-pre-generated transcript with sentiment and topic analysis in "Example calls analysis"
+                                \n 2. You can then analyse your own transcript or text by clicking 'Analyse my transcript' on the navigation bar 
+                                \n 3. The "Global Analytical report" section gives you a report of all global customer service items (chats, emails, calls) - of course, it is made up for this public app!
                         '''),
                 ui.button(name='#audio_call', label='Get Started'),
             ],
@@ -331,7 +331,7 @@ async def handle_contact(q: Q):
         box='content',
         items=[ui.message_bar(type='info', text='''
                               Please note this demonstration app is sending transcript data to our servers to interact with Enterprise H2oGPT.
-                              For help, please contact audrey.leteve@h2o.ai or support@h2o.ai'''), ]
+                              '''), ]
     )
     await q.page.save()
 
