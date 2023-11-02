@@ -10,8 +10,7 @@ def llm_query_custom(system_prompt, prompt, connection_details):
 
         client = Client(connection_details["address"], h2ogpt_key=connection_details["api_key"])
         text_completion = client.text_completion.create(
-            system_prompt=system_prompt,
-            visible_models=['gpt-3.5-turbo-0613']
+            system_prompt=system_prompt
         )
         response = text_completion.complete_sync(prompt)
 
