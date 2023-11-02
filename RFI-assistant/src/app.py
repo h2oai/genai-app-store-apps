@@ -34,7 +34,7 @@ async def initialize_app(q: Q):
     q.app.toml = toml.load("./app.toml")
     
     q.app.model_host = os.getenv("H2OGPTE_URL", "https://internal.h2ogpte.h2o.ai")
-    q.app.host_api = os.getenv("H2OGPTE_API_TOKEN", "sk-MxpJlkhTWi529QSuGlHyFxE5NXG3P8wZDVDDXGv2Pl3Nqxl2")
+    q.app.host_api = os.getenv("H2OGPTE_API_TOKEN", "")
     q.app.langchain_mode = os.getenv("COLLECTION_NAME", "H2O_DEMO_RFI")
     
     model_client = get_client(q.app.model_host, q.app.host_api)
