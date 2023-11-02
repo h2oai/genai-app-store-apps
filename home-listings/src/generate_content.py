@@ -9,13 +9,17 @@ import os
 
 text_heading = "<font size=4><b>{}</b></font>"
 
+
 def initialize_generate_content_app(q):
     logger.info("")
     q.app.h2ogpt = {
-        "address": os.getenv("H2OGPTE_URL"),
-        "api_key": os.getenv("H2OGPTE_API_TOKEN"),
+        "address": os.getenv("H2OGPT_URL"),
+        "api_key": os.getenv("H2OGPT_API_TOKEN"),
     }
 
+
+def initialize_generate_content_client(q):
+    logger.info("")
     q.client.attributes = ['Hardwood Floors', 'Air Conditioning']
     q.client.sqft = '1600'
     q.client.bedrooms = '3'
@@ -25,10 +29,6 @@ def initialize_generate_content_app(q):
 
     q.client.system_prompt = f"You are a real estate agent making a listing." \
                              f"Do not explain yourself, just return the text of the listing."
-
-
-def initialize_generate_content_client(q):
-    logger.info("")
 
 
 @on()
@@ -53,7 +53,7 @@ async def side_input_generate_content(q):
                               ui.dropdown(
                                   name='bedrooms', 
                                   label='Number of Bedrooms', 
-                                  width='250px',
+                                  width='32%',
                                   value=q.client.bedrooms,
                                   choices=[ui.choice(name=str(i), label=str(i)) for i in bathroom_choices ]
                                   ),
@@ -61,7 +61,7 @@ async def side_input_generate_content(q):
                               ui.dropdown(
                                   name='bathrooms', 
                                   label='Number of Bathrooms', 
-                                  width='250px', 
+                                  width='32%',
                                   value=q.client.bathrooms,
                                   choices=[ui.choice(name=str(i), label=str(i)) for i in bedroom_choices]
                                   ),
@@ -160,7 +160,6 @@ Write a real estate listing for the home geared towards {q.client.persona}.
     q.client.cards.append("prompt_card")
 
 
-
 @on()
 async def generate_listing(q: Q):
     logger.info("")
@@ -188,14 +187,13 @@ async def generate_listing(q: Q):
     q.client.waiting_dialog = "H2OGPT is creating your listing!"
     await long_process_dialog(q)
 
-
     q.page["listing_card"].content = await q.run(
         llm_query_custom, q.client.system_prompt, q.client.prompt, q.app.h2ogpt
     )
     await q.page.save()
 
 
-async def llm_query_custom(system_prompt, prompt, connection_details):
+def llm_query_custom(system_prompt, prompt, connection_details):
     logger.info("")
     try:
         logger.debug(system_prompt)

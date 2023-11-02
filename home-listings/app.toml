@@ -23,14 +23,14 @@ Value = "winter-is-coming"
 
 
 [[Env]]
-Name = "H2OGPTE_API_TOKEN"
+Name = "H2OGPT_API_TOKEN"
 Secret = "h2ogpt-oss"
-SecretKey = "h2ogpte-key"
+SecretKey = "h2ogpt-key"
 
 [[Env]]
-Name = "H2OGPTE_URL"
+Name = "H2OGPT_URL"
 Secret = "h2ogpt-oss"
-SecretKey = "h2ogpte-url"
+SecretKey = "h2ogpt-url"
 
 [[Env]]
 Name = "HEAP_ID"
