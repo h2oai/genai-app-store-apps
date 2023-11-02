@@ -4,7 +4,7 @@ Get some high level company information quickly based off data that LLMs can gen
 
 ## Local Development
 ```shell script
-python3.8 -m venv venv
+python3.10 -m venv venv
 ./venv/bin/pip install -r requirements.txt
 ./venv/bin/wave run src/app.py
 ```

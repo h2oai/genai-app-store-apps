@@ -17,19 +17,6 @@ async def close_dialog(q):
     q.page["meta"].dialog = None
 
 
-async def long_process_dialog(q, title=None):
-    logger.info("")
-    if title is None:
-        title = q.client.waiting_dialog
-    q.page["meta"].dialog = ui.dialog(
-        title=title,
-        items=[ui.image(title="", path=q.app.load, width="550px"),],
-        blocking=True
-    )
-    await q.page.save()
-    q.page["meta"].dialog = None
-
-
 def missing_required_variable_dialog(q, variable):
     logger.info("")
 
