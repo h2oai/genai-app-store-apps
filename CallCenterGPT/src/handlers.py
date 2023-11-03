@@ -196,11 +196,6 @@ async def render_upload_analyse_calls_page(q):
 
         cleaned_input = await clean_and_check_input(q.client.transcript_multiline)
 
-        from h2ogpte import H2OGPTE
-        # client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
-        # valid = await q.run(llm_validate_message, cleaned_input, client) #too many false positive
-        # log.info(f"validity of message: {valid}")       
-
         try:
             log.info("Create Sentiment Analysis and topic analysis from Transcript")
             overall_sentiment, topics_associated_sentiment, issue_resolution_outcome = await q.run(llm_transcript_analysis, q, cleaned_input)
@@ -208,11 +203,11 @@ async def render_upload_analyse_calls_page(q):
         except Exception as err:
             log.error(f"Unhandled Application Error: {str(err)}")
             log.error(traceback.format_exc())
-            await render_error_page(q, "The input may be invalid or H2ogpt may be down, please try again. thanks !")
-            overall_sentiment, topics_associated_sentiment, issue_resolution_outcome = "Non available", {"Non available": "Non available"}, "The input may be invalid or H2ogpt may be down, please try again. thanks !"
+            await render_error_page(q, "H2oGPT may be down, please try again later. thanks !")
+            overall_sentiment, topics_associated_sentiment, issue_resolution_outcome = "Non available", {"Non available": "Non available"}, "H2oGPT may be down, please try again. thanks !"
             return ""
         
-        log.info(f"{overall_sentiment} --- {topics_associated_sentiment}")       
+        log.info(f"overall_sentiment: {overall_sentiment} --- topics_associated_sentiment: {topics_associated_sentiment}")       
         
         add_card(q, name = "content/call_details")
         add_card(q, name = "content/transcript")

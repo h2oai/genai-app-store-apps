@@ -19,35 +19,54 @@ def llm_transcript_analysis(q, transcript):
     client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
     log.info(f'Trying and accessing H2OGPTE_URL:{os.getenv("H2OGPTE_URL")}')
 
-    #TODO ADD TRY
     overall_sentiment = client.answer_question(
-                                    question=q.app.h2ogpte["overall_sentiment_prompt"],
-                                    text_context_list=[transcript],  llm=q.app.h2ogpte["llm"]).content.strip()
+                                        question=q.app.h2ogpte["overall_sentiment_prompt"],
+                                        text_context_list=[transcript],
+                                        llm=q.app.h2ogpte["llm"],
+                                        system_prompt = q.app.h2ogpte["system_prompt"],
+                                        llm_args=q.app.h2ogpte["llm_args"]).content.strip()
     log.info(f"overall_sentiment: {overall_sentiment}")
 
     try:
-        topics_associated_sentiment =  client.answer_question(
-                            question=q.app.h2ogpte["topics_associated_prompt"],
-                            text_context_list=[transcript],  llm=q.app.h2ogpte["llm"]).content.strip()
-        log.info(f"1st topics_associated_sentiment: {topics_associated_sentiment}")
-        topics_associated_sentiment = ast.literal_eval(topics_associated_sentiment)
+        issue_resolution_outcome = client.answer_question(
+                                        question= q.app.h2ogpte["issue_resolution_prompt"],
+                                        text_context_list=[transcript],
+                                        llm=q.app.h2ogpte["llm"],
+                                        system_prompt = q.app.h2ogpte["system_prompt"],
+                                        llm_args=q.app.h2ogpte["llm_args"]).content.strip()
+        # log.info(llm_validate_message(issue_resolution_outcome, client)) #TODO to review as too many false positive for now.
     except Exception as e:
         log.info(f"error: {e}")
+        issue_resolution_outcome = f"No resolution to display: {e}"
+    log.info(f"issue_resolution_outcome: {issue_resolution_outcome}")
+
+    try:
+        topics_associated_sentiment =  client.answer_question(
+                                                question=q.app.h2ogpte["topics_associated_prompt"],
+                                                text_context_list=[transcript],
+                                                llm=q.app.h2ogpte["llm"],
+                                                system_prompt = q.app.h2ogpte["system_prompt"],
+                                                llm_args=q.app.h2ogpte["llm_args"]).content.strip()
+        log.info(f"1st topics_associated_sentiment: {topics_associated_sentiment}")
+
+        if "Sorry" in topics_associated_sentiment:
+            topics_associated_sentiment = {"Sorry, the input seems invalid, please try with a different input, thanks.": "NA"}
+            overall_sentiment = "Neutral"
+            issue_resolution_outcome = "Sorry, the input seems invalid, no resolution to display."
+        else:
+            start = topics_associated_sentiment.find('{')
+            end = topics_associated_sentiment.find('}', start)+1
+            topics_associated_sentiment = topics_associated_sentiment[start:end]
+            log.info(f"1st topics_associated_sentiment: {topics_associated_sentiment}")
+            topics_associated_sentiment = ast.literal_eval(topics_associated_sentiment)
+    except Exception as e:
+        log.info(f"error: {e}")
+        topics_associated_sentiment = {"The input may be invalid or H2oGPT may be down, please try again.": "NA"}
 
     log.info(f"2nd topics_associated_sentiment: {topics_associated_sentiment}")
-    try:
-        issue_resolution_outcome = client.answer_question(
-                                    question= q.app.h2ogpte["issue_resolution_prompt"],
-                                    text_context_list=[transcript],  llm=q.app.h2ogpte["llm"]).content.strip()
-        
-        log.info(llm_validate_message(issue_resolution_outcome, client)) #too many false positive for now?
-        
-    except Exception as e:
-        log.info(f"error: {e}")
+
     
-    log.info(f"issue_resolution_outcome: {issue_resolution_outcome}")\
-    
-    return  overall_sentiment, topics_associated_sentiment, issue_resolution_outcome
+    return overall_sentiment, topics_associated_sentiment, issue_resolution_outcome
 
 def get_plot_audio_data(audio_paths) -> str:
     audio_template = """
