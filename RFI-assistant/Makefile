@@ -1,9 +1,9 @@
 .PHONY: setup
 setup: #download_demo_data ## Setup
-	python3.10 -m venv .waveenv
-	./.waveenv/bin/python3.10 -m pip install --upgrade pip
-	./.waveenv/bin/python3.10 -m pip install wheel
-	./.waveenv/bin/python3.10 -m pip install -r requirements.txt
+	python3 -m venv .waveenv
+	./.waveenv/bin/python3 -m pip install --upgrade pip
+	./.waveenv/bin/python3 -m pip install wheel
+	./.waveenv/bin/python3 -m pip install -r requirements.txt
 	mkdir -p ./var/lib/tmp/jobs
 
 .PHONY: run
