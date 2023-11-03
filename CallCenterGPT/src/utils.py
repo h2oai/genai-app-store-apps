@@ -61,7 +61,7 @@ def llm_transcript_analysis(q, transcript):
             topics_associated_sentiment = ast.literal_eval(topics_associated_sentiment)
     except Exception as e:
         log.info(f"error: {e}")
-        topics_associated_sentiment = {"The input may be invalid or H2oGPT may be down, please try again.": "NA"}
+        topics_associated_sentiment = {"The H2oGPT answer may be invalid or H2oGPT may be down, please try again.": "NA"}
 
     log.info(f"2nd topics_associated_sentiment: {topics_associated_sentiment}")
 
