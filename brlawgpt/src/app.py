@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 name_collection_temas='temas_stf'
 description_collection_temas="Temas STF"
 
-llm = "h2oai/h2ogpt-4096-llama2-70b-chat"
+llm = "h2oai/h2ogpt-4096-llama2-70b-chat-4bit"
 
 @app("/")
 async def serve(q: Q):
