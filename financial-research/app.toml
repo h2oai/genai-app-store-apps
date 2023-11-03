@@ -1,0 +1,28 @@
+[App]
+Name = "ai.h2o.wave.investment-research"
+Version = "0.0.5"
+Title = "Digital Assets Investment Research"
+Description = "Enhanced your investment research with AI."
+Tags = ["GENERATIVE_AI", "DOCUMENT"]
+LongDescription = "LongDescription.md"
+
+[Runtime]
+Module = "app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "financial-research"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "financial-research"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
