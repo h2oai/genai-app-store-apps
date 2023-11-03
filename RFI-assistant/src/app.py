@@ -7,7 +7,7 @@ from loguru import logger
 
 import asyncio
 from src.gradio import get_client, upload_data, ask_query, get_sources, get_chat_session, get_collection_id
-from src.utils import format_sources, format_docs_table, get_rfi_response, update_rfi, edit_rfi, highlight_pdf, heap_analytics, validate_url
+from src.utils import format_sources, format_docs_table, get_rfi_response, update_rfi, edit_rfi, highlight_pdf, heap_analytics, validate_url, download_and_read
 
 base_path = (Path(__file__).parent / "../").resolve()
 tmp_path = f"{base_path}/var/lib/tmp"
@@ -132,40 +132,45 @@ async def update_response(q: Q):
     await set_rfi_update_cards(q, True)
     
 async def rfi_file_upload(q: Q):
-    q.page["sidebar"].value = "#questionnaire"
-    q.client.update_idx = None
-    q.client.rfi_responses = None
-    
-    await set_rfi_update_cards(q, True)
-    q.page["questionnaire"].rfi_sep.visible = False
-    q.page["questionnaire"].rfi_table.visible = False
-    q.page["questionnaire"].error_bar.visible = False
-    q.page["questionnaire"].success_bar.visible = False
-    q.page["questionnaire"].progress_bar.visible = True
-
-    await q.page.save()
-
-    data_pdf = q.args.rfi_file
-    if data_pdf is None:
-        q.page["questionnaire"].error_bar.visible = True
-        q.page["questionnaire"].progress_bar.visible = False
-    else:
-        if data_pdf:
-            usr_file_path = await q.site.download(
-                data_pdf[0], f"{tmp_path}/jobs"
-            )
-
-        q.page["dataset"].error_bar.visible = False
-        q.user.usr_file = usr_file_path
-        logger.debug(f"The user uploaded loacl path is {usr_file_path}")
+    try:  
+        q.page["sidebar"].value = "#questionnaire"
+        q.client.update_idx = None
+        q.client.rfi_responses = None
         
-        try:          
+        await set_rfi_update_cards(q, True)
+        q.page["questionnaire"].rfi_sep.visible = False
+        q.page["questionnaire"].rfi_table.visible = False
+        q.page["questionnaire"].error_bar.visible = False
+        q.page["questionnaire"].success_bar.visible = False
+        q.page["questionnaire"].progress_bar.visible = True
+
+        await q.page.save()
+
+        data_pdf = q.args.rfi_file if q.args.rfi_file else q.args.ingest_rfi
+        usr_file_path = download_and_read(data_pdf, f"{tmp_path}/jobs")
+        
+        if data_pdf is None or usr_file_path is None:
+            q.page["questionnaire"].error_bar.visible = True
+            q.page["questionnaire"].progress_bar.visible = False
+        else:
+            # if data_pdf:
+            #     usr_file_path = await q.site.download(
+            #         data_pdf[0], f"{tmp_path}/jobs"
+            #     )
+            q.page["dataset"].error_bar.visible = False
+            q.user.usr_file = usr_file_path
+            logger.debug(f"The user uploaded local path is {usr_file_path}")
+                
             rfi_cols, rfi_rows, df_rfi = await q.run(get_rfi_response,
                                                     q,
                                                     file_path=usr_file_path, 
                                                     model_host=q.app.model_host,
                                                     host_api=q.app.host_api, 
                                                     langchain_mode=q.app.langchain_mode)
+            
+            # Delete the file once done
+            if os.path.isfile(usr_file_path):
+                os.remove(usr_file_path)
             
             q.client.rfi_responses = df_rfi
             q.page["questionnaire"].rfi_table.columns = rfi_cols
@@ -174,11 +179,11 @@ async def rfi_file_upload(q: Q):
             q.page["questionnaire"].progress_bar.visible = False
             q.page["questionnaire"].rfi_sep.visible = True
             q.page["questionnaire"].rfi_table.visible = True
-        except Exception as e:
-            logger.debug(f"Error occured: {e}")
-            q.client.rfi_responses = None
-            q.page["questionnaire"].progress_bar.visible = False
-            q.page["questionnaire"].error_bar.visible = True
+    except Exception as e:
+        logger.debug(f"Error occured: {e}")
+        q.client.rfi_responses = None
+        q.page["questionnaire"].progress_bar.visible = False
+        q.page["questionnaire"].error_bar.visible = True
 
 # Add RFI Datasets Upload UI
 async def rfi_query_ui(q: Q):
@@ -207,8 +212,10 @@ async def rfi_query_ui(q: Q):
                     file_extensions=["csv", "xlsx"],
                     required=True,
                     max_file_size=5000,  # Specified in MB.
+                    visible = False,
                     tooltip="Please select a file to query!",
                 ),
+                ui.textbox(name='ingest_rfi', label='RFI Questionnaire from URL', required=True, tooltip="Please provide a URL to RFI Questionnaire. Formats supported: CSV & Excel!"),
                 ui.progress(
                     name="progress_bar", width="100%", label="Uploading file & querying!", visible=False
                 ),
@@ -264,11 +271,11 @@ async def datasets(q: Q):
                     visible = False,
                     tooltip="Please select a file to upload and index!",
                 ),
-                ui.textbox(name='ingest_url', label='Ingest from URL', required=True),
+                ui.textbox(name='ingest_url', label='Ingest from URL', disabled=True),
                 ui.progress(
                     name="progress_bar", width="100%", label="Uploading file and indexing!", visible=False
                 ),
-                ui.button(name="file_upload", label="Submit", primary=True),
+                ui.button(name="file_upload", label="Submit", primary=True, disabled=True),
                 ui.separator(label=''), 
                 ui.table(name='docs_table', multiple=False, height="1", width="1", columns=[
                                 ui.table_column(name='index', label='Index'),
@@ -308,11 +315,7 @@ async def chat(q: Q):
         ui.chatbot_card(
             box=ui.box('content'),
             data=data('content from_user', t='list', size=-100),
-            name='chatbot',
-            commands=[
-                    ui.command(name="download_accept", label="Download QnA history", icon="Download"),
-                    ui.command(name="download_reject", label="Download in-correct QnA history", icon="Download"),
-                ]
+            name='chatbot'
         )
     )
 
@@ -480,7 +483,7 @@ async def serve(q: Q):
         await update_response(q)
     elif q.args.file_upload:
         await file_upload(q)
-    elif q.args.rfi_file:
+    elif q.args.rfi_file_upload:
         await rfi_file_upload(q)
     elif q.args.q1 or q.args.q2 or q.args.q3:
         query = sample_q["q1"] if q.args.q1 else sample_q["q2"] if q.args.q2 else sample_q["q3"]

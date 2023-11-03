@@ -35,10 +35,12 @@ h2o secret create h2o-rfi-qa -l h2ogpte-key="" -l h2ogpte-url="https://***.h2ogp
 ## App Workflow
 
 ### Upload Sources
-This feature enables users to view the current list of documents in a collection that LLMs use to answer RFI queries.
+This feature enables users to view the current list of documents in a collection that LLMs use to answer RFI queries. Disabled for demo!
 
 ### Upload RFI Questionnaire
 This feature automates the RFI answering process. Users can upload an Excel file with a mandatory "Question" field. The LLM models use this to provide answers, which appear in an editable table for user review. Users can modify the answers in the table before downloading them.
+
+  - Sample URL: https://raw.githubusercontent.com/narasimhard/demo-data/main/RFIQueriesLLM.xlsx
 
 ### Chat 
 This feature allows users to interact directly with LLM models.

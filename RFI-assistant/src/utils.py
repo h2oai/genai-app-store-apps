@@ -4,10 +4,12 @@ import asyncio
 import pandas as pd
 import json 
 import validators
+import wget
 import fitz
 import os
 import hashlib
 from h2o_wave import Q
+from loguru import logger
 
 def format_sources(src_list: list):
     result = ""
@@ -145,3 +147,26 @@ def validate_url(url):
         return True 
     else:
         return False
+
+def download_and_read(url, output_path):
+    # Check if the URL is valid
+    if not validate_url(url):
+        logger.debug("Invalid URL.")
+        return None
+    
+    # Check if the file is a CSV or Excel
+    if not url.strip().lower().endswith(('.csv', '.xlsx')):
+        logger.debug("File is not a CSV or Excel file.")
+        return None
+    elif url.strip().lower().endswith('.csv'):
+        file_type = '.csv'
+    else:
+        file_type = '.xlsx'
+
+    # Download the file using wget
+    try:
+        filename = wget.download(url, out=f"{output_path}")
+        return filename
+    except Exception as e:
+        logger.debug("Error downloading the file:", e)
+        return None

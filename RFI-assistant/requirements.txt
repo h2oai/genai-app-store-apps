@@ -14,3 +14,4 @@ urllib3==2.0.4
 requests_file==1.5.1
 PyMuPDF==1.23.5
 validators==0.22.0
+wget==3.2
