@@ -213,6 +213,11 @@ async def generate_question(q):
 
 @on()
 async def chatbot(q):
+    if q.client.last_question is None:
+        q.page['chatbot'].data += [q.client.chatbot, True]
+        q.page['chatbot'].data += [f"Hi there! Please use the button to generate a question and start studying!", False]
+        return
+
     # Add the answer to the chat window and create query
     answer = q.client.chatbot
     query = prompt_feedback.format_map({'question': q.client.last_question, 'answer': answer})
