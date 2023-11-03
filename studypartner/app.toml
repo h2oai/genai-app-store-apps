@@ -1,0 +1,41 @@
+[App]
+Name = "ai.h2o.wave.study_partner"
+Version = "0.0.1"
+Title = "H2O Study Partner"
+Description = "Get interactive feedback while studying any material"
+Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "src.app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name= "LOGO"
+Value = "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"
+
+[[Env]]
+Name = "PRIMARY_COLOR"
+Value = "#585481"
+
+[[Env]]
+Name = "SECONDARY_COLOR"
+Value = "#C49BBB"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "study_partner"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "study_partner"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
