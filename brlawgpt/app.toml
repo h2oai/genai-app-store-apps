@@ -9,7 +9,6 @@ Tags = ["GENERATIVE_AI", "LLM"]
 
 [Runtime]
 Module = "src.app"
-RoutingMode = "BASE_URL"
 RuntimeVersion = "deb11_py310_wlatest"
 MemoryLimit = "40Gi"
 MemoryReservation = "20Gi"

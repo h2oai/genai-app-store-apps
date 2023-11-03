@@ -4,14 +4,14 @@ import pandas as pd
 
 async def loading(q):
     dialog_text = q.client.texts['dialog']
-    q.page['meta'].dialog = ui.dialog(title=dialog_text['title'], blocking =False, items=[
+    q.page['meta'].dialog = ui.dialog(title=dialog_text['title'], blocking=True, items=[
         ui.progress(label=dialog_text['label'], caption=dialog_text['caption'], name='progress'),
     ])
     await q.page.save()
 
 async def loading_home(q):
     dialog_text = q.client.texts['dialog_home']
-    q.page['meta'].dialog = ui.dialog(title=dialog_text['title'], blocking =False, items=[
+    q.page['meta'].dialog = ui.dialog(title=dialog_text['title'], blocking=True, items=[
         ui.progress(label=dialog_text['label'], caption=dialog_text['caption'], name='progress'),
     ])
     await q.page.save()

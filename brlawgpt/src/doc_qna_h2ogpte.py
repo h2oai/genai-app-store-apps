@@ -94,7 +94,7 @@ class H2OGPTEClient:
             self.client.delete_documents(doc_ids)
         return
 
-    async def ingest_filepath(self, filepath, collection_id):
+    def ingest_filepath(self, filepath, collection_id):
         filename = str(filepath).split('/')[-1]
         logging.info(f'Ingesting file {filename}')
         documents = self.client.list_documents_in_collection(collection_id, 0, 1000)
@@ -110,7 +110,7 @@ class H2OGPTEClient:
         chunks = self._get_collection_chunks(collection_id)
         return chunks
     
-    async def ingest_url(self, url, collection_id):
+    def ingest_url(self, url, collection_id):
         filename = url.split("/")[-1]
         documents = self.client.list_documents_in_collection(collection_id, 0, 1000)
         document_ids = [d.id for d in documents if d.name == filename]
@@ -299,7 +299,7 @@ If you do not have enough information to answer your question, inform in Portugu
                         break
         return check_exist, res
 
-    async def answer_question(self, q, question_prompt, pdfs=None, doc_chunks=[]):
+    def answer_question(self, q, question_prompt, pdfs=None, doc_chunks=[]):
         is_english = q.client.language == 'en'
         sum_check = ["dê-me um resumo", "resumo", "resuma", "resuma este documento", "resuma isto",
                     "dê-me um breve resumo", "resuma este pdf", "resuma este arquivo","faça um resumo da petição inicial",
