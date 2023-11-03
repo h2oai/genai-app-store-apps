@@ -395,7 +395,7 @@ async def init_ui(q: Q) -> None:
                 ])
             ])
         ],
-        title='H2O GPT',
+        title='RFI Assistant',
     )
 
     q.page["device-not-supported"] = ui.form_card(
