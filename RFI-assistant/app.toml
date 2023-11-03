@@ -13,7 +13,7 @@ EnableOIDC = false
 MemoryLimit = "16Gi"
 MemoryReservation = "16Gi"
 RoutingMode = "BASE_URL"
-RuntimeVersion = "ub2004_cuda114_cudnn8_py38_wlatest"
+RuntimeVersion = "deb11_py310_wlatest"
 
 [[Env]]
 Name= "COLLECTION_NAME"
