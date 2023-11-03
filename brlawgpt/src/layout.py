@@ -112,6 +112,7 @@ async def display_chat_view(q: Q):
 def get_sidebar(q):
     files = glob.glob("demo_files/*.pdf")
     filenames = [os.path.basename(file) for file in files]
+    filenames.sort()
     sidebar_text = q.client.texts['sidebar']
     items = [
         ui.text(text_heading.format(sidebar_text['heading'])),

@@ -95,7 +95,7 @@ class H2OGPTEClient:
         return
 
     async def ingest_filepath(self, filepath, collection_id):
-        filename = filepath.split('/')[-1]
+        filename = str(filepath).split('/')[-1]
         logging.info(f'Ingesting file {filename}')
         documents = self.client.list_documents_in_collection(collection_id, 0, 1000)
         document_ids = [d.id for d in documents if d.name == filename]

@@ -101,6 +101,7 @@ async def submit_url(q: Q):
             q.client.path.write_bytes(response.content)
             name_collection_peticao = f'collection_{filename}'
             description_collection_peticao = f'Collection for {filename}'
+            q.app.h2ogpte = H2OGPTEClient(q.app.h2ogpte_keys['address'], q.app.h2ogpte_keys['api_key'])
             q.client.collection_peticao_id = q.app.h2ogpte.create_collection(name_collection_peticao, description_collection_peticao)
             q.client.qnamanager = QnAManager(q.app.h2ogpte, llm, q.client.collection_peticao_id, q.app.collection_temas_id)
             q.client.peticao_chunks = await q.run(q.app.h2ogpte.ingest_url, q.client.url, q.client.collection_peticao_id)
@@ -111,6 +112,25 @@ async def submit_url(q: Q):
         except:
             await get_home_items(q, flag="home")
             await q.page.save()
+
+
+@on()
+async def submit_demo(q: Q):
+    try:
+        filename = q.client['initial_petition_demo']
+        q.client.path = Path('./demo_files/' + filename)
+        await loading(q)
+        q.app.h2ogpte = H2OGPTEClient(q.app.h2ogpte_keys['address'], q.app.h2ogpte_keys['api_key'])
+        q.client.collection_peticao_id = q.app.h2ogpte.create_collection(f'collection_{filename}', f'Collection for {filename}')
+        q.client.qnamanager = QnAManager(q.app.h2ogpte, llm, q.client.collection_peticao_id, q.app.collection_temas_id)
+        q.client.peticao_chunks = await q.run(q.app.h2ogpte.ingest_filepath, q.client.path, q.client.collection_peticao_id)
+        q.page['meta'].dialog = None
+        await get_home_items(q, flag="uploaded")
+        await q.page.save()
+    except:
+        q.page['meta'].dialog = None
+        await get_home_items(q, flag="home")
+        await q.page.save()
 
 
 @on()
