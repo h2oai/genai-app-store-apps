@@ -22,6 +22,6 @@ Deployment
 h2o secret create study_partner -l h2ogpt-key="" -l h2ogpt-url="https://gpt.h2o.ai"
 ```
 
-![Example1](static/example1.png)
+![Example1](static/screenshot-1.png)
 
-![Example2](static/example2.png)
+![Example2](static/screenshot-2.png)

@@ -11,12 +11,11 @@ from src.cards import (
 from src.utils import heap_analytics
 
 
-async def waiting_dialog(q: Q):
+async def waiting_dialog(q: Q, title=""):
     q.page["meta"].dialog = ui.dialog(
-        title="",
+        title=title,
         items=[ui.image(title="", path=q.app.loader_s, width="300px")],
         blocking=True,
-        width="300px"
     )
     await q.page.save()
     q.page["meta"].dialog = None

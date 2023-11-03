@@ -20,6 +20,7 @@ from src.layout import (
     landing_page_view,
     waiting_dialog
 )
+from src.cards import chatbot_card
 
 # Configurations
 TOPICS_MIN = 8
@@ -86,7 +87,7 @@ async def initialize_client(q: Q):
         q.page["meta"].dialog = ui.dialog(
             title="App Unavailable",
             items=[
-                ui.text("Something went wrong, please try again later."),
+                ui.text("There are no documents available, please try again later."),
                 ui.text("You can report this issue by sending an email to cloud-feedback@h2o.ai.")
             ],
             closable=False,
@@ -105,10 +106,12 @@ async def selected_collection(q):
     topic_count = random.randint(TOPICS_MIN, TOPICS_MAX)
     query = prompt_topic.format_map({'count': topic_count})
 
+    # UI we show while the LLM creates some topics
+    q.page['chatbot'] = chatbot_card()
     all_collections_dropdown = [
         ui.dropdown(
             name="selected_collection",
-            label="Explore the available collections and documents",
+            label="Select a collections of documents",
             value=q.client.selected_collection,
             trigger=True,
             choices=[
@@ -121,16 +124,17 @@ async def selected_collection(q):
             ]
         )
     ]
+    q.page["collection"] = ui.form_card(box=ui.box("collections"), items=all_collections_dropdown)
+    q.client.cards.append("collection")
+    await waiting_dialog(q, title="Generating topics about these documents to help you study!")
 
-    h2ogpte = H2OGPTE(address=q.app.h2ogpte["address"], api_key=q.app.h2ogpte["api_key"])
-
-    collection = h2ogpte.get_collection(q.client.selected_collection)
-    await q.page.save()
-    await waiting_dialog(q)
+    # Generate and make a UI for topics
     topic_response = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, query)
     q.client.topic_response = topic_response
     topics = ':'.join(topic_response.split(':')[1:]).strip().split('\n')
 
+    h2ogpte = H2OGPTE(address=q.app.h2ogpte["address"], api_key=q.app.h2ogpte["api_key"])
+    collection = h2ogpte.get_collection(q.client.selected_collection)
     all_topics_table = [
         ui.inline(
             justify='between',
@@ -151,6 +155,7 @@ async def selected_collection(q):
             width='1',
             checkbox_visibility='always',
             single=True,
+            values=[topics[0]],
             columns=[
                 ui.table_column(
                     name='Topic',
@@ -170,14 +175,7 @@ async def selected_collection(q):
         ),
     ]
 
-    q.page["collection"] = ui.form_card(
-        box=ui.box("collections"),
-        items=all_collections_dropdown +
-            [ui.separator("")] +
-            all_topics_table +
-            [ui.button(name='generate_question', label='Generate Question')]
-    )
-    q.client.cards.append("collection")
+    q.page["collection"] = ui.form_card(box=ui.box("collections"), items=all_collections_dropdown + [ui.separator("")] + all_topics_table + [ui.button(name='generate_question', label='Generate Question', primary=True)])
 
     q.page["collection-mobile"] = ui.form_card(
         box=ui.box("collections-mobile"),
@@ -189,16 +187,14 @@ async def selected_collection(q):
 @on()
 async def generate_question(q):
     # Clean up topic string for cleaner query
-    if q.args.topics_table:
-        topic = '.'.join(q.args.topics_table[0].split('.')[1:]).strip()
-    else:
-        topic = q.user.topic
-    q.user.topic = topic
-    query = prompt_question.format_map({'topic': topic, 'modifier': random.choice(prompt_modifiers)})
+    if q.args.topic is not None:
+        q.client.topic = '.'.join(q.args.topics_table[0].split('.')[1:]).strip()
+    query = prompt_question.format_map({'topic': q.client.topic, 'modifier': random.choice(prompt_modifiers)})
     logger.debug(f"Generate Question Query: {query}")
 
     # Append loading gif to data buffer while waiting on gpt
     q.page["chatbot"].data += [CHATBOT_FILLER.format(q.app.loader_c), False]
+    q.page["collection"].generate_question.disabled = True
     await q.page.save()
 
     # Query to generate a possible question
@@ -212,6 +208,7 @@ async def generate_question(q):
     q.page['chatbot'].data[-1] = [bot_res, False]
     q.client.chat_length += 1
     q.client.last_question = bot_res
+    q.page["collection"].generate_question.disabled = False
 
 
 @on()
