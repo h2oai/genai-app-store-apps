@@ -1,9 +1,10 @@
 from h2o_wave import Q
 from h2ogpt_client import Client
 from loguru import logger
+from typing import Optional
 
 
-def llm_query(q: Q, prompt: str, method_level_checks, class_level_checks) -> str:
+def llm_query(q: Q, prompt: Optional[str], method_level_checks, class_level_checks) -> str:
     logger.info("Prompting LLM with user query.")
 
     system_prompt = ("Assume the role of a Python clean code expert, offering clear guidance and easily digestible "
@@ -12,8 +13,18 @@ def llm_query(q: Q, prompt: str, method_level_checks, class_level_checks) -> str
                      "code outside this scope, kindly communicate your expertise and focus on class or method level "
                      "code.")
 
-    context = [f"The developer wants to get general advice on clean code principles for the following question or has "
-               f"specific instructions as follows: {prompt}."]
+
+    if prompt is None:
+        if q.client.user_code == "" or q.client.user_code is None:
+            prompt = ("The developer wants to get general advice on clean code principles but has forgotten to provide "
+                      "a code snippet. Remind them to do so. ")
+        else:
+            prompt = (f"The developer want to get general advice on clean code principles for the given code snippet \n "
+                      f"{q.client.user_code}. Verify whether this constitutes valid Python code. If not, kindly remind "
+                      f"the developer to rectify it.\n Besides that, show the code snippet in a manner that adheres to "
+                      f"clean coding principles.")
+
+    context = []
     if method_level_checks or class_level_checks:
         context += [f"With the provided code snippet ({q.client.user_code}) from the developer, the user seeks to "
                     f"verify adherence to the following Python clean code rules, "]
@@ -26,7 +37,7 @@ def llm_query(q: Q, prompt: str, method_level_checks, class_level_checks) -> str
         logger.debug(prompt)
         client = Client(q.app.h2ogpt_url, h2ogpt_key=q.app.h2ogpt_key)
         llm = client.text_completion.create(
-            visible_models=["gpt-3.5-turbo"],
+            visible_models=["gpt-3.5-turbo-0613"],
             system_prompt=system_prompt,
             text_context_list=context
         )
@@ -49,7 +60,8 @@ def get_rules(level_checks):
     return selection
 
 
-def get_response(q: Q, prompt: str) -> str:
+def get_response(q: Q, prompt: Optional[str]) -> str:
+
     method_checks = None
     if q.client.method_level_checks is not None:
         method_checks = get_rules(q.client.method_level_checks)

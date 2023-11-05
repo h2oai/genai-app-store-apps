@@ -26,22 +26,24 @@ def chat_card():
 
 def user_code_card():
     return ui.form_card(
-        box="top_left",
+        box="bottom_left",
         items=[
             ui.textbox(
                 name="user_code",
                 label="Insert your code here!",
                 width="100%",
                 height="100%",
-                multiline=True
+                multiline=True,
+                value=f"def xyz(a, b, c): \n    result = a + b * c \n    return result"
             ),
+            ui.button(name="inspect_code", label="Analyze Code")
         ]
     )
 
 
 def checklist_card():
     return ui.form_card(
-        box="bottom_left",
+        box="top_left",
         items=[
             ui.separator(label="Code Quality Checklist"),
             ui.text(""),
@@ -58,7 +60,7 @@ def checklist_card():
                         choices=get_class_level_rules()
                     )
                 ]
-            )
+            ),
         ]
     )
 

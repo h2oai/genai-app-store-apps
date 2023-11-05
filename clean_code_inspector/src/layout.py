@@ -8,9 +8,19 @@ from src.cards import (
     footer_card,
     user_code_card,
     device_not_supported_card,
-    response_card,
     checklist_card
 )
+
+
+async def waiting_dialog(q):
+    q.page["meta"].dialog = ui.dialog(
+        title="",
+        items=[],#[ui.image(title="", path=q.app.load, width="150px")],
+        blocking=True,
+        width="200px"
+    )
+    await q.page.save()
+    q.page["meta"].dialog = None
 
 
 def layout(q: Q):
