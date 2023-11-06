@@ -15,7 +15,7 @@ from src.cards import (
 async def waiting_dialog(q):
     q.page["meta"].dialog = ui.dialog(
         title="",
-        items=[],#[ui.image(title="", path=q.app.load, width="150px")],
+        items=[ui.image(title="", path=q.app.load, width="150px")],
         blocking=True,
         width="200px"
     )
