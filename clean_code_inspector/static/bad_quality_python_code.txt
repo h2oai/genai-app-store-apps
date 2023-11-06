@@ -1,0 +1,15 @@
+class MessyClass:
+    def calculate(self, a, b):
+        result = a + b
+        return result
+
+    def do_something_crazy(self, x, y):
+        return x * y
+
+    def perform_mth(self, num1, num2, operation):
+        if operation == 'add':
+            return self.calculate_sum(num1, num2)
+        elif operation == 'multiply':
+            return self.multiply_numbers(num1, num2)
+        else:
+            return None
