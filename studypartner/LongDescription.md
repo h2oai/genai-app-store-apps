@@ -1,0 +1,2 @@
+## H2O Study Partner
+User generative AI to create a study partner for any collection of documents. The app can determine the main topics then generate questions for a selected topic. A given answer can be evaluated by the generative AI and then a better answer to the given question is provided.
