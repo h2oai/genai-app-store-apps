@@ -18,9 +18,6 @@ export SECONDARY_COLOR="#e2e2e2"
 ## Deploy in the AI Cloud
 
 ### Secrets
-```
-h2o secret create tomatoai -l h2ogpt-key="" -l h2ogpt-url="https://gpt.h2o.ai"
-```
 
 Admins can grap the h2ogpt-key from internal.dedicated secret.
  
