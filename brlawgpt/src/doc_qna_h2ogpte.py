@@ -308,7 +308,7 @@ If you do not have enough information to answer your question, inform in Portugu
                     'summarize the facts described in the initial petition']
         
         stf_temas_check = ["tema do stf", "temas do stf", "tese do stf", "teses do stf", "tese do supremo", "teses do supremo",
-                           "supreme court theme", "supreme court themes", "supreme court thesis", "supreme court theses"]
+                           "supreme court theme", "supreme court themes", "supreme court thesis", "supreme court theses", "brazilian supreme court"]
         stf_temas_check_func = lambda x: any([i in x.lower() for i in stf_temas_check])
 
         summary_task, delete_old, open_ques = False, False, False
