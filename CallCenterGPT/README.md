@@ -9,12 +9,15 @@
 ### Secrets
 
 ```
-h2o secret create callcenterapp -l h2ogpte-api-token="***************************************" -l h2ogpte-url="https://********.h2ogpte.h2o.ai" `
+h2o secret create callcenterapp -l h2ogpte-api-token="***************************************" -l h2ogpte-url="https://********.h2ogpte.h2o.ai"
 ```
-
+or to update:
+```
+h2o secret update callcenterapp -l h2ogpte-api-token="*******************" -l h2ogpte-url="https://****.h2ogpte.h2o.ai" `
+```
 ### Config
 
-the `h2ogpte_config` dictionnary in `src/config.py` can be modified to update any H2oGPT prompts, llm arguments or llm models
+the `h2ogpte_config` dictionary in `src/config.py` can be modified to update  H2oGPT prompts, LLM parameters or LLM models
 
 ### Install and use / develop the app locally
 *The app has been tested with wave 0.26.3*
