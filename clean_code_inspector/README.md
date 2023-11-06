@@ -20,4 +20,3 @@ export SECONDARY_COLOR="#e2e2e2"
 ### Secrets
 
 Admins can grap the h2ogpt-api-token from internal.dedicated secret.
-
