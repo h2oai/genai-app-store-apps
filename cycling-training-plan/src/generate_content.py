@@ -23,6 +23,7 @@ def initialize_generate_content_client(q):
     q.client.weekFreq = '4x'
     q.client.conditionLevel = 'Beginner'
     q.client.setFtp = False
+    q.client.reduceWeight = False
     q.client.currentFTP = '150'
     q.client.targetFTP = '210'
     q.client.timeGoal = False
@@ -79,9 +80,9 @@ async def side_input_generate_content(q):
                 ui.choice(name=i, label=i) for i in weekFreq]),
 
             ui.toggle(
-                name='reduceWeights',
+                name='reduceWeight',
                 label='Do you want reduce weight recommendation?',
-                value=q.client.reduceWeights),
+                value=q.client.reduceWeight),
 
             ui.toggle(
                 name='setFtp',
@@ -153,8 +154,8 @@ async def generate_prompt(q: Q):
         setFtp = f'''* Improve FTP: from {q.client.currentFTP} to {q.client.targetFTP}'''
 
     reduceWeight = ""
-    if q.client.setFtp:
-        reduceWeight = "* Recommend healthy reduce weight which help with my training plan"
+    if q.client.reduceWeight:
+        reduceWeight = "* Recommend healthy ways to lose weight that will support my workout regimen and my goal weight"
 
     prompt = f'''Create an optimal cycling training program for a {q.client.conditionLevel} and an average working individual who stands at {q.client.heightFt} feet and {q.client.heightInch} inches tall and weighs {q.client.weight} pounds, utilizing the following setup:
 
@@ -162,6 +163,8 @@ async def generate_prompt(q: Q):
 {timeGoal}
 {setFtp}
 {reduceWeight}
+
+In response use table for week plan and make structured with markdown.
 '''
 
     q.client.prompt = prompt
