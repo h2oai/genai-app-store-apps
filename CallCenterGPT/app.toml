@@ -1,8 +1,8 @@
 [App]
 Name = "ai.h2o.demo.CallCenterGPT_aistore"
-Version = "0.0.1"
+Version = "0.0.2"
 Title = "Call Center GPT"
-Description = "Transcript and analyse your customer touchpoints: calls, emails to find out about what they are talking about and identify areas for improvment."
+Description = "Analyse your customer touchpoints to find out about what they are talking about and identify areas for improvement."
 LongDescription = "about.md"
 InstanceLifecycle = "MANAGED"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "NLP", "TELECOM"]
