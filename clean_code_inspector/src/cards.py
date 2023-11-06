@@ -1,6 +1,11 @@
 from h2o_wave import ui, Q, data
 
-from src.utils import get_method_level_rules, get_class_level_rules
+from src.utils import (
+    get_method_level_rules,
+    get_class_level_rules,
+    get_code_file,
+    get_example_code_choices
+)
 
 
 def header_card(q: Q):
@@ -24,26 +29,37 @@ def chat_card():
     )
 
 
-def user_code_card():
+def user_code_card(q):
     return ui.form_card(
-        box="bottom_left",
+        box="top_left",
         items=[
             ui.textbox(
                 name="user_code",
                 label="Insert your code here!",
                 width="100%",
-                height="100%",
+                height="200px",
                 multiline=True,
-                value=f"def xyz(a, b, c): \n    result = a + b * c \n    return result"
+                value=get_code_file(q.client.example_code) if q.client.example_code is not None else None,
             ),
-            ui.button(name="inspect_code", label="Analyze Code")
+            ui.inline(
+                items=[
+                    ui.dropdown(
+                        name="example_code",
+                        label="Or pick an example!",
+                        trigger=True,
+                        width="200px",
+                        choices=get_example_code_choices(),
+                        value=q.client.example_code
+                    ),
+                ]
+            ),
         ]
     )
 
 
-def checklist_card():
+def checklist_card(q):
     return ui.form_card(
-        box="top_left",
+        box="bottom_left",
         items=[
             ui.separator(label="Code Quality Checklist"),
             ui.text(""),
@@ -52,14 +68,20 @@ def checklist_card():
                     ui.checklist(
                         name="method_level_checks",
                         label="Method level",
-                        choices=get_method_level_rules()
+                        choices=get_method_level_rules(),
+                        values=q.client.method_level_checks
                     ),
                     ui.checklist(
                         name="class_level_checks",
                         label="Class level",
-                        choices=get_class_level_rules()
+                        choices=get_class_level_rules(),
+                        values=q.client.class_level_checks
                     )
                 ]
+            ),
+            ui.button(
+                name="inspect_code",
+                label="Analyze Code",
             ),
         ]
     )

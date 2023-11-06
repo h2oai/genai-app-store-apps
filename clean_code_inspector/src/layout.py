@@ -90,6 +90,6 @@ async def landing_page_view(q: Q):
 
     q.page['header'] = header_card(q)
     q.page['footer'] = footer_card()
-    q.page['user_code'] = user_code_card()
-    q.page['checklist'] = checklist_card()
+    q.page['user_code'] = user_code_card(q)
+    q.page['checklist'] = checklist_card(q)
     q.page['device-not-supported'] = device_not_supported_card()

@@ -1,0 +1,52 @@
+import java.util.*;
+
+public class MessyCodeExample {
+    private int result;
+
+    public MessyCodeExample() {
+        result = 0;
+    }
+
+    public void calculateSum(int a, int b) {
+        result = a + b;
+    }
+
+    public int getResult() {
+        return result;
+    }
+
+    public void performOperation(String operation, int num1, int num2) {
+        if (operation.equals("add")) {
+            calculateSum(num1, num2);
+        } else if (operation.equals("subtract")) {
+            result = num1 - num2;
+        } else if (operation.equals("multiply")) {
+            result = num1 * num2;
+        } else {
+            result = 0;
+        }
+    }
+
+    public void printResult() {
+        System.out.println("Result: " + result);
+    }
+
+    public List<Integer> filterEvenNumbers(List<Integer> numbers) {
+        List<Integer> evenNumbers = new ArrayList<>();
+        for (int num : numbers) {
+            if (num % 2 == 0) {
+                evenNumbers.add(num);
+            }
+        }
+        return evenNumbers;
+    }
+
+    public void displayEvenNumbers(List<Integer> numbers) {
+        List<Integer> evenNumbers = filterEvenNumbers(numbers);
+        System.out.print("Even Numbers: ");
+        for (int num : evenNumbers) {
+            System.out.print(num + " ");
+        }
+        System.out.println();
+    }
+}

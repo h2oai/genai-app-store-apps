@@ -45,3 +45,28 @@ def get_class_level_rules() -> List[ui.choice]:
         ui.choice(name="Docstrings", label="Docstrings")
     ]
     return choices
+
+
+def get_concatenated_str(list_of_str: List[str]) -> str:
+    if len(list_of_str) > 0:
+        concatenation = list_of_str[0]
+        for n in range(1, len(list_of_str)):
+            concatenation += ", "
+            concatenation += list_of_str[n]
+    else:
+        concatenation = None
+    return concatenation
+
+
+def get_code_file(filename: str):
+    with open(f"static/{filename}", 'r') as file:
+        code_example = file.read()
+    return code_example
+
+
+def get_example_code_choices() -> List[ui.choice]:
+    choices = [
+        ui.choice(name="bad_quality_python_code.txt", label="bad_quality_python_code.txt"),
+        ui.choice(name="bad_quality_java_code.txt", label="bad_quality_java_code.txt"),
+    ]
+    return choices
