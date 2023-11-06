@@ -26,7 +26,8 @@ async def generate_content_ui(q):
         items=[
             ui.text_xl(content="Specify your language preferences"),
             ui.inline(items=[
-                ui.toggle(name="oxford_comma", label="Oxford Comma", value=q.client.oxford_comma),
+                ui.toggle(name="oxford_comma", label="Oxford Comma",
+                          value=q.client.oxford_comma),
                 ui.dropdown(name="case", label="Case", value=q.client.case, choices=[
                     ui.choice(c, c) for c in ["Sentence Case", "Title Case", "Upper Case", "Lower Case"]
                 ])
@@ -54,7 +55,8 @@ Learn how the makers at H2O.ai are building internal tools to solve reall use ca
                 ),
             ]),
             ui.buttons(justify="end", items=[
-                ui.button(name="button_generate_content", label="Review Content", primary=True)
+                ui.button(name="button_generate_content",
+                          label="Review Content", primary=True)
             ])
         ]
     )
@@ -87,7 +89,8 @@ async def llm_query_custom(system_prompt, prompt, connection_details):
         logger.debug(system_prompt)
         logger.debug(prompt)
 
-        client = Client(connection_details["address"], h2ogpt_key=connection_details["api_key"])
+        client = Client(
+            connection_details["address"], h2ogpt_key=connection_details["api_key"])
 
         text_completion = client.text_completion.create(
             system_prompt=system_prompt,
