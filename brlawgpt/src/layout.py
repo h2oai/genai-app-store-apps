@@ -89,7 +89,7 @@ async def get_home_items(q, flag):
 
     elif flag == "uploaded":
         items = await get_questions(q)
-        q.page["header"] = get_header_card(q, [ui.button(name='reset', label='Voltar', primary=True, icon='ArrowDownRight')])
+        q.page["header"] = get_header_card(q, [ui.button(name='reset', label=q.client.texts['back_botton'], primary=True, icon='ArrowDownRight')])
         q.page["sidebar"] = ui.form_card(
             box=ui.box('zone_1_1'),
             items=items)
@@ -122,9 +122,9 @@ def get_sidebar(q):
                     choices=[ui.choice(name=filename, label=filename) for filename in filenames]),
         ui.button(name='submit_demo', label=sidebar_text['label'], primary=True, icon='Upload'),
         ui.separator(),
-        ui.text(text_heading.format(sidebar_text['heading_2'])),
-        ui.textbox(name='url', label=sidebar_text['label_2'], required=True),
-        ui.button(name='submit_url', label=sidebar_text['button'], primary=True, icon='Upload'),
+        # ui.text(text_heading.format(sidebar_text['heading_2'])),
+        # ui.textbox(name='url', label=sidebar_text['label_2'], required=True),
+        # ui.button(name='submit_url', label=sidebar_text['button'], primary=True, icon='Upload'),
     ]
     return items
 

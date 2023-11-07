@@ -1,5 +1,5 @@
-COMPANY = 'Brazilian Law'
-APP_TITLE = 'Brazilian LawGPT'
-COMPANY_LOGO = "https://i.ibb.co/tcq196f/DALL-E-2023-10-23-18-23-44-Render-of-a-logo-in-black-and-yellow-tones-A-scale-symbolizing-the-legal.png"
+COMPANY = 'Brazil Law'
+APP_TITLE = 'Brazil LawGPT'
+COMPANY_LOGO = "https://i.ibb.co/2qrfQLZ/Captura-de-Tela-2023-11-06-s-14-56-34.png"
 THEME= "custom"
 BACKGROUND_IMAGE = './static/image_brlawgpt.png'
