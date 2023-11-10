@@ -1,6 +1,6 @@
 # TomatoAI
 
-Grow Your Own Vegetables with the Power of GenAI.
+Grow your own vegetables with the power of GenAI.
 
 ## Local Development
 ```shell script

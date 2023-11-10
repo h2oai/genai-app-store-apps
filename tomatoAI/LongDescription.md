@@ -1,4 +1,4 @@
-# Grow Your Own Vegetables with the Power of GenAI!
+# Grow your own vegetables with the power of GenAI!
 
 Transform your gardening experience with GenAI, your ultimate green companion.
 Say goodbye to decoding manuals — GenAI simplifies crop rotation, nutrient optimization, and plant interactions. 
