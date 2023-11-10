@@ -1,7 +1,7 @@
 [App]
-Name = "ai.h2o.wave.brlaw-gpt"
+Name = "ai.h2o.wave.brazil-lawgpt"
 Version = "0.0.1"
-Title = "BrLawGPT"
+Title = "Brazil LawGPT"
 Description = "Chat with the legal petitions, ask for summaries and search for Supreme Court jurisprudence."
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
