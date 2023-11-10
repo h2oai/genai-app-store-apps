@@ -2,7 +2,7 @@
 Name = "ai.h2o.wave.ask_h2o"
 Version = "0.0.1"
 Title = "Ask H2O"
-Description = "Talk to product docs, the website, and more!"
+Description = "Conversationally explore H2O.ai’s website, products, and more"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
