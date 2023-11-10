@@ -1,8 +1,8 @@
 [App]
 Name = "ai.h2o.wave.company_info_at_a_glance"
 Version = "0.0.1"
-Title = "Company information, powered by GenerativeAI"
-Description = "Helping you leverage LLMs to do some quick research!"
+Title = "Company Information"
+Description = "Use AI to research companies and identify opportunities"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
