@@ -2,7 +2,7 @@
 Name = "ai.h2o.wave.make_home_listing"
 Version = "0.0.1"
 Title = "Make Your Own Home Listing"
-Description = "Create listings for your home by customizing the home attributes and audience persona. "
+Description = "Generate a stellar home listing with AI"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
