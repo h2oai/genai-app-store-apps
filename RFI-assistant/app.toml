@@ -1,7 +1,7 @@
 [App]
 name = "ai.h2o.wave.h2o-demo-rfi"
 Title = "RFI Assistant"
-description = "Make answering RFIs less painless with H2OGPTe"
+description = "Leverage AI to effortlessly respond to RFIs"
 LongDescription = "about.md"
 Tags = ["RFI QA", "DEMO", "INTERNAL"]
 Version = "0.0.2"
