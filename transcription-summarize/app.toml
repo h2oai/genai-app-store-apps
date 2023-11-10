@@ -2,7 +2,7 @@
 Name = "wave-h2ogpt-audio-summarization"
 Version = "0.0.2"
 Title = "Audio Summarization"
-Description = "Generate the text, summary, and sentiment of audio files."
+Description = "Automatically transcribe, summarize, and analyze the sentiment of audio files"
 Tags = ["GENERATIVE_AI", "OSS"]
 InstanceLifecycle = "MANAGED"
 LongDescription = "LongDescription.md"
