@@ -2,7 +2,7 @@
 Name = "ai.h2o.wave.clean-code-inspector"
 Version = "0.0.1"
 Title = "Clean Code Inspector"
-Description = "Clean Code Python, Powered by GenAI!"
+Description = "Apply best practices to your Python code with AI"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
