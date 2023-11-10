@@ -2,7 +2,7 @@
 Name = "ai.h2o.wave.grammar_and_syntax_review"
 Version = "0.0.2"
 Title = "Grammar and Syntax Review"
-Description = "Empowering you to review your content, fast."
+Description = "Review and edit content quickly with AI"
 Tags = ["GENERATIVE_AI", "OSS"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
