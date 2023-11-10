@@ -1,6 +1,6 @@
 # Ask H2O
 
-This application connects to a specific user in H2OGPTE who has collections of public documentation about H2O.ai.
+This app connects to a specific user in H2OGPTE who has collections of public documentation about H2O.ai.
 
 The end user can select the collection of documents they are interested in and then ask questions about those documents.
 
