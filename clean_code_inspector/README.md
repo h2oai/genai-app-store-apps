@@ -1,6 +1,6 @@
-# Clean Code Inspector
+# Clean Code Python
 
-Clean Code Python, Powered by GenAI!
+Clean Code Python, powered by GenAI!
 
 ## Local Development
 ```shell script
