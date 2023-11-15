@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.ask_h2o"
-Version = "0.0.1"
+Version = "0.0.2"
 Title = "Ask H2O"
 Description = "Talk to product docs, the website, and more!"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
