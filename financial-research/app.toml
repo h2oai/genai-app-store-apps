@@ -1,8 +1,8 @@
 [App]
 Name = "ai.h2o.wave.investment-research"
-Version = "0.0.6"
+Version = "0.0.7"
 Title = "Digital Assets Investment Research"
-Description = "Enhanced your investment research with AI."
+Description = "Enhance your investment research with AI"
 Tags = ["GENERATIVE_AI", "DOCUMENT"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"

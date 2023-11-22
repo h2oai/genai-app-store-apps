@@ -1,8 +1,8 @@
 [App]
 Name = "ai.h2o.wave.cycling_training_plan"
-Version = "0.0.1"
-Title = "Cycling training plan"
-Description = "Get into cycling, get fitter, or ride faster with our LLM cycling training plan"
+Version = "0.0.2"
+Title = "Cycling Training Plan"
+Description = "Get personalized cycling instructions with AI"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"

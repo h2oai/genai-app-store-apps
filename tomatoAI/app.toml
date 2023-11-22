@@ -1,8 +1,8 @@
 [App]
 Name = "ai.h2o.wave.tomatoAI"
-Version = "0.0.1"
+Version = "0.0.2"
 Title = "TomatoAI"
-Description = "Grow Your Own Vegetables with the Power of GenAI."
+Description = "Grow better produce with your own AI-powered gardening assistant"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
