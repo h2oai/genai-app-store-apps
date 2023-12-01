@@ -1,15 +1,58 @@
-## App Description:
+# Digital Assets Research Assistant
 
-This application uses public SEC 10k filings pair with Artificial Intelligence to undertake investment research,
-allowing the user to quickly extract meaningful information regarding potential risk positions and investment 
-opportunities.
+Unlock the Power of SEC Filings with this Intuitive Research Assistant!
 
-**Audience:** Investment Bankers, Fiduciaries, Retail Investors
+Are you tired of sifting through complex SEC 10-K forms to gather vital financial 
+information? Look no further - this Research Assistant is your go-to solution for 
+efficient and insightful research.
 
-**Feedback:** Send an email to cloud-feedback@h2o.ai with any questions, problems, or concerns
+## Explore Financial Data with Ease
 
-## Products Used in the App:
+This app comes pre-canned with history SEC 10-K forms from popular companies. Simplify 
+the research process by leveraging a cutting-edge RAG (Retrieval-Augmented Generation) 
+based Language Model. No more struggling with convoluted financial jagon - the 
+Digital Assets Research Assistant transforms the way your interact with SEC filings. 
 
-**Enterpise h2oGPT:** Enterprise h2oGPT combines vector search, advanced document AI, and large language models.
+Want to run this technology on different SEC 10-K's? This app code is open source! 
+You can visit https://github.com/h2oai/genai-app-store-apps/tree/main/financial-research 
+to learn how to run and customize this app to your own needs. 
 
-**H2O Wave:** H2O Wave is an open-source Python development framework that makes it fast and easy for data scientists, machine learning engineers, and software developers to develop real-time interactive AI apps with sophisticated visualizations.
+Interested in learning more about H2O's RAG, LLM, App Store, or rapid app 
+development products? Send us a note at sales@h2o.ai. 
+
+## Key Features
+
+### RAG-based Language Model
+Our advanced Language Model enhances your research experience by providing interactive 
+conversations and context-aware responses. Gain valuable insights effortlessly!
+
+### User-friendly Interface
+Say goodbye to overwhelming interfaces. Our application offers a clean and intuitive 
+design, making it easy for users of all backgrounds to input queries, explore results, 
+and refine searches.
+
+### Search and Summarize
+Quickly search through SEC 10-K forms, retrieve relevant information, and generate 
+concise summaries. Save time and focus on what matters most to you.
+
+### Interactive Conversations
+Engage in meaningful conversations with the RAG-based model to refine queries and 
+receive information tailored to your needs. It's like having a knowledgeable assistant 
+at your fingertips.
+
+## Getting Started
+
+Ready to transform your research experience? Click the `Visit` button to get started. 
+
+Want to customize this app to your own needs using only Python? Check out the 
+[Open Source Code Base](https://github.com/h2oai/genai-app-store-apps/tree/main/financial-research).
+
+
+## Unlock the Power of SEC Filings Today!
+
+Don't let SEC 10-K forms stand between you and the information you need. Try the 
+SEC-10K Research Assistant now and revolutionize your research journey. Your 
+insights are just a click away!
+
+
+_Have feedback? It's welcome! Send us a note at cloud-feedback@h2o.ai._
