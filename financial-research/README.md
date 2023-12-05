@@ -67,7 +67,7 @@ RAG-based model to refine queries and receive context-aware responses.
     * Create and save a new API Key
     ```shell script
     export H2OGPTE_URL="https://h2ogpte.genai.h2o.ai"
-    export H2OGPTE_API_TOKEN="sk-SzqeMa6QtklmLJZCB3smt9u4NGlV87p7BDLe4J0NNMPKTEf4"
+    export H2OGPTE_API_TOKEN="***"
     ```
    
 7. Add SEC-10Ks to your H2OGPTE account:
