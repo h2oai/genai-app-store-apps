@@ -11,6 +11,8 @@ documents.
 You can try the app out yourself for free using your Gmail or Github account at 
 https://financial-research.genai.h2o.ai. 
 
+Developers can use this app as a template of a custom UI on top of any collections 
+of data in h2oGPTe.
 
 ## Features
 * **RAG-based Language Model:** Powered by a sophisticated RAG-based Language Model, 
@@ -65,7 +67,7 @@ RAG-based model to refine queries and receive context-aware responses.
     * Create and save a new API Key
     ```shell script
     export H2OGPTE_URL="https://h2ogpte.genai.h2o.ai"
-    export H2OGPTE_API_TOKEN="***"
+    export H2OGPTE_API_TOKEN="sk-SzqeMa6QtklmLJZCB3smt9u4NGlV87p7BDLe4J0NNMPKTEf4"
     ```
    
 7. Add SEC-10Ks to your H2OGPTE account:
