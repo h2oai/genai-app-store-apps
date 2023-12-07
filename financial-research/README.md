@@ -11,6 +11,8 @@ documents.
 You can try the app out yourself for free using your Gmail or Github account at 
 https://financial-research.genai.h2o.ai. 
 
+Developers can use this app as a template of a custom UI on top of any collections 
+of data in h2oGPTe.
 
 ## Features
 * **RAG-based Language Model:** Powered by a sophisticated RAG-based Language Model, 

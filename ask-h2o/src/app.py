@@ -65,7 +65,7 @@ async def initialize_client(q: Q):
         q.page["meta"].dialog = ui.dialog(
             title="App Unavailable",
             items=[
-                ui.text("Something went wrong, please try again later."),
+                ui.text("There is no data available for chatting, please try again later."),
                 ui.text("You can report this issue by sending an email to cloud-feedback@h2o.ai.")
             ],
             closable=False,
