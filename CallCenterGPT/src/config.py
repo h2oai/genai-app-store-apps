@@ -8,7 +8,7 @@ from src.log import log
 
 
 h2ogpte_config = {
-        "llm":"h2oai/h2ogpt-4096-llama2-70b-chat",
+        "llm":"h2oai/h2ogpt-4096-llama2-70b-chat-4bit",
         "llm_args" :  {"temperature": 0.2,
                         "top_k": 70,
                         "top_p": 0.9,},
