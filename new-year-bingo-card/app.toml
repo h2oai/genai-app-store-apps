@@ -1,0 +1,34 @@
+[App]
+Name = "ai.h2o.wave.bingo_new_years_cards"
+Version = "0.0.8"
+Title = "Holiday Bingo"
+Description = "Use AI to generate your 2024 goals bingo card!"
+Tags = ["GENERATIVE_AI", "DATA_SCIENCE"]
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "bingo"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "bingo"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
+
+[[Env]]
+Name = "MAINTENANCE_MODE"
+Secret = "h2ogpte-maintenance"
+SecretKey = "show-maintenance-mode"
