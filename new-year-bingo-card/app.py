@@ -77,36 +77,14 @@ def initialize_browser(q):
     """
 
     script = """
-    function updateTitleAndMetaTags() {
-        // Update title
-
-        // Update or add meta tags
-        var ogTitleMetaTag = document.querySelector('meta[property="og:title"]');
-        var ogDescriptionMetaTag = document.querySelector('meta[property="og:description"]');
-
-        if (ogTitleMetaTag) {
-          ogTitleMetaTag.content = "H2O Holiday Bingo 2024";
-        } else {
-          // If the meta tag doesn't exist, create and append it
-          var newOgTitleMetaTag = document.createElement('meta');
-          newOgTitleMetaTag.setAttribute('property', 'og:title');
-          newOgTitleMetaTag.content = "H2O Holiday Bingo 2024";
-          document.head.appendChild(newOgTitleMetaTag);
-        }
-
-        if (ogDescriptionMetaTag) {
-          ogDescriptionMetaTag.content = "Use AI to reach your annual goals!";
-        } else {
-          // If the meta tag doesn't exist, create and append it
-          var newOgDescriptionMetaTag = document.createElement('meta');
-          newOgDescriptionMetaTag.setAttribute('property', 'og:description');
-          newOgDescriptionMetaTag.content = "Some description";
-          document.head.appendChild(newOgDescriptionMetaTag);
-        }
-    }
-
-    // Call the function to update title and meta tags
-    updateTitleAndMetaTags();
+     // Function to change the content of the description meta tag
+      function changeDescriptionMetaTag() {
+        var descriptionMetaTag = document.querySelector('meta[name="description"]');
+        descriptionMetaTag.content = "Holiday Bingo";
+      }
+    
+      // Call the function to change the content of the description meta tag
+      changeDescriptionMetaTag();
     """
 
     if os.getenv("MAINTENANCE_MODE", "false") == "true":
@@ -144,7 +122,8 @@ def initialize_browser(q):
         theme="custom",
         stylesheet=ui.inline_stylesheet(style),
         # script=ui.inline_script(heap_analytics(userid=q.auth.subject))
-        script=ui.inline_script(script)
+        script=ui.inline_script(script + heap_analytics(userid=q.auth.subject)),
+        icon="https://h2o.ai/company/brand-kit/_jcr_content/root/container/section/par/advancedcolumncontro/columns1/advancedcolumncontro/columns0/image.coreimg.svg/1697220254347/h2o-logo.svg",
     )
 
     q.page["header_mobile"] = ui.header_card(
