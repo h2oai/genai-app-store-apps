@@ -1,97 +1,95 @@
 import os
 from datetime import datetime
-import time
 import hashlib
+import asyncio
 
 import toml
 from h2ogpte import H2OGPTE
+from h2ogpte.types import PartialChatMessage, ChatMessage
 from h2o_wave import app, Q, ui, on, copy_expando, data, main, run_on
 from loguru import logger
 
 
+
 @app('/')
 async def serve(q: Q):
-    request_id = int(time.time() * 1000)
-    logger.info(f"Starting user request: {request_id}")
-    logger.debug(q.args)
     copy_expando(q.args, q.client)  # Save any UI responses of the User to their session
 
-    if not q.client.initialized:
-        await initialize_client(q)
+    try:
+        # Route the end user based on how they interacted with the app.
+        logger.info(q.args)
 
-    await run_on(q)
-    await q.page.save()
+        # Setup the application for a new browser tab, if not done yet
+        if not q.client.initialized:
+            await initialize_client(q)
 
-    logger.info(f"Ending user request: {request_id}")
+        await run_on(q)
+        await q.page.save()
 
-
-async def initialize_app(q: Q):
-    logger.info("Initializing the app for the first time.")
-    q.app.toml = toml.load("app.toml")
-    q.app.load, = await q.site.upload(['./static/load.gif'])
-
-    q.app.session_count = 0
-
-    q.app.h2ogpte = {
-        "address": os.getenv("H2OGPTE_URL"),
-        "api_key": os.getenv("H2OGPTE_API_TOKEN"),
-    }
-
-    h2ogpte = H2OGPTE(address=q.app.h2ogpte["address"], api_key=q.app.h2ogpte["api_key"])
-
-    q.app.collections = {}
-    for c in h2ogpte.list_recent_collections(0, 1000):
-        if c.document_count > 0:  # Empty collections do not help our end users
-            q.app.collections[c.id] = c.name
-
-    q.app.initialized = True
+    except Exception as ex:
+        logger.error(ex)
+        q.page["meta"].dialog = ui.dialog(
+            title="", blocking=True, closable=False,
+            items=[
+                ui.text_xl("<center>Something went wrong!</center>"),
+                ui.text(f"<center>Please come back soon to chat with the H2O Product Docs.</center>")
+            ],
+        )
+    await q.page.save()  # Update the UI
 
 
 async def initialize_client(q: Q):
 
     if not q.app.initialized:
-        await initialize_app(q)
+        q.app.toml = toml.load("app.toml")
+        q.app.initialized = True
 
-    q.app.session_count += 1
-    logger.info(f"Initializing the app for the {q.app.session_count} user")
+    h2ogpte = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+    q.client.collections = {}
+    for c in h2ogpte.list_recent_collections(0, 1000):
+        if c.document_count > 0:  # Empty collections do not help our end users
+            q.client.collections[c.id] = c.name
 
-    q.client.cards = []
-    q.client.selected_collection = list(q.app.collections.keys())[0] if len(q.app.collections) > 0 else None
-    q.client.chat_length = 0
+    q.client.selected_collection = list(q.client.collections.keys())[0] if len(q.client.collections) > 0 else None
 
     landing_page_layout(q)
-
-    if len(q.app.collections) == 0:
-        q.page["meta"].dialog = ui.dialog(
-            title="App Unavailable",
-            items=[
-                ui.text("There is no data available for chatting, please try again later."),
-                ui.text("You can report this issue by sending an email to cloud-feedback@h2o.ai.")
-            ],
-            closable=False,
-            blocking=True
-        )
-        return
-
     await selected_collection(q)
-
-    q.page["chatbot"] = ui.chatbot_card(
-        box="chat",
-        data=data('content from_user', t='list'),
-        name='chatbot'
-    )
 
     q.client.initialized = True
 
 
 def landing_page_layout(q: Q):
     logger.info("")
+    style = """
+        [data-test="header"] {
+            background-color: #000000 !important;
+        }
+
+        [data-test="source_code"] {
+            color: #000000 !important;
+            background-color: #FFE600 !important
+        }
+
+        img {
+            cursor: default;
+        }
+
+        [data-test="footer"] a {
+            color: #ff9632 !important;
+        }
+        
+        .ms-Persona-secondaryText {
+            white-space: unset;
+        }
+    """
+
     q.page['meta'] = ui.meta_card(
         box='',
-        title=q.app.toml['App']['Title'],
-        icon=os.getenv("LOGO",
-                       "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"),
+        title=f"{q.app.toml['App']['Title']} | H2O.ai",
+        icon="https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg",
+        themes=[ui.theme(name="custom", primary="#FFE600", text="#000000", card="#FFFFFF", page="#E2E2E2")],
         theme="custom",
+        stylesheet=ui.inline_stylesheet(style),
         script=heap_analytics(
             userid=q.auth.subject,
             event_properties=f"{{"
@@ -99,15 +97,6 @@ def landing_page_layout(q: Q):
                              f"product: '{q.app.toml['App']['Title']}'"
                              f"}}",
         ),
-        themes=[
-            ui.theme(
-                name='custom',
-                primary=os.getenv("PRIMARY_COLOR", "#FEC925"),
-                text='#000000',
-                card='#ffffff',
-                page=os.getenv("SECONDARY_COLOR", "#D3D3D1"),
-            )
-        ],
         layouts=[
             ui.layout(
                 breakpoint="xs",
@@ -122,7 +111,7 @@ def landing_page_layout(q: Q):
                 ],
             ),
             ui.layout(
-                breakpoint='s',
+                breakpoint='m',
                 min_height='100vh',
                 zones=[
                     ui.zone(name='header'),
@@ -139,21 +128,21 @@ def landing_page_layout(q: Q):
         box='header',
         title=f"{q.app.toml['App']['Title']}",
         subtitle=q.app.toml["App"]["Description"],
-        image=os.getenv("LOGO",
-                        "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"),
+        image="https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg",
+        items=[
+            ui.button(name="source_code", icon="Code", tooltip="View source code", path="https://github.com/h2oai/genai-app-store-apps/tree/main/ask-h2o"),
+        ]
+    )
+
+    q.page["chatbot"] = ui.chatbot_card(
+        box="chat",
+        data=data('content from_user', t='list'),
+        name='chatbot'
     )
 
     q.page["footer"] = ui.footer_card(
         box="footer",
-        caption="Made with 💛 and H2O Wave."
-    )
-    q.page["device-not-supported"] = ui.form_card(
-        box="device-not-supported",
-        items=[
-            ui.text_xl(
-                "This app was built desktop; it is not available on mobile or tablets."
-            )
-        ],
+        caption="Made with [Wave](https://wave.h2o.ai), [h2oGPTe](https://h2o.ai/platform/enterprise-h2ogpte), and 💛 by the Makers at H2O.ai."
     )
 
 
@@ -167,11 +156,11 @@ async def selected_collection(q):
             label="Explore the available collections and documents",
             value=q.client.selected_collection,
             trigger=True,
-            choices=[ui.choice(c, q.app.collections[c]) for c in q.app.collections.keys()]
+            choices=[ui.choice(c, q.client.collections[c]) for c in q.client.collections.keys()]
         )
     ]
 
-    h2ogpte = H2OGPTE(address=q.app.h2ogpte["address"], api_key=q.app.h2ogpte["api_key"])
+    h2ogpte = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
 
     collection = h2ogpte.get_collection(q.client.selected_collection)
     collection_documents = h2ogpte.list_documents_in_collection(q.client.selected_collection, 0, 4000)
@@ -197,41 +186,45 @@ async def selected_collection(q):
         box=ui.box("collections"),
         items=all_collections_dropdown + [ui.separator("")] + all_documents_table
     )
-    q.client.cards.append("collection")
 
     q.page["collection-mobile"] = ui.form_card(
         box=ui.box("collections-mobile"),
         items=all_collections_dropdown
     )
-    q.client.cards.append("collection-mobile")
 
 
 @on()
 async def chatbot(q):
 
-    starting_chat_length = q.client.chat_length
-    q.client.chat_length += 2
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.chatbot)
 
-    q.page['chatbot'].data += [q.client.chatbot, True]
-    q.page['chatbot'].data += ["<img src='{}' height='200px'/>".format(q.app.load), False]
+    q.page['chatbot'].data += [q.args.chatbot, True]
+    q.page["chatbot"].data += [q.client.chatbot_interaction.content_to_show, False]
+
+    # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
+    update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
+    await q.run(llm_query_with_context, q.client.selected_collection, q.client.chatbot_interaction)
+    await update_ui
+
+
+async def stream_updates_to_ui(q: Q):
+    """
+    Update the app's UI every 1/10th of a second with values from our chatbot interaction
+    :param q: The query object stored by H2O Wave with information about the app and user behavior.
+    """
+    while q.client.chatbot_interaction.responding:
+        q.page["chatbot"].data[-1] = [
+            q.client.chatbot_interaction.content_to_show,
+            False,
+        ]
+        await q.page.save()
+        await q.sleep(0.1)
+
+    q.page["chatbot"].data[-1] = [
+        q.client.chatbot_interaction.content_to_show,
+        False,
+    ]
     await q.page.save()
-
-    bot_res = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, q.client.chatbot)
-
-    diff = q.client.chat_length - starting_chat_length - 1
-    q.page['chatbot'].data[-diff] = [bot_res, False]
-
-    # stream = chunk = ''
-    # for w in bot_res:
-    #     chunk += w
-    #     await q.sleep(0.01)
-    #     if len(chunk) == 5:
-    #         stream += chunk
-    #         q.page['chatbot'].data[-diff] = [stream, False]
-    #         await q.page.save()
-    #         chunk = ''
-    # if chunk:
-    #     q.page['chatbot'].data[-diff] = [stream + chunk, False]
 
 
 def get_time_since(last_updated_timestamp):
@@ -259,27 +252,27 @@ def get_time_since(last_updated_timestamp):
         return '{} Seconds Ago'.format(int(duration_in_s))
 
 
-def llm_query_with_context(connection_details, collection_id, user_message):
+def llm_query_with_context(collection_id, chatbot_interaction):
     logger.info("")
-    try:
-        logger.debug(user_message)
 
-        h2ogpte = H2OGPTE(address=connection_details["address"], api_key=connection_details["api_key"])
+    def stream_response(message):
+        """
+        This function is called by the blocking H2OGPTE function periodically
+        :param message: response from the LLM, this is either a partial or completed response
+        """
+        chatbot_interaction.update_response(message)
+
+    try:
+        logger.debug(chatbot_interaction.user_message)
+
+        h2ogpte = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
         chat_session_id = h2ogpte.create_chat_session(collection_id=collection_id)
 
         with h2ogpte.connect(chat_session_id) as session:
-            reply = session.query(
-                message=user_message,
-                timeout=16000,
-            )
-
-        response = reply.content
-        logger.debug(response)
-        return response.strip()
+            session.query(message=chatbot_interaction.user_message, timeout=60,callback=stream_response)
 
     except Exception as e:
         logger.error(e)
-        return ""
 
 
 def heap_analytics(userid, event_properties=None) -> ui.inline_script:
@@ -300,3 +293,21 @@ heap.load("{heap_id}");
         script += f"heap.addEventProperties({event_properties})"
 
     return ui.inline_script(content=script)
+
+
+class ChatBotInteraction:
+    def __init__(self, user_message) -> None:
+        self.user_message = user_message
+        self.responding = True
+
+        self.llm_response = ""
+        self.content_to_show = "🟡"
+
+    def update_response(self, message):
+        if isinstance(message, ChatMessage):
+            self.content_to_show = message.content
+            self.responding = False
+        elif isinstance(message, PartialChatMessage):
+            if message.content != "#### No RAG (LLM only):\n":
+                self.llm_response += message.content
+                self.content_to_show = self.llm_response + " 🟡"
