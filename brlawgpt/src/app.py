@@ -37,7 +37,7 @@ async def serve(q: Q):
 
 async def initialize_app(q):
     q.app.h2ogpte_keys = {
-                "address": os.getenv("H2OGPTE_URL", "https://internal.h2ogpte.h2o.ai"),
+                "address": os.getenv("H2OGPTE_URL"),
                 "api_key": os.getenv("H2OGPTE_API_TOKEN"),
             }
     q.app.h2ogpte = H2OGPTEClient(q.app.h2ogpte_keys['address'], q.app.h2ogpte_keys['api_key'])

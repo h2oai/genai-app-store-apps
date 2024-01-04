@@ -202,14 +202,16 @@ If you do not have enough information to answer your question, inform in Portugu
     def _answer_question(self, chat_args):
         try:
             response = self.client.answer_question(**chat_args).content
-        except:
+        except Exception as e:
+            logging.warning(f'Error: {e}')
             response = 'Not able to construct an answer at the moment. Please contact the app administrators.'
         return response
     
     def _summarize_content(self, chat_args):
         try:
             response = self.client.summarize_content(**chat_args).content
-        except:
+        except Exception as e:
+            logging.warning(f'Error: {e}')
             response = 'Not able to construct an answer at the moment. Please contact the app administrators.'
         return response
 
@@ -239,8 +241,6 @@ If you do not have enough information to answer your question, inform in Portugu
         results = self.client.match_chunks(self.collection_peticao_id, question_vectors, [], 0, 5)
         results = [result.text for result in results]
         results = [result.replace('\n', ' ') for result in results]
-        for result in results:
-            print(result, flush=True)
         return results
     
     def _get_tema(self, summary):
