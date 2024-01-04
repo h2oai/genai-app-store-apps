@@ -1,0 +1,38 @@
+[App]
+Name = "ai.h2o.wave.make_home_listing"
+Version = "0.0.2"
+Title = "Make Your Own Home Listing"
+Description = "Generate a stellar home listing with AI"
+Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "src.app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name= "LOGO"
+Value = "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"
+
+[[Env]]
+Name = "THEME"
+Value = "winter-is-coming"
+
+
+[[Env]]
+Name = "H2OGPT_API_TOKEN"
+Secret = "h2ogpt-oss"
+SecretKey = "h2ogpt-key"
+
+[[Env]]
+Name = "H2OGPT_URL"
+Secret = "h2ogpt-oss"
+SecretKey = "h2ogpt-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"

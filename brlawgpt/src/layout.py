@@ -31,6 +31,7 @@ async def layout(q: Q):
         box="",
         themes=themes,
         theme="legal-theme",
+        title="BrLawGPT",
         script=heap_analytics(
             userid=q.auth.subject,
             event_properties=f"{{"

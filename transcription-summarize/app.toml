@@ -1,10 +1,11 @@
 [App]
 Name = "wave-h2ogpt-audio-summarization"
-Version = "0.0.2"
+Version = "0.0.3"
 Title = "Audio Summarization"
-Description = "Upload your audio files and have them summarized"
+Description = "Automatically transcribe, summarize, and analyze the sentiment of audio files"
 Tags = ["GENERATIVE_AI", "OSS"]
 InstanceLifecycle = "MANAGED"
+LongDescription = "LongDescription.md"
 
 [Runtime]
 Module = "app"
@@ -13,7 +14,17 @@ MemoryReservation = "16Gi"
 EnableOIDC = true
 
 [[Env]]
-Name = "H2OGPTE_API_TOKEN"
-Secret = "h2ogpt"
+Name = "H2OGPT_API_TOKEN"
+Secret = "h2ogpt-oss"
 SecretKey = "h2ogpt-key"
 
+
+[[Env]]
+Name = "H2OGPT_URL"
+Secret = "h2ogpt-oss"
+SecretKey = "h2ogpt-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"

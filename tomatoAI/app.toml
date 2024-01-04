@@ -1,0 +1,37 @@
+[App]
+Name = "ai.h2o.wave.tomatoAI"
+Version = "0.0.2"
+Title = "TomatoAI"
+Description = "Grow better produce with your own AI-powered gardening assistant"
+Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "src.app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name = "PRIMARY_COLOR"
+Value = "#a32424"
+
+[[Env]]
+Name = "SECONDARY_COLOR"
+Value = "#e2e2e2"
+
+[[Env]]
+Name = "H2OGPT_API_TOKEN"
+Secret = "h2ogpt-oss"
+SecretKey = "h2ogpt-key"
+
+[[Env]]
+Name = "H2OGPT_URL"
+Secret = "h2ogpt-oss"
+SecretKey = "h2ogpt-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"

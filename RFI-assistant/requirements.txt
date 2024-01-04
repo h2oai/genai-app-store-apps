@@ -1,0 +1,17 @@
+loguru==0.7.0
+beautifulsoup4==4.12.2
+markdown==3.4.3
+h2o-wave==1.0.0
+pandas==1.3.5
+toml==0.10.2
+text-generation==0.6.0
+tiktoken==0.4.0
+langchain==0.0.329
+pypdf==3.17.0
+h2ogpte==1.1.5
+openpyxl==3.1.2
+urllib3==2.0.7
+requests_file==1.5.1
+PyMuPDF==1.23.5
+validators==0.22.0
+wget==3.2

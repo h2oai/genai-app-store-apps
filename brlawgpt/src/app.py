@@ -49,14 +49,14 @@ async def initialize_app(q):
 
 @on()
 async def chatbot_brlaw(q: Q):
-    await q.run(on_generating, q, q.client.chatbot_brlaw, q.client.peticao_chunks)
+    await on_generating(q, q.client.chatbot_brlaw, q.client.peticao_chunks)
 
 
 @on()
 async def questions(q: Q):
     data = q.client.texts['questions_data']
     question_prompt = data['Question'][int(q.client.questions[0])]
-    await q.run(on_generating, q, question_prompt, q.client.peticao_chunks)
+    await on_generating(q, question_prompt, q.client.peticao_chunks)
 
 
 async def on_generating(q, question_prompt, doc_chunks):

@@ -81,7 +81,7 @@ async def button_generate_content(q):
     )
 
 
-async def llm_query_custom(system_prompt, prompt, connection_details):
+def llm_query_custom(system_prompt, prompt, connection_details):
     logger.info("")
     try:
         logger.debug(system_prompt)

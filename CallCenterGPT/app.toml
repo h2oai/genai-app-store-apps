@@ -1,0 +1,35 @@
+[App]
+Name = "ai.h2o.demo.CallCenterGPT_aistore"
+Version = "0.0.2"
+Title = "Call Center GPT"
+Description = "Analyse your customer touchpoints to find out about what they are talking about and identify areas for improvement."
+LongDescription = "about.md"
+InstanceLifecycle = "MANAGED"
+Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "NLP", "TELECOM"]
+
+[Runtime]
+Module = "src.app"
+EnableOIDC = true
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name = "PLATFORM_TOKEN_ENDPOINT"
+Secret = "platform-token"
+SecretKey = "token-endpoint"
+Optional = true
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "callcenterapp"
+SecretKey = "h2ogpte-api-token"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "callcenterapp"
+SecretKey = "h2ogpte-url"
