@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.demo.CallCenterGPT_aistore"
-Version = "0.0.2"
+Version = "0.0.3"
 Title = "Call Center GPT"
 Description = "Analyse your customer touchpoints to find out about what they are talking about and identify areas for improvement."
 LongDescription = "about.md"
