@@ -4,7 +4,7 @@ Title = "RFI Assistant"
 description = "Leverage AI to effortlessly respond to RFIs"
 LongDescription = "about.md"
 Tags = ["RFI QA", "DEMO", "INTERNAL"]
-Version = "0.0.4"
+Version = "0.0.5"
 InstanceLifecycle = "MANAGED"
 
 [Runtime]
@@ -12,7 +12,6 @@ Module = "src.app"
 EnableOIDC = false
 MemoryLimit = "16Gi"
 MemoryReservation = "16Gi"
-RoutingMode = "BASE_URL"
 RuntimeVersion = "deb11_py310_wlatest"
 
 [[Env]]

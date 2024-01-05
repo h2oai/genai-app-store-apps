@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.study_partner"
-Version = "0.0.3"
+Version = "0.0.4"
 Title = "H2O Study Partner"
 Description = "Meet your interactive AI study buddy"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]

@@ -1,4 +1,4 @@
-h2ogpte == 1.1.5
+h2ogpte == 1.2.7
 h2o_wave
 loguru
 toml
