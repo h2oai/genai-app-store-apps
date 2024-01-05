@@ -63,7 +63,7 @@ async def init(q: Q):
     )
     q.page['header'] = ui.header_card(
         box='header',
-        title='Digital Assets Investment Research',
+        title='Investment Research',
         subtitle="AI-enhanced research through SEC 10k forms",
         icon='StackedLineChart',
         items=[ui.persona(title='John Doe', subtitle='Researcher', caption='Online', size='m',
@@ -221,3 +221,5 @@ heap.load("{heap_id}");
         script += f"heap.addEventProperties({event_properties})"
 
     return ui.inline_script(content=script)
+
+
