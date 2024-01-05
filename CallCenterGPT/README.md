@@ -66,3 +66,26 @@ Run the app (be sure that you in the app directory):
 `wave run src/app.py`
 
 Access it by visiting `http://localhost:10101/` or `http://<ip/server dns>:10101/`
+
+### Deployment to Public AI Cloud
+```shell script
+echo "Setting variables for this app"
+app_name=ai.h2o.demo.CallCenterGPT_aistore;
+app_alias=call-center;
+
+echo "Fetching IDs of previous app version and instance"
+old_app_id=$(genai app list --name $app_name -l | awk 'NR==2{print $1}');
+old_instance_id=$(genai instance list $old_app_id | awk 'NR==2{print $1}');
+
+echo "Importing and running the new app version"
+genai bundle import -v PUBLIC;
+new_app_id=$(genai app list --name $app_name -l | awk 'NR==2{print $1}');
+new_instance_id=$(genai app run $new_app_id -v ALL_USERS | awk 'NR==1{print $2}');
+
+echo "Assigning the alias to the new app version"
+genai admin alias assign $app_alias $new_instance_id True;
+
+echo "Privating the previous app version and instance - do not delete without testing!!"
+genai admin app update -v PRIVATE $old_app_id
+genai admin instance update -v PRIVATE $old_instance_id
+```
