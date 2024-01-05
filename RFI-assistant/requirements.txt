@@ -8,7 +8,7 @@ text-generation==0.6.0
 tiktoken==0.4.0
 langchain==0.0.329
 pypdf==3.17.0
-h2ogpte==1.1.5
+h2ogpte==1.2.7
 openpyxl==3.1.2
 urllib3==2.0.7
 requests_file==1.5.1

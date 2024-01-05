@@ -4,14 +4,14 @@ update() {
   echo "Checking if there's a new version of $1"
   new_app_version=$(toml get --toml-path ./$3/app.toml App.Version)
 
-  if grep -q $new_app_version <<< "$(genai app list --name $1 -l)"; then
+  if grep -q $new_app_version <<< "$(genai admin app list --name $1 -l)"; then
       echo "The local and deployed apps have the same app version"
       # move on to the next app
   else
       echo "The local app is a new version"
 
       echo "Fetching IDs of previous app version"
-      old_app_id=$(genai app list --name $1 -l | awk 'NR==2{print $1}');
+      old_app_id=$(genai admin app list --name $1 -l | awk 'NR==2{print $1}');
 
       echo "Importing the new app version"
       cd $3 && genai bundle import -v PUBLIC && cd ../;
@@ -20,14 +20,14 @@ update() {
         return 1;
       fi
 
-      new_app_id=$(genai app list --name $1 -l | awk 'NR==2{print $1}');
+      new_app_id=$(genai admin app list --name $1 -l | awk 'NR==2{print $1}');
 
       if test "$1" != "ai.h2o.link.h2ogpte"; then
         # The app is not a link app, which means we need to run instances and assign aliases
         # if this repo ends up with a lot of link apps we could do something better like check if the toml is link
 
         echo "Fetching IDs of previous app instance"
-        old_instance_id=$(genai instance list $old_app_id | awk 'NR==2{print $1}');
+        old_instance_id=$(genai admin instance list $old_app_id | awk 'NR==2{print $1}');
 
         echo "Running an instance of the new app version"
         new_instance_id=$(genai app run $new_app_id -v ALL_USERS | awk 'NR==1{print $2}');
@@ -40,7 +40,7 @@ update() {
       fi
 
       echo "Privating the previous app version - do not delete without testing!!"
-      genai admin app update -v PRIVATE $old_app_id
+      genai admin admin app update -v PRIVATE $old_app_id
   fi
 }
 
