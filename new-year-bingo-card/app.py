@@ -1,11 +1,10 @@
-import os
 import asyncio
+import os
 import re
 
-from h2o_wave import main, app, Q, ui, data, run_on, on
+from h2o_wave import Q, app, data, main, on, run_on, ui
 from h2ogpte import H2OGPTE
 from h2ogpte.types import ChatMessage, PartialChatMessage
-
 from loguru import logger
 
 
@@ -15,7 +14,9 @@ async def serve(q: Q):
         """Route the end user based on how they interacted with the app."""
         logger.info(q.args)
 
-        if not q.client.initialized:  # Setup the application for a new browser tab, if not done yet
+        if (
+            not q.client.initialized
+        ):  # Setup the application for a new browser tab, if not done yet
             initialize_browser(q)
 
         await run_on(q)  # Route user to the appropriate "on" function
@@ -28,8 +29,9 @@ async def serve(q: Q):
             closable=False,
             items=[
                 ui.text_xl("<center>Something went wrong!</center>"),
-                ui.text("<center>Please come back soon to create your 2024 Holiday Bingo card.</center>")
-
+                ui.text(
+                    "<center>Please come back soon to create your 2024 Holiday Bingo card.</center>"
+                ),
             ],
         )
 
@@ -72,19 +74,8 @@ def initialize_browser(q):
     }
 
     [data-test="footer"] a {
-        color: #ff9632 !important;
+        color: #0000EE !important;
     }
-    """
-
-    script = """
-     // Function to change the content of the description meta tag
-      function changeDescriptionMetaTag() {
-        var descriptionMetaTag = document.querySelector('meta[name="description"]');
-        descriptionMetaTag.content = "Holiday Bingo";
-      }
-    
-      // Call the function to change the content of the description meta tag
-      changeDescriptionMetaTag();
     """
 
     if os.getenv("MAINTENANCE_MODE", "false") == "true":
@@ -94,8 +85,9 @@ def initialize_browser(q):
             closable=False,
             items=[
                 ui.text_xl("<center>This app is under maintenance!</center>"),
-                ui.text("<center>Please come back soon to create your 2024 Holiday Bingo card.</center>")
-
+                ui.text(
+                    "<center>Please come back soon to create your 2024 Holiday Bingo card.</center>"
+                ),
             ],
         )
     else:
@@ -109,20 +101,35 @@ def initialize_browser(q):
             ui.layout(
                 breakpoint="xs",
                 height="100vh",
-                zones=[ui.zone("header_mobile"), ui.zone("mobile", size="1"), ui.zone("footer")],
+                zones=[
+                    ui.zone("header_mobile"),
+                    ui.zone("mobile", size="1"),
+                    ui.zone("footer"),
+                ],
             ),
             ui.layout(
                 max_width="1000px",
                 breakpoint="m",
                 height="100vh",
-                zones=[ui.zone("header_desktop"), ui.zone("desktop", size="1"), ui.zone("footer")],
+                zones=[
+                    ui.zone("header_desktop"),
+                    ui.zone("desktop", size="1"),
+                    ui.zone("footer"),
+                ],
             ),
         ],
-        themes=[ui.theme(name="custom", primary="#FFE600", text="#000000", card="#FFFFFF", page="#E2E2E2")],
+        themes=[
+            ui.theme(
+                name="custom",
+                primary="#FFE600",
+                text="#000000",
+                card="#FFFFFF",
+                page="#E2E2E2",
+            )
+        ],
         theme="custom",
         stylesheet=ui.inline_stylesheet(style),
-        # script=ui.inline_script(heap_analytics(userid=q.auth.subject))
-        script=ui.inline_script(script + heap_analytics(userid=q.auth.subject)),
+        script=ui.inline_script(heap_analytics(userid=q.auth.subject)),
         icon="https://h2o.ai/company/brand-kit/_jcr_content/root/container/section/par/advancedcolumncontro/columns1/advancedcolumncontro/columns0/image.coreimg.svg/1697220254347/h2o-logo.svg",
     )
 
@@ -132,13 +139,24 @@ def initialize_browser(q):
         subtitle="",
         image="https://h2o.ai/company/brand-kit/_jcr_content/root/container/section/par/advancedcolumncontro/columns1/advancedcolumncontro/columns0/image.coreimg.svg/1697220254347/h2o-logo.svg",
         items=[
-            ui.button(name="source_code", disabled=True, icon="Code",
-                      path="https://github.com/h2oai/genai-app-store-apps/tree/main/new-year-bingo-card",
-                      tooltip="View source code"),
-            ui.button(name="edit_mode", disabled=True, icon="Edit", value=str(q.client.edit_mode),
-                      tooltip="Edit content"),
-            ui.button(name="regenerate", disabled=True, icon="Reset", tooltip="Try again"),
-        ]
+            ui.button(
+                name="source_code",
+                disabled=True,
+                icon="Code",
+                path="https://github.com/h2oai/genai-app-store-apps/tree/main/new-year-bingo-card",
+                tooltip="View source code",
+            ),
+            ui.button(
+                name="edit_mode",
+                disabled=True,
+                icon="Edit",
+                value=str(q.client.edit_mode),
+                tooltip="Edit content",
+            ),
+            ui.button(
+                name="regenerate", disabled=True, icon="Reset", tooltip="Try again"
+            ),
+        ],
     )
     q.page["header_desktop"] = ui.header_card(
         box="header_desktop",
@@ -146,17 +164,28 @@ def initialize_browser(q):
         subtitle="",
         image="https://h2o.ai/company/brand-kit/_jcr_content/root/container/section/par/advancedcolumncontro/columns1/advancedcolumncontro/columns0/image.coreimg.svg/1697220254347/h2o-logo.svg",
         items=[
-            ui.button(name="source_code", disabled=True, icon="Code",
-                      path="https://github.com/h2oai/genai-app-store-apps/tree/main/new-year-bingo-card",
-                      tooltip="View source code"),
-            ui.button(name="edit_mode", disabled=True, icon="Edit", value=str(q.client.edit_mode),
-                      tooltip="Edit content"),
-            ui.button(name="regenerate", disabled=True, icon="Reset", tooltip="Try again"),
-        ]
+            ui.button(
+                name="source_code",
+                disabled=True,
+                icon="Code",
+                path="https://github.com/h2oai/genai-app-store-apps/tree/main/new-year-bingo-card",
+                tooltip="View source code",
+            ),
+            ui.button(
+                name="edit_mode",
+                disabled=True,
+                icon="Edit",
+                value=str(q.client.edit_mode),
+                tooltip="Edit content",
+            ),
+            ui.button(
+                name="regenerate", disabled=True, icon="Reset", tooltip="Try again"
+            ),
+        ],
     )
     q.page["footer"] = ui.footer_card(
         box="footer",
-        caption="Made with [Wave](https://wave.h2o.ai), [h2oGPTe](https://h2o.ai/platform/enterprise-h2ogpte), and 💛 by the Makers at H2O.ai."
+        caption="Made with [Wave](https://wave.h2o.ai), [h2oGPTe](https://h2o.ai/platform/enterprise-h2ogpte), and 💛 by the Makers at H2O.ai.<br />Find more in the [H2O GenAI App Store](https://genai.h2o.ai).",
     )
 
     q.client.initialized = True
@@ -184,7 +213,9 @@ async def generate_bingo_card(q: Q):
     q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.goals)
 
     q.page["mobile_bingo_card"] = ui.form_card(box=ui.box("mobile", size="0"), items=[])
-    q.page["desktop_bingo_card"] = ui.form_card(box=ui.box("desktop", size="0"), items=[])
+    q.page["desktop_bingo_card"] = ui.form_card(
+        box=ui.box("desktop", size="0"), items=[]
+    )
 
     if q.args.name is None or q.args.name == "":
         q.client.bingo_card_title = "Your 2024 Bingo Card!"
@@ -246,7 +277,10 @@ def chat(chatbot_interaction):
         """
         chatbot_interaction.update_response(message)
 
-    if chatbot_interaction.user_message is None or chatbot_interaction.user_message == "":
+    if (
+        chatbot_interaction.user_message is None
+        or chatbot_interaction.user_message == ""
+    ):
         message = "The user has no specific goals."
     else:
         message = f'Here is the user\'s goals in free text: """\n{chatbot_interaction.user_message}\n"""'
@@ -269,7 +303,7 @@ def chat(chatbot_interaction):
             timeout=60,
             callback=stream_response,
             rag_config={"rag_type": "llm_only"},
-            llm_args={"do_sample": True, "temperature": 0.6}
+            llm_args={"do_sample": True, "temperature": 0.6},
         )
     client.delete_collections([collection_id])
     client.delete_chat_sessions([chat_session_id])
@@ -288,7 +322,7 @@ def bingo_game_inputs(q, blocking):
                 multiline=True,
                 value=q.client.goals,
                 placeholder="Use free text to write as much or little about what you want to accomplish "
-                            "throughout the next year...",
+                "throughout the next year...",
             ),
             ui.buttons(
                 items=[
@@ -299,7 +333,7 @@ def bingo_game_inputs(q, blocking):
                     ),
                 ],
                 justify="end",
-            )
+            ),
         ],
     )
 
@@ -367,7 +401,9 @@ def mobile_print_mode_ui(q: Q):
             line_items.append(
                 ui.text(
                     name=f"bingo_{item_number}",
-                    content="<center>" + (q.client[f"bingo_{item_number}"] or "") + "</center>",
+                    content="<center>"
+                    + (q.client[f"bingo_{item_number}"] or "")
+                    + "</center>",
                     width="19%",
                     size="s",
                 )
@@ -396,7 +432,9 @@ def print_mode_ui(q: Q):
             line_items.append(
                 ui.text(
                     name=f"bingo_{item_number}",
-                    content="<center>" + (q.client[f"bingo_{item_number}"] or "") + "</center>",
+                    content="<center>"
+                    + (q.client[f"bingo_{item_number}"] or "")
+                    + "</center>",
                     width="19%",
                     size="l",
                 )
@@ -419,7 +457,6 @@ class ChatBotInteraction:
         self.content_to_show = ["🟡"]
 
     def update_response(self, message):
-
         if isinstance(message, ChatMessage):
             content_to_show = message.content
             self.responding = False
@@ -428,14 +465,17 @@ class ChatBotInteraction:
             content_to_show = self.llm_response + " 🟡"
 
         # Split the string into individual lines
-        lines = content_to_show.strip().split('\n')
+        lines = content_to_show.strip().split("\n")
         # Use regular expression to extract text after the number and period
-        pattern = re.compile(r'\d+\.\s+(.*)')
-        self.content_to_show = [pattern.match(line).group(1).strip() for line in lines if pattern.match(line)]
+        pattern = re.compile(r"\d+\.\s+(.*)")
+        self.content_to_show = [
+            pattern.match(line).group(1).strip()
+            for line in lines
+            if pattern.match(line)
+        ]
 
 
 def heap_analytics(userid) -> ui.inline_script:
-
     if "HEAP_ID" not in os.environ:
         return
     heap_id = os.getenv("HEAP_ID")
@@ -444,7 +484,9 @@ window.heap=window.heap||[],heap.load=function(e,t){{window.heap.appid=e,window.
 heap.load("{heap_id}"); 
     """
 
-    if userid is not None:  # is OIDC Enabled? we do not want to identify all non-logged in users as "none"
+    if (
+        userid is not None
+    ):  # is OIDC Enabled? we do not want to identify all non-logged in users as "none"
         script += f"heap.identify('{userid}');"
 
     return script
