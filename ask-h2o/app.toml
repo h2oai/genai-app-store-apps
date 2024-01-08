@@ -1,9 +1,9 @@
 [App]
 Name = "ai.h2o.wave.ask_h2o"
-Version = "0.0.5"
+Version = "0.0.6"
 Title = "Ask H2O"
 Description = "Conversationally explore H2O.ai’s website, products, and more"
-Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+Tags = ["GENERATIVE_AI", "OSS"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
 
@@ -39,3 +39,8 @@ SecretKey = "h2ogpte-url"
 Name = "HEAP_ID"
 Secret = "heap-analytics"
 SecretKey = "id"
+
+[[Env]]
+Name = "MAINTENANCE_MODE"
+Secret = "h2ogpte-maintenance"
+SecretKey = "show-maintenance-mode"
