@@ -1,5 +1,6 @@
-from h2ogpte import H2OGPTE
 import os
+
+from h2ogpte import H2OGPTE
 
 connect = {
     "address": os.getenv("H2OGPTE_URL"),
@@ -27,12 +28,10 @@ for c in h2ogpte.list_recent_collections(0, 1000):
 for collection_name in collections_to_ingest.keys():
     print(f"Starting {collection_name}")
     collection_id = h2ogpte.create_collection(
-        name=collection_name,
-        description=""  # AI will generate this
+        name=collection_name, description=""  # AI will generate this
     )
     h2ogpte.ingest_website(
-        collection_id=collection_id,
-        url=collections_to_ingest[collection_name]
+        collection_id=collection_id, url=collections_to_ingest[collection_name]
     )
 
 for c in h2ogpte.list_recent_collections(0, 1000):
