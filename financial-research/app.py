@@ -1,7 +1,9 @@
 import os
+import asyncio
 
 from h2o_wave import app, Q, ui, on, data, main, copy_expando, run_on
 from h2ogpte import H2OGPTE
+from h2ogpte.types import PartialChatMessage, ChatMessage
 
 
 @app('/')
@@ -27,18 +29,27 @@ async def init(q: Q):
 
     :param q: The query object for H2O Wave that has important app information.
     """
-    if not q.app.initialized:
-        await initialize_app(q)
-
-    # Set default properties for a new session
-    q.client.collection_name = "ABBOTT_LABORATORIES_145_2021"
-    q.client.chat_length = 0
 
     # Create landing page UI elements
     q.page['meta'] = ui.meta_card(
         box='',
         title='Digital Assets Investment Research',
         theme='solarized',
+        stylesheet=ui.inline_stylesheet("""
+            [data-test="footer"] a {
+                color: #0000EE !important;
+            }
+            
+            [data-test="source_code"] {
+                background-color: #FFFFFF !important;
+            }
+            [data-test="app_store"] {
+                background-color: #FFFFFF !important;
+            }
+            [data-test="support"] {
+                background-color: #FFFFFF !important;
+            }
+        """),
         script=heap_analytics(
             event_properties=f"{{"
                              f"version: '0.0.8', "
@@ -66,13 +77,47 @@ async def init(q: Q):
         title='Investment Research',
         subtitle="AI-enhanced research through SEC 10k forms",
         icon='StackedLineChart',
-        items=[ui.persona(title='John Doe', subtitle='Researcher', caption='Online', size='m',
-                          image='https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&h=750&w=1260')]
+        items=[
+            ui.persona(title='John Doe', subtitle='Researcher', caption='Online', size='m',
+                       image='https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&h=750&w=1260'),
+            ui.button(
+                name="source_code",
+                icon="Code",
+                path="https://github.com/h2oai/genai-app-store-apps/tree/main/financial-research",
+                tooltip="View the source code",
+            ),
+            ui.button(
+                name="app_store",
+                icon="Shop",
+                path="https://genai.h2o.ai",
+                tooltip="Visit the App Store",
+            ),
+            ui.button(
+                name="support",
+                icon="Help",
+                path="https://support.h2o.ai/support/tickets/new",
+                tooltip="Get help",
+            ),
+        ]
     )
-    q.page['footer'] = ui.footer_card(
-        box='footer',
-        caption='Made with 💛 using [H2O Wave](https://wave.h2o.ai).'
+    q.page["footer"] = ui.footer_card(
+        box="footer",
+        caption="Made with [Wave](https://wave.h2o.ai), [h2oGPTe](https://h2o.ai/platform/enterprise-h2ogpte), and "
+        "💛 by the Makers at H2O.ai.<br />Find more in the [H2O GenAI App Store](https://genai.h2o.ai/).",
     )
+
+    if os.getenv("MAINTENANCE_MODE", "false") == "true":
+        q.page["meta"].dialog = ui.dialog(
+            title="",
+            blocking=True,
+            closable=True,
+            items=[
+                ui.text_xl("<center>This app is under maintenance!</center>"),
+                ui.text("<center>Please come back soon for digital assets investment research support.</center>")
+
+            ],
+        )
+        return
 
     q.page['image'] = ui.tall_info_card(
         box=ui.box('vertical'),
@@ -83,28 +128,9 @@ async def init(q: Q):
         image='https://franklintempletonprod.widen.net/content/fghctkvqjy/webp/uk-gilts-masthead-640x360.jpg'
     )
 
-    q.page['selectors'] = ui.form_card(
-        box=ui.box('horizontal', size='0'),
-        items=[
-            ui.choice_group(name='collection_name', label='Select a firm to research', value=q.client.collection_name,
-                            choices=q.app.collections, trigger=True),
-        ]
-    )
-    q.client.initialized = True  # Save that we have setup the app for this browser session
-
-    await collection_name(q)
-
-
-async def initialize_app(q: Q):
-    """
-    Initialize the app for all users.
-
-    :param q: The query object for H2O Wave that has important app information.
-    """
-    q.app.load, = await q.site.upload(['./static/load.gif'])
-
     # Create a list of available SEC 10-Ks to chat with
-    supported_companies = {
+    q.client.collection_name = "ABBOTT_LABORATORIES_145_2021"
+    companies = {
         "ABBOTT_LABORATORIES_145_2021": "Abbot Laboratories",
         "Diamondback_Energy_Inc._129_2021": "Diamondback Energy",
         "EXXON_MOBIL_CORP_171_2021": "Exxon Mobile",
@@ -117,10 +143,19 @@ async def initialize_app(q: Q):
         "WESTERN_DIGITAL_CORP_72_2021": "Western Digital"
     }
     h2ogpte = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
-    available_collections = [c.name for c in h2ogpte.list_recent_collections(0, 1000)]
-    q.app.collections = [ui.choice(c, supported_companies[c]) for c in supported_companies.keys() if c in available_collections]
+    all_h2ogpte_collections = [c.name for c in h2ogpte.list_recent_collections(0, 1000)]
+    app_collections = [ui.choice(c, companies[c]) for c in companies.keys() if c in all_h2ogpte_collections]
+    q.page['selectors'] = ui.form_card(
+        box=ui.box('horizontal', size='0'),
+        items=[
+            ui.choice_group(name='collection_name', label='Select a firm to research', value=q.client.collection_name,
+                            choices=app_collections, trigger=True),
+        ]
+    )
 
-    q.app.initialized = True  # Save that we have setup the app
+    q.client.initialized = True  # Save that we have setup the app for this browser session
+
+    await collection_name(q)
 
 
 @on()
@@ -138,7 +173,7 @@ async def collection_name(q: Q):
     q.client.chat_session_id = h2ogpte.create_chat_session(collection_id)
 
     # Show a new chat session to the user
-    q.page['chatbot'] = ui.chatbot_card(
+    q.page['chatbot_card'] = ui.chatbot_card(
         name='chatbot',
         box='horizontal',
         data=data('content from_user', t='list', rows=[
@@ -155,50 +190,74 @@ async def chatbot(q: Q):
     :param q: The query object for H2O Wave that has important app information.
     """
 
-    # Support the user asking multiple questions at once, show users a loading image
-    starting_chat_length = q.client.chat_length
-    q.client.chat_length += 2
-    q.page['chatbot'].data += [q.client.chatbot, True]
-    q.page['chatbot'].data += ["<img src='{}' height='200px'/>".format(q.app.load), False]
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.chatbot)
+
+    q.page["chatbot_card"].data += [q.args.chatbot, True]
+    q.page["chatbot_card"].data += [q.client.chatbot_interaction.content_to_show, False]
+
+    # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
+    update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
+    await q.run(chat, q.client.chatbot_interaction, q.client.chat_session_id)
+    await update_ui
+
+
+async def stream_updates_to_ui(q: Q):
+    """
+    Update the app's UI every 1/10th of a second with values from our chatbot interaction
+    :param q: The query object stored by H2O Wave with information about the app and user behavior.
+    """
+    while q.client.chatbot_interaction.responding:
+        q.page["chatbot_card"].data[-1] = [q.client.chatbot_interaction.content_to_show, False]
+        await q.page.save()
+        await q.sleep(0.1)
+
+    q.page["chatbot_card"].data[-1] = [q.client.chatbot_interaction.content_to_show, False]
     await q.page.save()
 
-    # Get a response from the LLM
-    bot_res = await q.run(get_chat_answer, q.client.chat_session_id, q.client.chatbot)
 
-    # Update the UI with the LLM's response
-    diff = q.client.chat_length - starting_chat_length - 1
-    q.page['chatbot'].data[-diff] = [bot_res, False]
-
-    stream = chunk = ''
-    for w in bot_res:
-        chunk += w
-        await q.sleep(0.01)
-        if len(chunk) == 5:
-            stream += chunk
-            q.page['chatbot'].data[-diff] = [stream, False]
-            await q.page.save()
-            chunk = ''
-    if chunk:
-        q.page['chatbot'].data[-diff] = [stream + chunk, False]
-
-
-def get_chat_answer(chat_session_id, question):
+def chat(chatbot_interaction, chat_session_id):
     """
-    Interact with the Large Language Model.
-
-    :param chat_session_id: The H2OGPTE ID for a specific chat session. Ensures related queries are contained in one chat thread.
-    :param question: The input text into the chat bot from the end user.
+    Send the user's message to the LLM and save the response
+    :param chatbot_interaction: Details about the interaction between the user and the LLM
+    :param chat_session_id: Chat session for these messages
     """
+
+    def stream_response(message):
+        """
+        This function is called by the blocking H2OGPTE function periodically
+        :param message: response from the LLM, this is either a partial or completed response
+        """
+        chatbot_interaction.update_response(message)
 
     try:
-        h2ogpte = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
 
-        with h2ogpte.connect(chat_session_id) as session:
-            reply = session.query(message=question, timeout=200)
-        return reply.content.strip()
+        with client.connect(chat_session_id) as session:
+            session.query(
+                message=chatbot_interaction.user_message,
+                timeout=60,
+                callback=stream_response,
+            )
 
     except Exception as e:
         return f"Unable to get an response: {e}"
+
+
+class ChatBotInteraction:
+    def __init__(self, user_message) -> None:
+        self.user_message = user_message
+        self.responding = True
+
+        self.llm_response = ""
+        self.content_to_show = "🔵"
+
+    def update_response(self, message):
+        if isinstance(message, ChatMessage):
+            self.content_to_show = message.content
+            self.responding = False
+        elif isinstance(message, PartialChatMessage):
+            self.llm_response += message.content
+            self.content_to_show = self.llm_response + " 🔵"
 
 
 def heap_analytics(event_properties=None) -> ui.inline_script:
