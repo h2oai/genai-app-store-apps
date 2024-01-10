@@ -1,7 +1,7 @@
 [App]
 Name = "ai.h2o.wave.weekly_meal_planning"
-Version = "0.0.2"
-Title = "Weekly Meal Planning"
+Version = "0.0.3"
+Title = "Meal Planning"
 Description = "Let AI cook up meal ideas for the whole family"
 Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
@@ -13,26 +13,23 @@ EnableOIDC = false
 MemoryLimit = "16Gi"
 MemoryReservation = "16Gi"
 
-[[Env]]
-Name= "LOGO"
-Value = "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"
 
 [[Env]]
-Name = "THEME"
-Value = "nature"
-
-
-[[Env]]
-Name = "H2OGPT_API_TOKEN"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-key"
+Name = "H2OGPTE_API_TOKEN"
+Secret = "financial-research"
+SecretKey = "h2ogpte-key"
 
 [[Env]]
-Name = "H2OGPT_URL"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-url"
+Name = "H2OGPTE_URL"
+Secret = "financial-research"
+SecretKey = "h2ogpte-url"
 
 [[Env]]
 Name = "HEAP_ID"
 Secret = "heap-analytics"
 SecretKey = "id"
+
+[[Env]]
+Name = "MAINTENANCE_MODE"
+Secret = "h2ogpte-maintenance"
+SecretKey = "show-maintenance-mode"
