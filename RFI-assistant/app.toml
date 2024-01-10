@@ -3,8 +3,8 @@ name = "ai.h2o.wave.h2o-demo-rfi"
 Title = "RFI Assistant"
 description = "Leverage AI to effortlessly respond to RFIs"
 LongDescription = "about.md"
-Tags = ["RFI QA", "DEMO", "INTERNAL"]
-Version = "0.0.5"
+Tags = ["OSS", "GENERATIVE_AI"]
+Version = "0.0.6"
 InstanceLifecycle = "MANAGED"
 
 [Runtime]

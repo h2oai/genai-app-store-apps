@@ -1,9 +1,9 @@
 [App]
 Name = "ai.h2o.wave.study_partner"
-Version = "0.0.4"
+Version = "0.0.5"
 Title = "H2O Study Partner"
 Description = "Meet your interactive AI study buddy"
-Tags = ["GENERATIVE_AI", "DEMO", "INTERNAL", "DATA_SCIENCE"]
+Tags = ["GENERATIVE_AI", "OSS", "DATA_SCIENCE"]
 LongDescription = "LongDescription.md"
 InstanceLifecycle = "MANAGED"
 
