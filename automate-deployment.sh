@@ -37,6 +37,7 @@ update() {
 
         echo "Privating the previous instance - do not delete without testing!!"
         genai admin instance update -v PRIVATE $old_instance_id
+        genai admin instance suspend $old_instance_id
       fi
 
       echo "Privating the previous app version - do not delete without testing!!"
@@ -44,20 +45,20 @@ update() {
   fi
 }
 
-# App Name from app.toml, alias pre-created in genai.h2o.ai, folder name in github
-update "ai.h2o.wave.ask_h2o" "ask-h2o" "ask-h2o";
-# update "ai.h2o.wave.brazil-lawgpt" "brlawgpt" "brlawgpt";
-# update "ai.h2o.demo.CallCenterGPT_aistore" "call-center" "CallCenterGPT";
-# update "ai.h2o.wave.company_info_at_a_glance" "company-info-at-a-glance" "company-financial-overview";
-# update "ai.h2o.wave.cycling_training_plan" "cycling" "cycling-training-plan";
-# update "ai.h2o.wave.investment-research" "financial-research" "financial-research";
-# update "ai.h2o.wave.grammar_and_syntax_review" "content-review" "grammar-and-syntax-review";
-# update "ai.h2o.link.h2ogpte" "" "h2ogpte-link";
-# update "ai.h2o.wave.make_home_listing" "make-home-listing" "home-listings";
-# update "ai.h2o.wave.bingo_new_years_cards" "2024-bingo" "new-year-bingo-card";
-# update "ai.h2o.wave.clean-code-inspector" "python" "python-code-inspector";
-# update "ai.h2o.wave.h2o-demo-rfi" "rfi-assistant" "RFI-assistant";
-# update "ai.h2o.wave.study_partner" "study" "study-partner";
-# update "ai.h2o.wave.tomatoAI" "tomato-ai" "tomatoAI";
-# update "wave-h2ogpt-audio-summarization" "audio-summarization" "transcription-summarize";
-# update "ai.h2o.wave.weekly_meal_planning" "meal-planning" "weekly-dinner-plan";
+ App Name from app.toml, alias pre-created in genai.h2o.ai, folder name in github
+ update "ai.h2o.wave.ask_h2o" "ask-h2o" "ask-h2o";
+ update "ai.h2o.wave.brazil-lawgpt" "brlawgpt" "brlawgpt";
+ update "ai.h2o.demo.CallCenterGPT_aistore" "call-center" "CallCenterGPT";
+ update "ai.h2o.wave.company_info_at_a_glance" "company-info-at-a-glance" "company-financial-overview";
+ update "ai.h2o.wave.cycling_training_plan" "cycling" "cycling-training-plan";
+ update "ai.h2o.wave.investment-research" "financial-research" "financial-research";
+ update "ai.h2o.wave.grammar_and_syntax_review" "content-review" "grammar-and-syntax-review";
+ update "ai.h2o.link.h2ogpte" "" "h2ogpte-link";
+ update "ai.h2o.wave.make_home_listing" "make-home-listing" "home-listings";
+ update "ai.h2o.wave.bingo_new_years_cards" "2024-bingo" "new-year-bingo-card";
+ update "ai.h2o.wave.clean-code-inspector" "python" "python-code-inspector";
+ update "ai.h2o.wave.h2o-demo-rfi" "rfi-assistant" "RFI-assistant";
+ update "ai.h2o.wave.study_partner" "study" "study-partner";
+ update "ai.h2o.wave.tomatoAI" "tomato-ai" "tomatoAI";
+ update "wave-h2ogpt-audio-summarization" "audio-summarization" "transcription-summarize";
+ update "ai.h2o.wave.weekly_meal_planning" "meal-planning" "weekly-dinner-plan";
