@@ -3,7 +3,7 @@ import toml
 import os
 import glob
 import hashlib
-from .utils import get_body, get_questions, loading
+from .utils import get_body, get_questions
 from .constants import COMPANY, COMPANY_LOGO, APP_TITLE, THEME, BACKGROUND_IMAGE
 
 text_heading = "<font size=4><b>{}</b></font>"
@@ -15,7 +15,6 @@ themes = [ui.theme(
         page='#1D1D1D',
             )]
 
-
 async def layout(q: Q):
     q.app.toml = toml.load("app.toml")
     zones = [
@@ -26,7 +25,6 @@ async def layout(q: Q):
         ]),
         ui.zone(name="zone_2", direction="row", size="8%"),
     ]
-
     q.page["meta"] = ui.meta_card(
         box="",
         themes=themes,
@@ -64,7 +62,7 @@ def get_header_card(q, items):
         box="zone_0",
         title=title,
         subtitle=subtitle,
-        image=COMPANY_LOGO,
+        image=q.app.logo,
         items=items
     )
 

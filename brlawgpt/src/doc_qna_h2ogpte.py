@@ -1,7 +1,8 @@
 from h2ogpte import H2OGPTE
+from h2ogpte.types import ChatMessage, PartialChatMessage
 import logging
 import os, glob
-import requests
+import asyncio
 import datetime
 import json
 
@@ -106,9 +107,7 @@ class H2OGPTEClient:
             logging.info(f'File {filename} ingested')
         else:
             logging.info(f'File {filename} already ingested')
-
-        chunks = self._get_collection_chunks(collection_id)
-        return chunks
+        return
     
     def ingest_url(self, url, collection_id):
         filename = url.split("/")[-1]
@@ -119,9 +118,7 @@ class H2OGPTEClient:
             logging.info(f'File {filename} ingested')
         else:
             logging.info(f'File {filename} already ingested')
-        
-        chunks = self._get_collection_chunks(collection_id)
-        return chunks
+        return
     
     def _get_collection_chunks(self, collection_id):
         chunk_sizes = 80
@@ -132,7 +129,6 @@ class H2OGPTEClient:
                 break
             except:
                 chunk_sizes = int(chunk_sizes*0.9)
-                print(f'chunk_sizes: {chunk_sizes}')
 
         chunks = [c.text for c in chunks]
         chunks = [text.replace('\n', ' ') for text in chunks]
@@ -160,235 +156,184 @@ class H2OGPTEClient:
 
 
 class QnAManager:
-    def __init__(self, client, llm, collection_peticao_id, collection_stf_id):
+    def __init__(self, client, llm, collection_peticao_id, collection_stf_id, language):
+        from .prompts import prompts_pt, prompts_eng
         self.client = client.client
         self.llm = llm
         self.collection_peticao_id = collection_peticao_id
         self.collection_stf_id = collection_stf_id
-        self.system_prompt = """Você é um assistente virtual chamado BrLawGPT.
-Apenas responda as perguntas em português e jamais use outro idioma.
-Responda as pergunta com informações fornecidas no contexto, não crie nenhuma informação.
-Se não tiver informações suficientes para responder à sua pergunta, informe em português sobre as informações que estão faltando para fornecer uma resposta completa.
-"""
-        self.system_prompt_eng = """You are a virtual assistant called BrLawGPT.
-Please answer in English.
-Answer the question with information provided in the context, do not create any information.
-If you do not have enough information to answer your question, inform in Portuguese about the information that is missing to provide a complete answer.
-"""
-    def _translate_pt_to_eng(self, text):
-        logging.info(f'Translating text to English')
-        logging.info(f'Text: {text}')
-        chat_args = {
-            "system_prompt": self.system_prompt_eng,
-            "question": f"""{text}\n\nTranslate the text above to English.""",
-            "llm": self.llm,
-        }
-        response = self._answer_question(chat_args)
-        logging.info(f'Response: {response}')
-        return response
+        self.prompts = prompts_pt if language == 'ptbr' else prompts_eng
+        self.language = language
+        self.json_file_path = "./history.json"
     
-    def _translate_eng_to_pt(self, text):
-        logging.info(f'Translating text to Portuguese')
-        logging.info(f'Text: {text}')
-        chat_args = {
-            "system_prompt": self.system_prompt,
-            "question": f"""{text}\n\nApenas traduza o texto acima para o português brasileiro sem adicionar nenhuma informação.""",
-            "llm": self.llm,
-        }
-        response = self._answer_question(chat_args)
-        logging.info(f'Response: {response}')
-        return response
-    
-    def _answer_question(self, chat_args):
+    def _summarize_content(self, summarize_args):
         try:
-            response = self.client.answer_question(**chat_args).content
-        except Exception as e:
-            logging.warning(f'Error: {e}')
-            response = 'Not able to construct an answer at the moment. Please contact the app administrators.'
-        return response
-    
-    def _summarize_content(self, chat_args):
-        try:
-            response = self.client.summarize_content(**chat_args).content
+            response = self.client.summarize_document(**summarize_args).content
         except Exception as e:
             logging.warning(f'Error: {e}')
             response = 'Not able to construct an answer at the moment. Please contact the app administrators.'
         return response
 
-    def _chat(self, question_prompt, summary, open_question, stf_check):
-        chat_args = {
-            "system_prompt": self.system_prompt,
-            "question": question_prompt,
-            "llm": self.llm,
-            }
+    async def _chat(self, q, question_prompt, open_question, stf_check):
         if stf_check == True:
             logging.info(f'Finding Supreme Court Theme')
-            response = self._get_tema(summary)
+            response = await self.stream_answer(q, question_prompt, rag_type="rag", stf_check=True)
         elif open_question == True:
             logging.info(f'Open question')
-            response = self._answer_question(chat_args)
+            response = await self.stream_answer(q, question_prompt, rag_type="llm_only", stf_check=False)
         else:
-            logging.info(f'Pesquisando na peticao inicial')
-            prompt = f"""Responda apenas usando os trechos acima da petição inicial.\n\nPERGUNTA:{question_prompt} \n\nRESPOSTA:"""
-            context = self._search_peticao(question_prompt)
-            chat_args['text_context_list'] = context
-            chat_args['question'] = prompt
-            response = self._answer_question(chat_args)
-        return response
-        
-    def _search_peticao(self, question_prompt):
-        question_vectors = self.client.encode_for_retrieval([question_prompt])
-        results = self.client.match_chunks(self.collection_peticao_id, question_vectors, [], 0, 5)
-        results = [result.text for result in results]
-        results = [result.replace('\n', ' ') for result in results]
-        return results
-    
-    def _get_tema(self, summary):
-        prompt_setter = f"""Usando apenas os fatos de uma petição inicial descritos abaixo, responda a pergunta.\n\nFATOS DA PETIÇÃO:\n{summary}"""
-        prompt = f"""{prompt_setter}\n\nQuais são os temas do STF mais relacionados aos fatos da petição inicial? Escolha apenas os temas relacionados diretamente à petição inicial limitado em 3 temas e ignore o restante."""
-
-        question_vectors = self.client.encode_for_retrieval([prompt])
-        results = self.client.match_chunks(self.collection_stf_id, question_vectors, [], 0, 5)
-        for result in results:
-            print(result, flush=True)
-        results = [result.text for result in results]
-        results = [result.replace('\n', ' ') for result in results]
-        chat_args = {
-                    "system_prompt": self.system_prompt,
-                    "text_context_list": ['\n'.join(results)],
-                    "question": prompt,
-                    "llm": self.llm,
-                }
-        response = self._answer_question(chat_args)
+            logging.info(f'Searching for answer in the petition')
+            response = await self.stream_answer(q, question_prompt, rag_type="rag", stf_check=False)
         return response
     
-    def _get_full_summary(self, chunks):
-        full_context = ['\n'.join(chunks)]
-        size = len(full_context[0].split(' '))
-        logging.info(f"Chunk Size: {size}")
-        chat_args = {
-                    "system_prompt": self.system_prompt,
-                    "pre_prompt_summary":"Usando apenas os trechos do documento abaixo, faça um resumo que melhor descreva o assunto da petição inicial e os pedidos do autor. Não adicione nenhum fato não descrito no texto.\n",
-                    "text_context_list": full_context,
-                    "prompt_summary": "Descreva o assunto e os fatos descritos pelo autor da petição em um resumo em português brasileiro.",
-                    "docs_token_handling":'split_or_merge',#"chunk",
+    def _get_full_summary(self, collection_id):
+        logging.info('Summarizing task')
+        documents = self.client.list_documents_in_collection(collection_id, offset=0, limit=99)
+        doc = documents[0]
+        summarize_args = {
+                    "system_prompt": self.prompts['system_prompt'],
+                    "pre_prompt_summary": self.prompts['pre_prompt_summary'],
+                    "prompt_summary": self.prompts['prompt_summary'],
+                    "sampling_strategy": "first+last",
                     "llm": self.llm,
+                    "document_id": doc.id,
+                    "max_num_chunks": 20,
                 }
-        final_summary = self._summarize_content(chat_args)
+        final_summary = self._summarize_content(summarize_args)
         return final_summary
 
-    def _check_history(self, filename, json_file_path, sum_check, delete_old):
+    def _check_history(self, filename, delete_old):
         check_exist = False
         res=''
-        with open(json_file_path, "r") as json_file:
+        with open(self.json_file_path, "r") as json_file:
             existing_data = json.load(json_file)
-        print("Num of histories: ", len(existing_data))
         for hist in existing_data:
-            if hist['filename']==f"""{filename}""":
-                if hist['user_question'].lower() in sum_check:
-                    if delete_old:
-                        existing_data.remove(hist)
-                        check_exist = False
-                        print("Num of histories after removal: ",len(existing_data))
+            if hist['filename']==f"""{filename}""" and hist['language']==self.language:
+                if delete_old:
+                    existing_data.remove(hist)
+                    check_exist = False
 
-                    if delete_old==False:
-                        summary_task = False
-                        print('Summary exists for this file, fetching from history.')
-                        res = hist['llm_resp']
-                        check_exist = True
-                        break
+                if delete_old==False:
+                    logging.info('Summary exists for this file, fetching from history...')
+                    res = hist['summary']
+                    check_exist = True
+                    break
         return check_exist, res
+    
+    def chat_session_stream(self, q, prompt, rag_type="rag", stf_check=False):
+        """
+        Send the user's message to the LLM and save the response
+        """
+        def stream_response(message):
+            """
+            This function is called by the blocking H2OGPTE function periodically
+            """
+            q.client.chatbot_interaction.update_response(message, q)
 
-    def answer_question(self, q, question_prompt, pdfs=None, doc_chunks=[]):
-        is_english = q.client.language == 'en'
-        sum_check = ["dê-me um resumo", "resumo", "resuma", "resuma este documento", "resuma isto",
-                    "dê-me um breve resumo", "resuma este pdf", "resuma este arquivo","faça um resumo da petição inicial",
-                    "faça um resumo", "faça um resumo dos fatos descritos na petição inicial",
-                    'gimme a summary', 'give me a summary', 'summarize this', 'summarize this pdf', 'summarize this file',
-                    'summarize the facts described in the initial petition']
-        
-        stf_temas_check = ["tema do stf", "temas do stf", "tese do stf", "teses do stf", "tese do supremo", "teses do supremo",
-                           "supreme court theme", "supreme court themes", "supreme court thesis", "supreme court theses", "brazilian supreme court"]
+        collection = self.collection_peticao_id
+        if stf_check == True: collection = self.collection_stf_id
+        chat_session_id = self.client.create_chat_session(collection)
+        args = {
+            "system_prompt": self.prompts['system_prompt'],
+            "message": prompt,
+            "timeout": 60,
+            "callback": stream_response,
+            "llm": self.llm,
+            'rag_config':{"rag_type": rag_type}
+            }
+        with self.client.connect(chat_session_id) as session:
+            session.query(**args)
+        self.client.delete_chat_sessions([chat_session_id])
+
+    async def stream_updates_to_ui(self, q, chatbot_name):
+        while q.client.chatbot_interaction.responding:
+            q.page[chatbot_name].data[-1] = [q.client.chatbot_interaction.content_to_show, False]
+            await q.page.save()
+            await q.sleep(0.1)
+
+        q.page[chatbot_name].data[-1] = [q.client.chatbot_interaction.content_to_show, False]
+        await q.page.save()
+
+    async def stream_answer(self, q, question_prompt, rag_type="rag", stf_check=False):
+        q.client.chatbot_interaction = ChatBotInteraction(user_message=question_prompt, q=q)
+        q.page['card_1'].data += [q.client.chatbot_interaction.content_to_show, False]
+        try:
+            update_ui = asyncio.ensure_future(self.stream_updates_to_ui(q, 'card_1'))
+            await q.run(self.chat_session_stream, q, question_prompt, rag_type, stf_check)
+            await update_ui
+            response = q.client.chatbot_interaction.content_to_show
+            return response
+        except Exception as e:
+            logging.warning(f'Error: {e}')
+            update_ui.cancel()
+            response = 'Not able to construct an answer at the moment. Please contact the app administrators.'
+            q.page['card_1'].data[-1] = [response, False]
+            await q.page.save()
+            return response
+
+    async def answer_question(self, q, question_prompt, filename):
+        from .prompts import sum_check, stf_temas_check
         stf_temas_check_func = lambda x: any([i in x.lower() for i in stf_temas_check])
-
+        sum_check_func = lambda x: any([i in x.lower() for i in sum_check])
         summary_task, delete_old, open_ques = False, False, False
-
-        start_dir = "./"
-        history_file = "history.json"
-        json_file_path = None
-        for root, dirs, files in os.walk(start_dir):
-            if history_file in files:
-                json_file_path = os.path.join(root, history_file)
-                print("File found at:", json_file_path)
-                break
-
-        if question_prompt.lower()[-6:]==" --new":
-            question_prompt = question_prompt.strip(" --new")
-            delete_old = True
         if question_prompt.lower()[-5:]=="--new":
             question_prompt = question_prompt.strip("--new").strip(" ")
             delete_old = True
-        if question_prompt.lower()[-7:]==" --open":
-            question_prompt = question_prompt.strip(" --open")
-            open_ques = True
         if question_prompt.lower()[-6:]=="--open":
             question_prompt = question_prompt.strip("--open").strip(" ")
             open_ques = True
 
-        filename = pdfs[0]
-        if question_prompt.lower() in sum_check:
-            print(f'Summarizing file: {pdfs[0]}')
-            check_exist, res = self._check_history(filename, json_file_path, sum_check, delete_old)
+        cfg = dict()
+        cfg['filename'] = str(filename)
+        cfg['language'] = self.language
+        cfg['created'] = str(datetime.datetime.now())
+        if sum_check_func(question_prompt) and not stf_temas_check_func(question_prompt):
+            q.page['card_1'].data += ["<img src='{}' height='40px'/>".format(q.app.loader), False]
+            await q.page.save()
+            check_exist, res = self._check_history(filename, delete_old)
             if check_exist==False:
-                res = self._get_full_summary(doc_chunks)
-                if not res.startswith('Not able to construct an answer at the moment. Please contact the app administrators.'):
+                res = self._get_full_summary(self.collection_peticao_id)
+                if not res.startswith('Not able to construct an answer at the moment.'):
                     summary_task = True
-            prmpt = question_prompt
-            cfg = dict()
-            cfg['filename'] = f"""{pdfs[0]}"""
-            cfg['user_question'] = f"""{question_prompt}"""
-            cfg['llm_resp'] = f"""{res.replace('"', "'")}"""
-            cfg['llm_prompt'] = f"""{prmpt.replace('"', "'")}"""
-            cfg['created'] = str(datetime.datetime.now())
-            res = self._translate_pt_to_eng(res) if is_english else res
+            cfg['summary'] = res.replace('"', "'")
+            q.page['card_1'].data[-1] = [res, False]
+            await q.page.save()
         elif stf_temas_check_func(question_prompt):
-            print(f'Summarizing file: {pdfs[0]}')
-            check_exist, summary = self._check_history(filename, json_file_path, sum_check, delete_old)
+            check_exist, summary = self._check_history(filename, delete_old)
             if check_exist==False:
-                summary = self._get_full_summary(doc_chunks)
-                if not summary.startswith('Not able to construct an answer at the moment. Please contact the app administrators.'):
+                summary = self._get_full_summary(self.collection_peticao_id)
+                if not summary.startswith('Not able to construct an answer at the moment.'):
                     summary_task = True
-            res = self._chat(question_prompt, open_question=open_ques, summary=summary, stf_check=True)
-            res = self._translate_pt_to_eng(res) if is_english else res
-            cfg = dict()
-            cfg['filename'] = f"""{pdfs[0]}"""
-            cfg['user_question'] = 'faça um resumo'
-            cfg['llm_resp'] = f"""{summary.replace('"', "'")}"""
-            cfg['llm_prompt'] = f"""{"faça um resumo".replace('"', "'")}"""
-            cfg['created'] = str(datetime.datetime.now())
+            question_prompt = self.prompts['stf_tema_prompt'].format(summary)
+            res = await self._chat(q, question_prompt, open_question=open_ques, stf_check=True)
+            cfg['summary'] = summary.replace('"', "'")
         else:
-            summary = ''
-            question_prompt = self._translate_eng_to_pt(question_prompt) if is_english else question_prompt
-            res = self._chat(question_prompt, open_question=open_ques, summary=summary, stf_check=False)
-            res = self._translate_pt_to_eng(res) if is_english else res
+            question_prompt = self.prompts['peticao_prompt'].format(question_prompt)
+            res = await self._chat(q, question_prompt, open_question=open_ques, stf_check=False)
 
         if summary_task:
-            try:
-                print("Num of histories before adding new summary: ",len(existing_data))
-                existing_data.append(cfg)
-                with open(json_file_path, "w", encoding="utf-8") as json_file:
-                    json.dump(existing_data, json_file, indent=4)
-                print("Num of histories after adding new summary: ", len(existing_data))
-            
-            except:
-                try:
-                    with open(json_file_path, "r") as json_file:
-                        existing_data = json.load(json_file)
-                except FileNotFoundError:
-                    existing_data = []
-                
-                existing_data.append(cfg)
-                with open(json_file_path, "w", encoding="utf-8") as json_file:
-                    json.dump(existing_data, json_file, indent=4)
+            with open(self.json_file_path, "r") as json_file:
+                existing_data = json.load(json_file)
+            existing_data.append(cfg)
+            logging.warning(f"cfg: {cfg}")
+            with open(self.json_file_path, "w", encoding="utf-8") as json_file:
+                json.dump(existing_data, json_file, indent=4)
         return res
 
+
+
+class ChatBotInteraction:
+    def __init__(self, user_message, q) -> None:
+        self.user_message = user_message
+        self.responding = True
+        self.llm_response = ""
+        self.content_to_show = "<img src='{}' height='40px'/>".format(q.app.loader)
+
+    def update_response(self, message, q):
+        if isinstance(message, ChatMessage):
+            self.content_to_show = message.content
+            self.responding = False
+        elif isinstance(message, PartialChatMessage):
+            if message.content not in ["#### No RAG (LLM only):\n", "#### LLM Only (no RAG):\n"]:
+                self.llm_response += message.content
+                self.content_to_show = self.llm_response
