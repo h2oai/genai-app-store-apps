@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.investment-research"
-Version = "0.0.11"
+Version = "0.0.12"
 Title = "Digital Assets Investment Research"
 Description = "Enhance your investment research with AI"
 Tags = ["GENERATIVE_AI", "DOCUMENT", "OSS"]
