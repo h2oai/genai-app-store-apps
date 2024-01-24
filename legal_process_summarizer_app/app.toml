@@ -1,0 +1,31 @@
+[App]
+Name = "ai.h2o.wave.legal_process_summarizer"
+Version = "0.0.1"
+Title = "Legal Process Summarizer"
+Description = "Build legal reports on appeal processes from court legal documents and decisions"
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+Tags = ["GENERATIVE_AI", "LLM"]
+
+[Runtime]
+Module = "src.app"
+RuntimeVersion = "deb11_py310_wlatest"
+MemoryLimit = "40Gi"
+MemoryReservation = "20Gi"
+CPULimit = "12"
+CPUReservation = "4"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpte-abaraldo"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-abaraldo"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
