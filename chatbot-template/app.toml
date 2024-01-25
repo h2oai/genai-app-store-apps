@@ -1,0 +1,24 @@
+[App]
+Name = "ai.h2o.wave.system_prompt"
+Version = "0.0.2"
+Title = "Learning LLMs: System Prompts"
+Description = "Explore the power of personalized language models by comparing how changing the System Prompt changes the response."
+Tags = ["GENERATIVE_AI", "OSS"]
+LongDescription = "LongDescription.md"
+InstanceLifecycle = "MANAGED"
+
+[Runtime]
+Module = "app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-url"
