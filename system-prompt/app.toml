@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.system_prompt"
-Version = "0.0.3"
+Version = "0.0.4"
 Title = "Learning LLMs: System Prompts"
 Description = "Explore the power of personalized language models by comparing how changing the System Prompt changes the response."
 Tags = ["GENERATIVE_AI", "OSS"]
@@ -22,3 +22,8 @@ SecretKey = "h2ogpte-key"
 Name = "H2OGPTE_URL"
 Secret = "h2ogpte-shared"
 SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
