@@ -62,3 +62,4 @@ update() {
  update "ai.h2o.wave.tomatoAI" "tomato-ai" "tomatoAI";
  update "wave-h2ogpt-audio-summarization" "audio-summarization" "transcription-summarize";
  update "ai.h2o.wave.weekly_meal_planning" "meal-planning" "weekly-dinner-plan";
+ update "ai.h2o.wave.system_prompt" "personalize" "system-prompt";
