@@ -4,7 +4,7 @@ Title = "RFI Assistant"
 description = "Leverage AI to effortlessly respond to RFIs"
 LongDescription = "about.md"
 Tags = ["OSS", "GENERATIVE_AI"]
-Version = "0.0.6"
+Version = "0.0.7"
 InstanceLifecycle = "MANAGED"
 
 [Runtime]

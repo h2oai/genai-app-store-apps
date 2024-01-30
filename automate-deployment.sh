@@ -45,7 +45,7 @@ update() {
   fi
 }
 
- App Name from app.toml, alias pre-created in genai.h2o.ai, folder name in github
+ #App Name from app.toml, alias pre-created in genai.h2o.ai, folder name in github
  update "ai.h2o.wave.ask_h2o" "ask-h2o" "ask-h2o";
  update "ai.h2o.wave.brazil-lawgpt" "brlawgpt" "brlawgpt";
  update "ai.h2o.demo.CallCenterGPT_aistore" "call-center" "CallCenterGPT";
@@ -62,3 +62,4 @@ update() {
  update "ai.h2o.wave.tomatoAI" "tomato-ai" "tomatoAI";
  update "wave-h2ogpt-audio-summarization" "audio-summarization" "transcription-summarize";
  update "ai.h2o.wave.weekly_meal_planning" "meal-planning" "weekly-dinner-plan";
+ update "ai.h2o.wave.system_prompt" "personalize" "system-prompt";

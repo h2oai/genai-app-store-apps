@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.link.h2ogpte"
-Version = "1.2.7"
+Version = "1.3.1"
 Title = "Enterprise h2oGPTe"
 Description = "Information retrieval on internal data, privately hosted LLM, your data stays with you."
 InstanceLifecycle = "LINK"
