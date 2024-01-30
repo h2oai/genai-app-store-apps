@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.brazil-lawgpt"
-Version = "0.0.6"
+Version = "0.0.7"
 Title = "Brazil LawGPT"
 Description = "Chat with the legal petitions, request summaries, and search for Supreme Court jurisprudence"
 LongDescription = "LongDescription.md"
