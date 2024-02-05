@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.weekly_meal_planning"
-Version = "0.0.5"
+Version = "0.0.6"
 Title = "Meal Planning"
 Description = "Let AI cook up meal ideas for the whole family"
 Tags = ["GENERATIVE_AI", "OSS", "AI_FOR_LIFE", "DATA_SCIENCE"]
