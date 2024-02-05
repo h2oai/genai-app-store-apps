@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.legal_process_summarizer"
-Version = "0.0.1"
+Version = "0.0.2"
 Title = "Legal Process Summarizer"
 Description = "Build legal reports on appeal processes from court legal documents and decisions"
 LongDescription = "LongDescription.md"
