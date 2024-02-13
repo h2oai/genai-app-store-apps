@@ -36,9 +36,8 @@ async def serve(q: Q):
     request_id = int(time.time() * 1000)
     logger.info(f"Starting user request: {request_id}")
     logger.debug(q.args)
-    logger.debug(q.client)
     copy_expando(q.args, q.client)  # Save any UI responses of the User to their session
-    logger.debug(q.client)
+    
     if not q.client.initialized:
         await initialize_client(q)
 
@@ -199,8 +198,8 @@ async def generate_question(q):
     q.page["collection"].generate_question.disabled = True
     q.page["chatbot"].data += [CHATBOT_FILLER.format(q.app.loader_c), False]
     q.client.chatbot_interaction = ChatBotInteraction(user_message=query)
+    
     # Query to generate a possible question
-    # bot_res = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, query)
     update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
     bot_res = await q.run(chat, q.app.h2ogpte, q.client.selected_collection, q.client.chatbot_interaction, q.client.chat_session_id)
     await update_ui
@@ -217,17 +216,12 @@ async def generate_question(q):
     q.client.last_question = q.client.chatbot_interaction.content_to_show
 
 
-
 @on()
 async def chatbot(q):
-    logger.debug(q.client)
     if q.client.last_question is None:
         q.page['chatbot'].data += [q.client.chatbot, True]
         q.page['chatbot'].data += [f"Hi there! Please use the button to generate a question and start studying!", False]
         return
-    
-    logger.debug(q.client.chatbot)
-    logger.debug(q.args)
 
     # Add the answer to the chat window
     answer = q.client.chatbot
@@ -253,7 +247,6 @@ async def chatbot(q):
     await update_ui
     q.page['chatbot'].data[-1] = [f"**Better Answer** {q.client.chatbot_interaction.content_to_show}", False]
     await q.page.save()
-
 
 
 def get_time_since(last_updated_timestamp):
