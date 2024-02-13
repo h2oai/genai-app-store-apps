@@ -205,7 +205,6 @@ async def generate_question(q):
     await update_ui
     if 'Question:' in q.client.chatbot_interaction.content_to_show:
         q.client.chatbot_interaction.content_to_show = ':'.join(q.client.chatbot_interaction.content_to_show.split(':')[1:]).lstrip()
-    # bot_res = f"**Question** {bot_res}"
         q.page['chatbot'].data[-1] = [f"**Question** {q.client.chatbot_interaction.content_to_show}", False]
     else:
         q.page['chatbot'].data[-1] = [f"**Question** {q.client.chatbot_interaction.content_to_show}", False]
