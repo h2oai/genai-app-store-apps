@@ -2,8 +2,9 @@ import os
 import time
 import random
 from datetime import datetime
-
+import asyncio
 import toml
+from h2ogpte.types import ChatMessage, PartialChatMessage
 from loguru import logger
 from h2ogpte import H2OGPTE
 from h2o_wave import app, Q, ui, on, copy_expando, run_on, main
@@ -35,8 +36,9 @@ async def serve(q: Q):
     request_id = int(time.time() * 1000)
     logger.info(f"Starting user request: {request_id}")
     logger.debug(q.args)
+    logger.debug(q.client)
     copy_expando(q.args, q.client)  # Save any UI responses of the User to their session
-
+    logger.debug(q.client)
     if not q.client.initialized:
         await initialize_client(q)
 
@@ -186,55 +188,72 @@ async def selected_collection(q):
 
 @on()
 async def generate_question(q):
-    # Clean up topic string for cleaner query
+
     if q.args.topic is not None:
         q.client.topic = '.'.join(q.args.topics_table[0].split('.')[1:]).strip()
     query = prompt_question.format_map({'topic': q.client.topic, 'modifier': random.choice(prompt_modifiers)})
     logger.debug(f"Generate Question Query: {query}")
-
-    # Append loading gif to data buffer while waiting on gpt
-    q.page["chatbot"].data += [CHATBOT_FILLER.format(q.app.loader_c), False]
-    q.page["collection"].generate_question.disabled = True
     await q.page.save()
 
+    # Append loading gif to data buffer while waiting on gpt
+    q.page["collection"].generate_question.disabled = True
+    q.page["chatbot"].data += [CHATBOT_FILLER.format(q.app.loader_c), False]
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=query)
     # Query to generate a possible question
-    bot_res = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, query)
-    logger.debug(f"Generate Question Response: {bot_res}")
-
-    # Clean up response and replace loading gif with response
-    if ':' in bot_res:
-        bot_res = ':'.join(bot_res.split(':')[1:]).lstrip()
-    bot_res = f"**Question** {bot_res}"
-    q.page['chatbot'].data[-1] = [bot_res, False]
+    # bot_res = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, query)
+    update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
+    bot_res = await q.run(chat, q.app.h2ogpte, q.client.selected_collection, q.client.chatbot_interaction, q.client.chat_session_id)
+    await update_ui
+    if 'Question:' in q.client.chatbot_interaction.content_to_show:
+        q.client.chatbot_interaction.content_to_show = ':'.join(q.client.chatbot_interaction.content_to_show.split(':')[1:]).lstrip()
+    # bot_res = f"**Question** {bot_res}"
+        q.page['chatbot'].data[-1] = [f"**Question** {q.client.chatbot_interaction.content_to_show}", False]
+    else:
+        q.page['chatbot'].data[-1] = [f"**Question** {q.client.chatbot_interaction.content_to_show}", False]
+    await q.page.save()
+    
     q.client.chat_length += 1
-    q.client.last_question = bot_res
     q.page["collection"].generate_question.disabled = False
+    q.client.last_question = q.client.chatbot_interaction.content_to_show
+
 
 
 @on()
 async def chatbot(q):
+    logger.debug(q.client)
     if q.client.last_question is None:
         q.page['chatbot'].data += [q.client.chatbot, True]
         q.page['chatbot'].data += [f"Hi there! Please use the button to generate a question and start studying!", False]
         return
+    
+    logger.debug(q.client.chatbot)
+    logger.debug(q.args)
 
-    # Add the answer to the chat window and create query
+    # Add the answer to the chat window
     answer = q.client.chatbot
-    query = prompt_feedback.format_map({'question': q.client.last_question, 'answer': answer})
     q.page['chatbot'].data += [f"**Answer** {answer}", True]
 
     # Query to see if this is a good answer
-    q.page["chatbot"].data += [CHATBOT_FILLER.format(q.app.loader_c), False]
+    query = prompt_feedback.format_map({'question': q.client.last_question, 'answer': answer})
     await q.page.save()
-    bot_res = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, query)
-    q.page['chatbot'].data[-1] = [f"**Feedback** {bot_res}", False]
+    q.page["chatbot"].data += [CHATBOT_FILLER.format(q.app.loader_c), False]
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=query)
+    update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
+    bot_res = await q.run(chat, q.app.h2ogpte, q.client.selected_collection, q.client.chatbot_interaction, q.client.chat_session_id)
+    await update_ui
+    q.page['chatbot'].data[-1] = [f"**Feedback** {q.client.chatbot_interaction.content_to_show}", False]
+    await q.page.save()
 
     # Get best answer
     query = prompt_best_answer.format_map({'question': q.client.last_question})
     q.page["chatbot"].data += [CHATBOT_FILLER.format(q.app.loader_c), False]
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=query)
+    update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
+    bot_res = await q.run(chat, q.app.h2ogpte, q.client.selected_collection, q.client.chatbot_interaction, q.client.chat_session_id)
+    await update_ui
+    q.page['chatbot'].data[-1] = [f"**Better Answer** {q.client.chatbot_interaction.content_to_show}", False]
     await q.page.save()
-    bot_res = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, query)
-    q.page['chatbot'].data[-1] = [f"**Better Answer** {bot_res}", False]
+
 
 
 def get_time_since(last_updated_timestamp):
@@ -261,6 +280,49 @@ def get_time_since(last_updated_timestamp):
     else:
         return '{} Seconds Ago'.format(int(duration_in_s))
 
+async def stream_updates_to_ui(q: Q):
+    """
+    Update the app's UI every 1/10th of a second with values from our chatbot interaction
+    :param q: The query object stored by H2O Wave with information about the app and user behavior.
+    """
+    while q.client.chatbot_interaction.responding:
+        q.page["chatbot"].data[-1] = [
+            q.client.chatbot_interaction.content_to_show,
+            False,
+        ]
+        await q.page.save()
+        await q.sleep(0.1)
+
+    q.page["chatbot"].data[-1] = [
+        q.client.chatbot_interaction.content_to_show,
+        False,
+    ]
+    await q.page.save()
+
+def chat(connection_details, collection_id, chatbot_interaction, chat_session_id):
+    """
+    Send the user's message to the LLM and save the response
+    :param chatbot_interaction: Details about the interaction between the user and the LLM
+    :param chat_session_id: Chat session for these messages
+    """
+
+    def stream_response(message):
+        """
+        This function is called by the blocking H2OGPTE function periodically
+        :param message: response from the LLM, this is either a partial or completed response
+        """
+        chatbot_interaction.update_response(message)
+
+    h2ogpte = H2OGPTE(address=connection_details["address"], api_key=connection_details["api_key"])
+    chat_session_id = h2ogpte.create_chat_session(collection_id=collection_id)
+
+    with h2ogpte.connect(chat_session_id) as session:
+        return session.query(
+            message=chatbot_interaction.user_message,
+            timeout=60,
+            callback=stream_response,
+        )
+
 
 def llm_query_with_context(connection_details, collection_id, user_message):
     logger.info("")
@@ -270,11 +332,11 @@ def llm_query_with_context(connection_details, collection_id, user_message):
         h2ogpte = H2OGPTE(address=connection_details["address"], api_key=connection_details["api_key"])
         chat_session_id = h2ogpte.create_chat_session(collection_id=collection_id)
 
+
         with h2ogpte.connect(chat_session_id) as session:
             reply = session.query(
                 message=user_message,
-                timeout=16000,
-            )
+                timeout=16000,)
 
         response = reply.content
         logger.debug(response)
@@ -283,3 +345,20 @@ def llm_query_with_context(connection_details, collection_id, user_message):
     except Exception as e:
         logger.error(e)
         return ""
+    
+class ChatBotInteraction:
+    def __init__(self, user_message) -> None:
+        self.user_message = user_message
+        self.responding = True
+
+        self.llm_response = ""
+        self.content_to_show = "🟡"
+
+    def update_response(self, message):
+        if isinstance(message, ChatMessage):
+            self.content_to_show = message.content
+            self.responding = False
+        elif isinstance(message, PartialChatMessage):
+            if message.content != "#### LLM Only (no RAG):\n":
+                self.llm_response += message.content
+                self.content_to_show = self.llm_response + " 🟡"
