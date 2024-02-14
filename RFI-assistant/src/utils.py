@@ -5,7 +5,7 @@ import pandas as pd
 import json 
 import validators
 import wget
-import fitz
+# import fitz
 import os
 import hashlib
 from h2o_wave import Q
@@ -60,6 +60,8 @@ async def get_rfi_response(q:Q, file_path: str, model_host: str, host_api: str, 
     
     df["Response"] = responses
     df["References"] = references
+    # Add Review Status
+    df["Review Status"] = ["PENDING"]*len(df)
 
     if df is not None:
         for col in df.columns:
@@ -69,6 +71,12 @@ async def get_rfi_response(q:Q, file_path: str, model_host: str, host_api: str, 
             elif col == "References":
                 columns.append(ui.table_column(name=f'{col}', label=f'{col}', sortable=True, link=False, searchable=True, 
                                                min_width='550px', cell_overflow="wrap", cell_type=ui.markdown_table_cell_type(target='_blank')))
+            elif col == "Review Status":
+                columns.append(ui.table_column(name='review', label='Review Status', cell_type=ui.tag_table_cell_type(name='tags', tags=[
+                        ui.tag(label='PENDING', color='#D2E3F8', label_color='#053975'),
+                        ui.tag(label='DONE', color='$mint'),
+                        ]))
+                    )
             else:
                 columns.append(ui.table_column(name=f'{col}', label=f'{col}', sortable=True, link=False, searchable=True, 
                                                min_width='550px', cell_overflow="wrap"))
@@ -85,42 +93,47 @@ def edit_rfi(df: pd.DataFrame, idx: int):
     return query, response
 
 def update_rfi(df: pd.DataFrame, idx: int, updated_res: str):
-    df.at[int(idx), 'Response'] = updated_res
+    review_idx = int(idx)
+    df.at[review_idx, 'Response'] = updated_res
+    df.at[review_idx, 'Review Status'] = 'DONE'
     
     rows = []
     for i, row in df.iterrows():
         _tmp = row.values.tolist()
+        if review_idx == i:
+            _tmp[-1] = 'DONE'
+
         rows.append(ui.table_row(name=str(i), cells=_tmp))
     
     return rows
 
-def highlight_pdf(file_path: str, src_markers: list, chat_message_id: str):
-    markers = []
+# def highlight_pdf(file_path: str, src_markers: list, chat_message_id: str):
+#     markers = []
 
-    for ref in src_markers:
-        markers.append(ref.json())
+#     for ref in src_markers:
+#         markers.append(ref.json())
     
-    _process_pdf_with_annotations(file_path, markers, chat_message_id)
+#     _process_pdf_with_annotations(file_path, markers, chat_message_id)
 
-def _create_polygon_annotation(page, selection):
-    points = [(coord["x"], coord["y"]) for coord in selection["polygons"]]
-    annot = page.add_polygon_annot(points)
-    annot.set_colors(stroke=(1, 1, 1), fill=(1.0, 1.0, 0.0))
-    annot.set_opacity(0.4)
-    annot.update()
+# def _create_polygon_annotation(page, selection):
+#     points = [(coord["x"], coord["y"]) for coord in selection["polygons"]]
+#     annot = page.add_polygon_annot(points)
+#     annot.set_colors(stroke=(1, 1, 1), fill=(1.0, 1.0, 0.0))
+#     annot.set_opacity(0.4)
+#     annot.update()
 
-def _process_pdf_with_annotations(file_path, markers: list, doc_id: str):
-    for i, marker in enumerate(markers):
-        pdf_document = fitz.open(file_path)
-        marker = json.loads(marker)
-        selections = json.loads(marker["pages"])["selections"]
-        for selection in selections:
-            page_number = selection["page"] - 1
-            page = pdf_document.load_page(page_number)
-            page.set_rotation(0)
-            _create_polygon_annotation(page, selection)
-        pdf_document.save(f"{doc_id}_{i}.pdf")
-    pdf_document.close()
+# def _process_pdf_with_annotations(file_path, markers: list, doc_id: str):
+#     for i, marker in enumerate(markers):
+#         pdf_document = fitz.open(file_path)
+#         marker = json.loads(marker)
+#         selections = json.loads(marker["pages"])["selections"]
+#         for selection in selections:
+#             page_number = selection["page"] - 1
+#             page = pdf_document.load_page(page_number)
+#             page.set_rotation(0)
+#             _create_polygon_annotation(page, selection)
+#         pdf_document.save(f"{doc_id}_{i}.pdf")
+#     pdf_document.close()
 
 
 def heap_analytics(userid, event_properties=None) -> ui.inline_script:

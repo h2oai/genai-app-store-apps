@@ -6,8 +6,8 @@ from pathlib import Path
 from loguru import logger
 
 import asyncio
-from src.gradio import get_client, upload_data, ask_query, get_sources, get_chat_session, get_collection_id
-from src.utils import format_sources, format_docs_table, get_rfi_response, update_rfi, edit_rfi, highlight_pdf, heap_analytics, validate_url, download_and_read
+from src.gradio import get_client, upload_data, ask_query, get_sources, get_collection_id
+from src.utils import format_docs_table, get_rfi_response, update_rfi, edit_rfi, heap_analytics, validate_url, download_and_read
 
 base_path = (Path(__file__).parent / "../").resolve()
 tmp_path = f"{base_path}/var/lib/tmp"
@@ -33,7 +33,7 @@ async def initialize_app(q: Q):
     logger.info("Initializing the app for all users and sessions - this runs the first time someone visits this app")
     q.app.toml = toml.load("./app.toml")
     
-    q.app.model_host = os.getenv("H2OGPTE_URL", "https://internal.h2ogpte.h2o.ai")
+    q.app.model_host = os.getenv("H2OGPTE_URL", "https://h2ogpte.genai.h2o.ai/")
     q.app.host_api = os.getenv("H2OGPTE_API_TOKEN", "")
     q.app.langchain_mode = os.getenv("COLLECTION_NAME", "H2O_DEMO_RFI")
     
@@ -110,14 +110,25 @@ async def file_upload(q: Q):
             q.page["dataset"].progress_bar.visible = False
             q.page["dataset"].error_bar.visible = True
 
+async def create_edit_dialog(q: Q, query, resp):
+    q.page['meta'].dialog = ui.dialog(
+            title='Human in the loop - Review/Edit Response',
+            name='edit_dialog',
+            items=[
+                ui.textbox(name='update_question_txt', label='Question', readonly=True, visible=True, multiline=True, value=query),
+                ui.textbox(name='update_response_txt', label='Response', visible=True, multiline=True, height="200px", value=resp),
+                ui.button(name="update_response", label="Update Response", visible=True, primary=True)
+            ],
+            closable=True,
+            events=['dismissed'],
+        )
+
 async def edit_response(q: Q):
     q.client.update_idx = q.args.rfi_table[0]
     
     if q.client.rfi_responses is not None:
         query, resp = edit_rfi(q.client.rfi_responses, q.client.update_idx)
-        q.page["questionnaire"].update_question_txt.value = query
-        q.page["questionnaire"].update_response_txt.value = resp
-        await set_rfi_update_cards(q, False)
+        await create_edit_dialog(q, query, resp)
     else:
         q.client.update_idx=None
         await set_rfi_update_cards(q, True)
@@ -128,8 +139,9 @@ async def update_response(q: Q):
         _rows = update_rfi(q.client.rfi_responses, q.client.update_idx, upd_res)
         q.page["questionnaire"].rfi_table.rows = _rows
     
-    q.client.update_idx=None
-    await set_rfi_update_cards(q, True)
+    q.client.update_idx = None
+    q.page['meta'].dialog = None
+    # await set_rfi_update_cards(q, True)
     
 async def rfi_file_upload(q: Q):
     try:  
@@ -215,7 +227,9 @@ async def rfi_query_ui(q: Q):
                     visible = False,
                     tooltip="Please select a file to query!",
                 ),
-                ui.textbox(name='ingest_rfi', label='RFI Questionnaire from URL', required=True, tooltip="Please provide a URL to RFI Questionnaire. Formats supported: CSV & Excel!"),
+                ui.textbox(name='ingest_rfi', label='RFI Questionnaire from URL', required=True, 
+                           tooltip="Please provide a URL to RFI Questionnaire. Formats supported: CSV & Excel! \
+                           \n Sample URL: https://raw.githubusercontent.com/narasimhard/demo-data/main/RFIQueriesLLM.xlsx"),
                 ui.progress(
                     name="progress_bar", width="100%", label="Uploading file & querying!", visible=False
                 ),
@@ -479,7 +493,7 @@ async def serve(q: Q):
         await user_query(q, sample_query=None)
     elif q.args.rfi_table and len(q.args.rfi_table) > 0:
         await edit_response(q)
-    elif q.args.update_response:
+    elif q.args.update_response or q.events.edit_dialog:
         await update_response(q)
     elif q.args.file_upload:
         await file_upload(q)
