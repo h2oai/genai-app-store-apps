@@ -1,0 +1,21 @@
+[App]
+Name = "ai.h2o.wave.investment-research"
+Version = "0.0.1"
+Title = "Chatbot Template"
+Description = "H2O Wave Template for Chatbot Applications"
+Tags = ["GENERATIVE_AI", "OSS"]
+LongDescription = "LongDescription.md"
+
+[Runtime]
+Module = "app"
+EnableOIDC = false
+
+[[Env]]
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-key"
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-url"
