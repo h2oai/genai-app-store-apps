@@ -7,17 +7,7 @@ import re
 import os
 import asyncio
 
-
 text_heading = "<font size=4><b>{}</b></font>"
-
-
-def initialize_generate_content_app(q):
-    logger.info("")
-    q.app.h2ogpt = {
-        "address": os.getenv("H2OGPTE_URL"),
-        "api_key": os.getenv("H2OGPTE_API_TOKEN"),
-    }
-
 
 def initialize_generate_content_client(q):
     logger.info("")
@@ -27,10 +17,6 @@ def initialize_generate_content_client(q):
     q.client.bathrooms = '2'
     q.client.persona = "Young Professionals"
     q.client.image = 'https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/home-improvement/wp-content/uploads/2022/07/download-23.jpg'
-
-    q.client.system_prompt = f"You are a real estate agent making a listing." \
-                             f"Do not explain yourself, just return the text of the listing."
-
 
 @on()
 async def side_input_generate_content(q):
@@ -234,6 +220,8 @@ def chat(chatbot_interaction):
 
         with client.connect(chat_session_id) as session:
             session.query(
+                system_prompt = f"You are a real estate agent making a listing." \
+                             f"Do not explain yourself, just return the text of the listing.",
                 message=chatbot_interaction.user_message,
                 timeout=60,
                 rag_config={"rag_type": "llm_only"},
