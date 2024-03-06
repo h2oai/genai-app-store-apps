@@ -1,27 +1,12 @@
 from loguru import logger
 from h2o_wave import on, ui
-
 import os
 import hashlib
-
 
 def clear_cards(q):
     for c in q.client.cards:
         del q.page[c]
     q.client.cards = []
-
-
-async def long_process_dialog(q):
-    logger.info("")
-
-    q.page["meta"].dialog = ui.dialog(
-        title=q.client.waiting_dialog,
-        items=[ui.image(title="", path=q.app.load, width="550px"),],
-        blocking=True
-    )
-    await q.page.save()
-    q.page["meta"].dialog = None
-
 
 def heap_analytics(userid, event_properties=None) -> ui.inline_script:
 
@@ -41,3 +26,4 @@ heap.load("{heap_id}");
         script += f"heap.addEventProperties({event_properties})"
 
     return ui.inline_script(content=script)
+    
