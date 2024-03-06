@@ -1,6 +1,6 @@
 from h2o_wave import on, ui, data, Q
 from h2ogpte import H2OGPTE
-from src.wave_utils import clear_cards, long_process_dialog
+from src.wave_utils import clear_cards
 from h2ogpte.types import ChatMessage, PartialChatMessage
 from loguru import logger
 import re
@@ -170,9 +170,6 @@ async def generate_listing(q: Q):
     )
     await q.page.save()
     q.client.cards.append("listing_card")
-
-    q.client.waiting_dialog = "H2OGPT is creating your listing!"
-    await long_process_dialog(q)
 
     q.client.chatbot_interaction = ChatBotInteraction(user_message=q.client.prompt)
 
