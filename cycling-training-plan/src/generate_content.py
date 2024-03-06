@@ -173,10 +173,6 @@ In response use table for week plan and make structured with markdown.
     update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
     await q.run(chat, q.client.chatbot_interaction)
     await update_ui
-
-    # q.page["training_plan"].training_plan.content = await q.run(
-    #     llm_query_custom, q.app.system_prompt, q.client.prompt, q.app.h2ogpt
-    # )
     await q.page.save()
 
 
