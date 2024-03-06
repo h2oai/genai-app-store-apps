@@ -4,7 +4,7 @@ from h2o_wave import on, ui, Q
 from h2ogpte import H2OGPTE
 from loguru import logger
 from h2ogpte.types import ChatMessage, PartialChatMessage
-from src.wave_utils import clear_cards, long_process_dialog
+from src.wave_utils import clear_cards
 
 def initialize_generate_content_client(q):
     logger.info("")
@@ -166,9 +166,6 @@ In response use table for week plan and make structured with markdown.
             ui.text(content="", name="training_plan")
         ]
     )
-
-    q.client.waiting_dialog = "H2OGPT is creating your training plan!"
-    await long_process_dialog(q)
 
     q.client.chatbot_interaction = ChatBotInteraction(user_message=q.client.prompt)
 
