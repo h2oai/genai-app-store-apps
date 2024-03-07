@@ -1,0 +1,3 @@
+h2ogpte==1.3.11
+h2o_wave
+loguru
