@@ -5,6 +5,7 @@
 This template application can be your starter code for chatbots that use H2O Wave and h2oGPTe where you want all chat history to be included with each message.
 
 ![](static/screenshot-1.png)
+![](static/screenshot-2.png)
 
 ## Features
 1. Interact with an LLM using the h2oGPTe API
