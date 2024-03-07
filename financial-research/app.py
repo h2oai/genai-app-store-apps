@@ -131,7 +131,7 @@ async def init(q: Q):
     # Create a list of available SEC 10-Ks to chat with
     q.client.collection_name = "ABBOTT_LABORATORIES_145_2021"
     companies = {
-        "ABBOTT_LABORATORIES_145_2021": "Abbot Laboratories",
+        "ABBOTT_LABORATORIES_145_2021": "Abbott Laboratories",
         "Diamondback_Energy_Inc._129_2021": "Diamondback Energy",
         "EXXON_MOBIL_CORP_171_2021": "Exxon Mobile",
         "Johnson_Controls_International_plc_246_2021": "Johnson Controls",
