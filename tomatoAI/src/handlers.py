@@ -98,8 +98,6 @@ def chat(chatbot_interaction, syst_prompt):
 
         collection_id = client.create_collection("temp", "")
         chat_session_id = client.create_chat_session(collection_id)
-        print(syst_prompt)
-        print(chatbot_interaction.user_message)
         with client.connect(chat_session_id) as session:
             session.query(
                 system_prompt = syst_prompt,
