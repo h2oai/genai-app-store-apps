@@ -1,13 +1,10 @@
 import toml
 import os
-
 from h2o_wave import app, Q, handle_on, copy_expando, main
 from loguru import logger
-
 from src.layout import layout, landing_page_view
 from src.handlers import handler
 from src.cards import chat_card
-
 
 @app('/')
 async def serve(q: Q):
@@ -32,14 +29,8 @@ async def serve(q: Q):
 async def initialize_app(q: Q):
     logger.info("Initializing the app for all users and sessions")
     q.app.toml = toml.load("app.toml")
-
-    if q.app.h2ogpt_url is None:
-        q.app.h2ogpt_url = os.getenv("H2OGPT_URL")
-    if q.app.h2ogpt_key is None:
-        q.app.h2ogpt_key = os.getenv("H2OGPT_API_TOKEN")
     if q.app.load is None:
         q.app.load, = await q.site.upload(['./static/load.gif'])
-
     q.app.initialized = True
 
 
