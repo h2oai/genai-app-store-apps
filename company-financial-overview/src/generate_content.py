@@ -1,22 +1,14 @@
 import os
-
-from h2o_wave import on, ui
+from h2o_wave import on, ui, Q
 from loguru import logger
-
-from src.generative_ai import llm_query_custom
+from h2ogpte import H2OGPTE
+from h2ogpte.types import ChatMessage, PartialChatMessage
 from src.wave_utils import missing_required_variable_dialog
-
 import asyncio
-
 
 def initialize_generate_content_app(q):
     logger.info("")
     q.app.generate_content_required_variables = ["Company Name"]
-
-    q.app.h2ogpt = {
-        "address": os.getenv("H2OGPT_URL"),
-        "api_key": os.getenv("H2OGPT_API_TOKEN"),
-    }
 
     with open("prompts/system_task.txt") as f:
         q.app.summary_prompt = f.read()
@@ -69,20 +61,28 @@ async def generate_content_ui(q):
 
 
 async def generate_specific_content(q, card, system_prompt):
-    card.value = await q.run(llm_query_custom, system_prompt,  q.client.company_name, q.app.h2ogpt)
+    # card.value = await q.run(llm_query_custom, system_prompt,  q.client.company_name, q.app.h2ogpt)
+    prompt = f'''Answer the following question about {q.client.company_name}: {system_prompt} '''
+    print(prompt)
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=prompt)
+
+    # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
+    update_ui = asyncio.ensure_future(stream_updates_to_ui(q, card))
+    await q.run(chat, q.client.chatbot_interaction)
+    await update_ui
     await q.page.save()
 
-    q.client.jobs_done += 1
-    if q.client.jobs_done == 4:
-        q.page["meta"].dialog = None
-        await q.page.save()
+    # q.client.jobs_done += 1
+    # if q.client.jobs_done == 4:
+    #     q.page["meta"].dialog = None
+    #     await q.page.save()
 
 
 @on()
 async def button_generate_content(q):
     logger.info("User has clicked the Generate Content button")
 
-    q.page["generate_content"].company_summary.value = ""
+    q.page["generate_content"].company_summary.value= ""
     q.page["generate_content"].competitor_info.value = ""
     q.page["generate_content"].company_revenue.value = ""
     q.page["generate_content"].potential_value_add.value = ""
@@ -92,19 +92,85 @@ async def button_generate_content(q):
         if missing_required_variable_dialog(q, v):
             return
 
-    q.client.jobs_done = 0
-    q.page["meta"].dialog = ui.dialog(
-        title="H2OGPT is researching the company, please wait :)",
-        items=[ui.image(title="", path=q.app.load, width="550px"), ],
-        blocking=True
-    )
+    # q.client.jobs_done = 0
+    # q.page["meta"].dialog = ui.dialog(
+    #     title="H2OGPT is researching the company, please wait :)",
+    #     items=[ui.image(title="", path=q.app.load, width="550px"), ],
+    #     blocking=True
+    # )
+    # await q.page.save()
+
+    # asyncio.gather(
+    await generate_specific_content(q, q.page["generate_content"].company_summary, q.app.summary_prompt),
+    await generate_specific_content(q, q.page["generate_content"].competitor_info, q.app.competitor_prompt),
+    await generate_specific_content(q, q.page["generate_content"].company_revenue, q.app.revenue_prompt),
+    await generate_specific_content(q, q.page["generate_content"].potential_value_add, q.app.h2oai_value_prompt)
+    # )
+
+async def stream_updates_to_ui(q: Q, card):
+    """
+    Update the app's UI every 1/10th of a second with values from our chatbot interaction
+    :param q: The query object stored by H2O Wave with information about the app and user behavior.
+    """
+
+    while q.client.chatbot_interaction.responding:
+        card.value = q.client.chatbot_interaction.content_to_show
+        await q.page.save()
+        await q.sleep(0.1)
+
+    card.value = q.client.chatbot_interaction.content_to_show
     await q.page.save()
 
-    asyncio.gather(
-        generate_specific_content(q, q.page["generate_content"].company_summary, q.app.summary_prompt),
-        generate_specific_content(q, q.page["generate_content"].competitor_info, q.app.competitor_prompt),
-        generate_specific_content(q, q.page["generate_content"].company_revenue, q.app.revenue_prompt),
-        generate_specific_content(q, q.page["generate_content"].potential_value_add, q.app.h2oai_value_prompt)
-    )
+
+def chat(chatbot_interaction):
+    """
+    Send the user's message to the LLM and save the response
+    :param chatbot_interaction: Details about the interaction between the user and the LLM
+    :param chat_session_id: Chat session for these messages
+    """
+
+    def stream_response(message):
+        """
+        This function is called by the blocking H2OGPTE function periodically for updating the UI
+        :param message: response from the LLM, this is either a partial or completed response
+        """
+        chatbot_interaction.update_response(message)
+
+    try:
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+
+        collection_id = client.create_collection("temp", "")
+        chat_session_id = client.create_chat_session(collection_id)
+        print("USER MESSSAGEEEEE", chatbot_interaction.user_message)
+        with client.connect(chat_session_id) as session:
+            session.query(
+                message=chatbot_interaction.user_message,
+                timeout=60,
+                rag_config={"rag_type": "llm_only"},
+                callback=stream_response,
+            )
+        
+        client.delete_collections([collection_id])
+        client.delete_chat_sessions([chat_session_id])
+
+    except Exception as e:
+        logger.error(e)
+        return f""
 
 
+class ChatBotInteraction:
+    def __init__(self, user_message) -> None:
+        self.user_message = user_message
+        self.responding = True
+
+        self.llm_response = ""
+        self.content_to_show = "🟡"
+
+    def update_response(self, message):
+        if isinstance(message, ChatMessage):
+            self.content_to_show = message.content
+            self.responding = False
+        elif isinstance(message, PartialChatMessage):
+            if message.content != "#### LLM Only (no RAG):\n":
+                self.llm_response += message.content
+                self.content_to_show = self.llm_response + " 🟡"
