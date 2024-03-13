@@ -10,19 +10,6 @@ def clear_cards(q):
         del q.page[c]
     q.client.cards = []
 
-
-async def long_process_dialog(q):
-    logger.info("")
-
-    q.page["meta"].dialog = ui.dialog(
-        title=q.client.waiting_dialog,
-        items=[ui.image(title="", path=q.app.load, width="550px"),],
-        blocking=True
-    )
-    await q.page.save()
-    q.page["meta"].dialog = None
-
-
 def heap_analytics(userid, event_properties=None) -> ui.inline_script:
 
     if "HEAP_ID" not in os.environ:

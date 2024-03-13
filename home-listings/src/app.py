@@ -1,10 +1,8 @@
 from h2o_wave import main, app, Q, ui, run_on, copy_expando
 import os
 import toml
-
 from loguru import logger
-
-from src.generate_content import initialize_generate_content_app, initialize_generate_content_client, side_input_generate_content
+from src.generate_content import initialize_generate_content_client, side_input_generate_content
 from src.wave_utils import heap_analytics
 
 
@@ -27,8 +25,6 @@ async def initialize_app(q: Q):
     logger.info("Initializing the app for all users and sessions - this runs the first time someone visits this app")
     q.app.toml = toml.load("app.toml")
     q.app.load, = await q.site.upload(['./static/load.gif'])
-
-    initialize_generate_content_app(q)
 
     q.app.initialized = True
 
@@ -94,6 +90,3 @@ def landing_page_layout(q: Q):
         box="footer",
         caption="Made with 💛 and [H2O Wave](https://wave.h2o.ai)."
     )
-
-
-
