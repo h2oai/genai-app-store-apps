@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.grammar_and_syntax_review"
-Version = "0.0.3"
+Version = "0.0.4"
 Title = "Grammar and Syntax Review"
 Description = "Review and edit content quickly with AI"
 Tags = ["GENERATIVE_AI", "OSS"]
@@ -27,14 +27,14 @@ Value = "#E8E5E1"
 
 
 [[Env]]
-Name = "H2OGPT_API_TOKEN"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-key"
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-key"
 
 [[Env]]
-Name = "H2OGPT_URL"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-url"
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-url"
 
 [[Env]]
 Name = "HEAP_ID"

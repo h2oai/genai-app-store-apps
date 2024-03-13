@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.system_prompt"
-Version = "0.0.5"
+Version = "0.0.6"
 Title = "Learning LLMs: System Prompts"
 Description = "Explore the power of personalized language models by comparing how changing the System Prompt changes the response."
 Tags = ["GENERATIVE_AI", "OSS"]

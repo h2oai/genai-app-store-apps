@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.bingo_new_years_cards"
-Version = "0.0.16"
+Version = "0.0.17"
 Title = "Holiday Bingo"
 Description = "Use AI to generate your 2024 goals bingo card!"
 Tags = ["GENERATIVE_AI", "DATA_SCIENCE", "OSS", "AI_FOR_LIFE"]

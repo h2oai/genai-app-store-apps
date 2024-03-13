@@ -1,5 +1,5 @@
 prompt_topic = """
-what are the {count} main topics in this collect
+what are the {count} main topics in this collect. return only the names of these topics each on a new line. Do not explain yourself.
 """
 
 prompt_question = """

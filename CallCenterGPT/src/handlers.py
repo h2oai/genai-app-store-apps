@@ -288,7 +288,7 @@ async def long_process_dialog(q):
     ]
 
     q.page["meta"].dialog = ui.dialog(
-        title='Analysing with H2oGPT ...',
+        title='Analysing with h2oGTe ...',
         items=items,
         blocking=True
     )

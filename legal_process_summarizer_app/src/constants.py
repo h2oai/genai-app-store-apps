@@ -14,6 +14,6 @@ SEC_IMAGE_DIM = (360,150)
 FACTOR_LOGO = 0.15
 FACTOR_SEC_IMAGE = 0.35
 FACTOR_H2O_LOGO = 0.3
-LLM = "h2oai/h2ogpt-4096-llama2-70b-chat-4bit"
+LLM = "h2oai/h2ogpt-4096-llama2-70b-chat"
 # LLM = "HuggingFaceH4/zephyr-7b-beta"
 # LLM = "h2oai/h2ogpt-gm-7b-mistral-chat-sft-dpo-v1"

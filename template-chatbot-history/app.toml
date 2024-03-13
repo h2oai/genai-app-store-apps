@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.template.chatbot-history"
-Version = "0.0.1"
+Version = "0.0.2"
 Title = "Chatbot History Template"
 Description = "H2O Wave Template for Chatbot Applications with History"
 Tags = ["GENERATIVE_AI", "OSS"]

@@ -6,8 +6,7 @@ import os
 import asyncio
 from src.layout import (
     landing_page_view,
-    image_view,
-    waiting_dialog
+    image_view
 )
 from src.prompts import questions
 
@@ -15,7 +14,6 @@ async def answer_question(q: Q, prompt: str):
     q.page['chat'].data += [prompt, True]
     q.page['chat'].data += ['', False]
     await q.page.save()
-    await waiting_dialog(q)
 
     plants = []
     if q.client.plants is not None:
@@ -96,7 +94,7 @@ def chat(chatbot_interaction, syst_prompt):
     try:
         client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
 
-        collection_id = client.create_collection("temp", "")
+        collection_id = client.create_collection("Temp for TomatoAI", "")
         chat_session_id = client.create_chat_session(collection_id)
         with client.connect(chat_session_id) as session:
             session.query(
@@ -121,7 +119,7 @@ class ChatBotInteraction:
         self.responding = True
 
         self.llm_response = ""
-        self.content_to_show = "🔵"
+        self.content_to_show = "🍅"
 
     def update_response(self, message):
         if isinstance(message, ChatMessage):
@@ -130,7 +128,7 @@ class ChatBotInteraction:
         elif isinstance(message, PartialChatMessage):
             if message.content != "#### LLM Only (no RAG):\n":
                 self.llm_response += message.content
-                self.content_to_show = self.llm_response + " 🔵"
+                self.content_to_show = self.llm_response + " 🍅"
 
 
 async def handler(q: Q):

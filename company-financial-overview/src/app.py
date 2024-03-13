@@ -26,7 +26,6 @@ async def serve(q: Q):
 async def initialize_app(q: Q):
     logger.info("Initializing the app for all users and sessions - this runs the first time someone visits this app")
     q.app.toml = toml.load("app.toml")
-    q.app.load, = await q.site.upload(['./static/load.gif'])
 
     initialize_generate_content_app(q)
 
@@ -51,9 +50,7 @@ def landing_page_layout(q: Q):
     q.page['meta'] = ui.meta_card(
         box='',
         title=q.app.toml['App']['Title'],
-        icon=os.getenv("LOGO",
-                       "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"),
-        theme="custom",
+        icon="https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg",
         script=heap_analytics(
             userid=q.auth.subject,
             event_properties=f"{{"
@@ -61,15 +58,6 @@ def landing_page_layout(q: Q):
                              f"product: '{q.app.toml['App']['Title']}'"
                              f"}}",
         ),
-        themes=[
-            ui.theme(
-                name='custom',
-                primary=os.getenv("PRIMARY_COLOR", "#FEC925"),
-                text='#000000',
-                card='#ffffff',
-                page=os.getenv("SECONDARY_COLOR", "#E8E5E1"),
-            )
-        ],
         layouts=[
             ui.layout(
                 breakpoint='xs',
@@ -86,19 +74,15 @@ def landing_page_layout(q: Q):
     )
     q.page['header'] = ui.header_card(
         box='header',
-        title=f"{q.app.toml['App']['Title']}",
+        title=q.app.toml['App']['Title'],
         subtitle=q.app.toml["App"]["Description"],
-        image=os.getenv("LOGO",
-                        "https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg"
-                        ),
-        items=[
-            ui.persona(title="Guest User", initials_color="#000000", initials="G", size="xs"),
-        ]
+        image="https://h2o.ai/content/experience-fragments/h2o/us/en/site/header/master/_jcr_content/root/container/header_copy/logo.coreimg.svg/1696007565253/h2o-logo.svg",
     )
 
     q.page["footer"] = ui.footer_card(
         box="footer",
-        caption="Made with 💛 and [H2O Wave](https://wave.h2o.ai)."
+        caption="Made with [Wave](https://wave.h2o.ai), [h2oGPTe](https://h2o.ai/platform/enterprise-h2ogpte), and "
+                "💛 by the Makers at H2O.ai.<br />Find more in the [H2O GenAI App Store](https://genai.h2o.ai/).",
     )
 
 

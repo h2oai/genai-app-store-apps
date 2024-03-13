@@ -131,10 +131,13 @@ async def selected_collection(q):
     # Generate and make a UI for topics
     topic_response = await q.run(llm_query_with_context, q.app.h2ogpte, q.client.selected_collection, query)
     q.client.topic_response = topic_response
-    topics = ':'.join(topic_response.split(':')[1:]).strip().split('\n')
+
+    topics = topic_response.split('\n')
+    logger.debug(topics)
 
     h2ogpte = H2OGPTE(address=q.app.h2ogpte["address"], api_key=q.app.h2ogpte["api_key"])
     collection = h2ogpte.get_collection(q.client.selected_collection)
+
     all_topics_table = [
         ui.inline(
             justify='between',
@@ -165,12 +168,8 @@ async def selected_collection(q):
                 ),
             ],
             rows=[
-                ui.table_row(
-                    name=topic,
-                    cells=[topic]
-                )
-                for topic
-                in topics
+                ui.table_row(name=topic, cells=[topic])
+                for topic in topics
             ]
         ),
     ]

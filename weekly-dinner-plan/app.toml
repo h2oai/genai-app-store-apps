@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.weekly_meal_planning"
-Version = "0.0.6"
+Version = "0.0.7"
 Title = "Meal Planning"
 Description = "Let AI cook up meal ideas for the whole family"
 Tags = ["GENERATIVE_AI", "OSS", "AI_FOR_LIFE", "DATA_SCIENCE"]
@@ -16,12 +16,12 @@ MemoryReservation = "16Gi"
 
 [[Env]]
 Name = "H2OGPTE_API_TOKEN"
-Secret = "financial-research"
+Secret = "h2ogpte-shared"
 SecretKey = "h2ogpte-key"
 
 [[Env]]
 Name = "H2OGPTE_URL"
-Secret = "financial-research"
+Secret = "h2ogpte-shared"
 SecretKey = "h2ogpte-url"
 
 [[Env]]

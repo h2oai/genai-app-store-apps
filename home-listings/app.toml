@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.make_home_listing"
-Version = "0.0.3"
+Version = "0.0.5"
 Title = "Make Your Own Home Listing"
 Description = "Generate a stellar home listing with AI"
 Tags = ["GENERATIVE_AI", "AI_FOR_LIFE", "OSS", "DATA_SCIENCE"]
@@ -23,14 +23,14 @@ Value = "winter-is-coming"
 
 
 [[Env]]
-Name = "H2OGPT_API_TOKEN"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-key"
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-key"
 
 [[Env]]
-Name = "H2OGPT_URL"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-url"
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-url"
 
 [[Env]]
 Name = "HEAP_ID"

@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.clean-code-inspector"
-Version = "0.0.3"
+Version = "0.0.5"
 Title = "Clean Code Inspector"
 Description = "Apply best practices to your Python code with AI"
 Tags = ["GENERATIVE_AI", "OSS", "DATA_SCIENCE"]
@@ -22,14 +22,14 @@ Name = "SECONDARY_COLOR"
 Value = "#e2e2e2"
 
 [[Env]]
-Name = "H2OGPT_API_TOKEN"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-key"
+Name = "H2OGPTE_API_TOKEN"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-key"
 
 [[Env]]
-Name = "H2OGPT_URL"
-Secret = "h2ogpt-oss"
-SecretKey = "h2ogpt-url"
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-url"
 
 [[Env]]
 Name = "HEAP_ID"

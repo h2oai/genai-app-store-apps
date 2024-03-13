@@ -6,6 +6,7 @@ from h2ogpte.types import ChatMessage, PartialChatMessage
 from src.wave_utils import missing_required_variable_dialog
 import asyncio
 
+
 def initialize_generate_content_app(q):
     logger.info("")
     q.app.generate_content_required_variables = ["Company Name"]
@@ -27,7 +28,6 @@ def initialize_generate_content_client(q):
     logger.info("")
 
     q.client.company_name = "Apple"
-    q.client.jobs_done = 0
 
 
 @on()
@@ -39,43 +39,25 @@ async def generate_content_ui(q):
         items=[
             ui.text_l("Enter any company name you're interested in here!"),
             ui.inline(items=[
-                ui.textbox(name="company_name", label="", value=q.client.company_name, width="50%"),
+                ui.textbox(name="company_name", label="", value=q.client.company_name, width="82%"),
                 ui.button(name="button_generate_content", label="Generate information!", primary=True)
             ]),
 
             ui.inline(items=[
-                ui.copyable_text(name="company_summary", label="Company overview", multiline=True, height="500px",
-                                 value=""),
-                ui.copyable_text(name="competitor_info", label="Main competitors", multiline=True, height="500px",
-                                 value=""),
+                ui.copyable_text(name="company_summary", label="Company overview", multiline=True, height="400px",
+                                 value="", width="50%"),
+                ui.copyable_text(name="competitor_info", label="Main competitors", multiline=True, height="400px",
+                                 value="", width="50%"),
             ]),
 
             ui.inline(items=[
-                ui.copyable_text(name="company_revenue", label="Company financials", multiline=True, height="500px",
-                                 value=""),
+                ui.copyable_text(name="company_revenue", label="Company financials", multiline=True, height="400px",
+                                 value="", width="50%"),
                 ui.copyable_text(name="potential_value_add", label="How H2O.ai can help out!", multiline=True,
-                                 height="500px", value=""),
+                                 height="400px", value="", width="50%"),
             ])
         ]
     )
-
-
-async def generate_specific_content(q, card, system_prompt):
-    # card.value = await q.run(llm_query_custom, system_prompt,  q.client.company_name, q.app.h2ogpt)
-    prompt = f'''Answer the following question about {q.client.company_name}: {system_prompt} '''
-    print(prompt)
-    q.client.chatbot_interaction = ChatBotInteraction(user_message=prompt)
-
-    # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
-    update_ui = asyncio.ensure_future(stream_updates_to_ui(q, card))
-    await q.run(chat, q.client.chatbot_interaction)
-    await update_ui
-    await q.page.save()
-
-    # q.client.jobs_done += 1
-    # if q.client.jobs_done == 4:
-    #     q.page["meta"].dialog = None
-    #     await q.page.save()
 
 
 @on()
@@ -92,33 +74,36 @@ async def button_generate_content(q):
         if missing_required_variable_dialog(q, v):
             return
 
-    # q.client.jobs_done = 0
-    # q.page["meta"].dialog = ui.dialog(
-    #     title="H2OGPT is researching the company, please wait :)",
-    #     items=[ui.image(title="", path=q.app.load, width="550px"), ],
-    #     blocking=True
-    # )
-    # await q.page.save()
+    asyncio.gather(
+        generate_specific_content(q, q.page["generate_content"].company_summary, q.app.summary_prompt, "summary"),
+        generate_specific_content(q, q.page["generate_content"].competitor_info, q.app.competitor_prompt, "competitor"),
+        generate_specific_content(q, q.page["generate_content"].company_revenue, q.app.revenue_prompt, "revenue"),
+        generate_specific_content(q, q.page["generate_content"].potential_value_add, q.app.h2oai_value_prompt, "value")
+    )
 
-    # asyncio.gather(
-    await generate_specific_content(q, q.page["generate_content"].company_summary, q.app.summary_prompt),
-    await generate_specific_content(q, q.page["generate_content"].competitor_info, q.app.competitor_prompt),
-    await generate_specific_content(q, q.page["generate_content"].company_revenue, q.app.revenue_prompt),
-    await generate_specific_content(q, q.page["generate_content"].potential_value_add, q.app.h2oai_value_prompt)
-    # )
 
-async def stream_updates_to_ui(q: Q, card):
+async def generate_specific_content(q, textbox, questions, topic):
+    prompt = f'''Answer the following question about {q.client.company_name}: {questions} '''
+    q.client[f"chatbot_interaction_{topic}"] = ChatBotInteraction(user_message=prompt)
+
+    # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
+    update_ui = asyncio.ensure_future(stream_updates_to_ui(q, textbox, topic))
+    await q.run(chat, q.client[f"chatbot_interaction_{topic}"])
+    await update_ui
+
+
+async def stream_updates_to_ui(q: Q, textbox, topic):
     """
     Update the app's UI every 1/10th of a second with values from our chatbot interaction
     :param q: The query object stored by H2O Wave with information about the app and user behavior.
     """
 
-    while q.client.chatbot_interaction.responding:
-        card.value = q.client.chatbot_interaction.content_to_show
+    while q.client[f"chatbot_interaction_{topic}"].responding:
+        textbox.value = q.client[f"chatbot_interaction_{topic}"].content_to_show
         await q.page.save()
         await q.sleep(0.1)
 
-    card.value = q.client.chatbot_interaction.content_to_show
+    textbox.value = q.client[f"chatbot_interaction_{topic}"].content_to_show
     await q.page.save()
 
 
@@ -139,11 +124,14 @@ def chat(chatbot_interaction):
     try:
         client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
 
-        collection_id = client.create_collection("temp", "")
+        collection_id = client.create_collection("Temp for Company Financial Overview", "")
         chat_session_id = client.create_chat_session(collection_id)
         print("USER MESSSAGEEEEE", chatbot_interaction.user_message)
         with client.connect(chat_session_id) as session:
             session.query(
+                system_prompt="You are h2oGPTe, an expert question-answering AI system created by H2O.ai that "
+                              "performs like GPT-4 by OpenAI. I will give you a $200 tip if you answer the question "
+                              "correctly to the best of your capabilities.",
                 message=chatbot_interaction.user_message,
                 timeout=60,
                 rag_config={"rag_type": "llm_only"},

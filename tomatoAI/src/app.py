@@ -35,8 +35,6 @@ async def serve(q: Q):
 async def initialize_app(q: Q):
     logger.info("Initializing the app for all users and sessions")
     q.app.toml = toml.load("app.toml")
-    if q.app.load is None:
-        q.app.load, = await q.site.upload(['./static/load.gif'])
     q.app.initialized = True
 
 async def initialize_client(q: Q):
