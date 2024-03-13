@@ -1,33 +1,17 @@
 from loguru import logger
 from h2o_wave import on, ui
-
 import os
 import hashlib
-
 
 def clear_cards(q):
     for c in q.client.cards:
         del q.page[c]
     q.client.cards = []
 
-
 @on()
 async def close_dialog(q):
     logger.info("")
     q.page["meta"].dialog = None
-
-
-async def long_process_dialog(q):
-    logger.info("")
-
-    q.page["meta"].dialog = ui.dialog(
-        title=q.client.waiting_dialog,
-        items=[ui.image(title="", path=q.app.load, width="550px"),],
-        blocking=True
-    )
-    await q.page.save()
-    q.page["meta"].dialog = None
-
 
 def missing_required_variable_dialog(q, variable):
     logger.info("")
