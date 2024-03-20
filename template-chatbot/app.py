@@ -3,16 +3,10 @@ import asyncio
 
 from h2o_wave import main, app, Q, ui, data, run_on, on
 from h2ogpte import H2OGPTE
-from h2ogpte.types import ChatMessage, PartialChatMessage, SessionError
-from h2ogpte.errors import UnauthorizedError
+from h2ogpte.types import ChatMessage, PartialChatMessage
+import h2o_authn
 
 from loguru import logger
-
-
-SYSTEM_PROMPT = "Hi! I am the Large Language Model LLaMA2, I am super friendly and here to try and answer any " \
-                "question you might have with a casual and fun tone."
-
-LLM = "h2oai/h2ogpt-4096-llama2-70b-chat"
 
 
 @app("/")
@@ -28,6 +22,11 @@ async def serve(q: Q):
 
 def initialize_client(q):
     """Code that is needed for each new browser that visits the app"""
+
+    if not q.app.initialized:
+        q.app.system_prompt = "Hi! I am a Large Language Model, I am super friendly and here to try and answer any " \
+                "question you might have with a casual and fun tone."
+        q.app.initialized = True
 
     q.page["meta"] = ui.meta_card(
         box="",
@@ -52,7 +51,7 @@ def initialize_client(q):
             fields="content from_user",
             t="list",
             rows=[
-                [SYSTEM_PROMPT, False],
+                [q.app.system_prompt, False],
             ],
         ),
     )
@@ -61,6 +60,22 @@ def initialize_client(q):
         caption="Made with [Wave](https://wave.h2o.ai), [h2oGPTe](https://h2o.ai/platform/enterprise-h2ogpte), and "
         "💛 by the Makers at H2O.ai.<br />Find more in the [H2O GenAI App Store](https://genai.h2o.ai/).",
     )
+
+    try:
+
+        client = connect_to_h2ogpte(q.auth.refresh_token)
+        q.client.chat_session_id = client.create_chat_session()  # Set up a single chat session ahead of time so users can look in the h2ogpte UI
+
+    except Exception as ex:
+        logger.error(ex)
+        logger.error(type(ex))
+        q.page["meta"].dialog = ui.dialog(
+            title="Something went wrong! Please try again later.",
+            items=[],
+            closable=False,
+            blocking=True
+        )
+
     q.client.initialized = True
 
 
@@ -68,14 +83,16 @@ def initialize_client(q):
 async def chatbot(q: Q):
     """Send a user's message to a Large Language Model and stream the response."""
 
-    q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.chatbot)
+    q.client.chatbot_interaction = ChatBotInteraction(
+        user_message=q.args.chatbot, system_prompt=q.app.system_prompt, chat_session_id=q.client.chat_session_id
+    )
 
     q.page["chatbot_card"].data += [q.args.chatbot, True]
     q.page["chatbot_card"].data += [q.client.chatbot_interaction.content_to_show, False]
 
     # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
     update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
-    await q.run(chat, q.client.chatbot_interaction)
+    await q.run(chat, q.client.chatbot_interaction, q.auth.refresh_token)
     await update_ui
 
 
@@ -91,7 +108,7 @@ async def stream_updates_to_ui(q: Q):
     await q.page.save()
 
 
-def chat(chatbot_interaction):
+def chat(chatbot_interaction, refresh_token):
     """Interact with h2oGPTe and stream the response"""
 
     def stream_response(message):
@@ -99,38 +116,45 @@ def chat(chatbot_interaction):
         chatbot_interaction.update_response(message)
 
     try:
-        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
-    except UnauthorizedError as ex:
-        logger.error(ex)
-        chatbot_interaction.content_to_show = f"Something went wrong! Unable to authenticate with h2oGPTe, " \
-                                              f"please as your admin to update the credentials."
-        chatbot_interaction.responding = False
-        return
+        client = connect_to_h2ogpte(refresh_token)
 
-    # Create a fake collection and chat session
-    collection_id = client.create_collection("temp", "")
-    chat_session_id = client.create_chat_session(collection_id)
-    with client.connect(chat_session_id) as session:
-        try:
+        with client.connect(chatbot_interaction.chat_session_id) as session:
             session.query(
-                system_prompt=SYSTEM_PROMPT,
+                system_prompt=chatbot_interaction.system_prompt,
                 message=chatbot_interaction.user_message,
+
                 timeout=60,
                 callback=stream_response,
                 rag_config={"rag_type": "llm_only"},
-                llm=LLM
-            )
-        except SessionError as ex:
-            logger.error(ex)
-            chatbot_interaction.content_to_show = f"Something went wrong! Please try again. \n\n{ex}"
-            chatbot_interaction.responding = False
 
-    client.delete_collections([collection_id])
-    client.delete_chat_sessions([chat_session_id])
+            )
+
+    except Exception as ex:
+        logger.error(ex)
+        chatbot_interaction.content_to_show = f"Something went wrong! Please try again later."
+        chatbot_interaction.responding = False
+
+
+def connect_to_h2ogpte(refresh_token):
+
+    if refresh_token is None:
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+    else:
+
+        token_provider = h2o_authn.TokenProvider(
+            refresh_token=refresh_token,
+            token_endpoint_url=f"{os.getenv('H2O_WAVE_OIDC_PROVIDER_URL')}/protocol/openid-connect/token",
+            client_id=os.getenv("H2O_WAVE_OIDC_CLIENT_ID"),
+            client_secret=os.getenv("H2O_WAVE_OIDC_CLIENT_SECRET"),
+        )
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), token_provider=token_provider)
+    return client
 
 
 class ChatBotInteraction:
-    def __init__(self, user_message) -> None:
+    def __init__(self, user_message, system_prompt, chat_session_id) -> None:
+        self.system_prompt = system_prompt
+        self.chat_session_id = chat_session_id
         self.user_message = user_message
         self.responding = True
 
