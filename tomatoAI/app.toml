@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.tomatoAI"
-Version = "0.0.5"
+Version = "0.0.6"
 Title = "TomatoAI"
 Description = "Grow better produce with your own AI-powered gardening assistant"
 Tags = ["GENERATIVE_AI", "AI_FOR_LIFE", "OSS", "DATA_SCIENCE"]

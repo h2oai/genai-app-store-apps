@@ -1,4 +1,4 @@
-alias genai="h2o --conf ~/.h2oai/haic-genai-appstore.toml"
+alias genai="h2o --conf ~/.h2oai/haic-genai.toml"
 
 update() {
   echo "Checking if there's a new version of $1"
