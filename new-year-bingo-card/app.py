@@ -1,6 +1,7 @@
 import asyncio
 import os
 import re
+import h2o_authn
 
 from h2o_wave import Q, app, data, main, on, run_on, ui
 from h2ogpte import H2OGPTE
@@ -20,7 +21,6 @@ async def serve(q: Q):
             initialize_browser(q)
 
         await run_on(q)  # Route user to the appropriate "on" function
-        await q.page.save()  # Update the UI
     except Exception as ex:
         logger.error(ex)
         q.page["meta"].dialog = ui.dialog(
@@ -34,6 +34,7 @@ async def serve(q: Q):
                 ),
             ],
         )
+    await q.page.save()  # Update the UI
 
 
 def initialize_browser(q):
@@ -78,25 +79,10 @@ def initialize_browser(q):
     }
     """
 
-    if os.getenv("MAINTENANCE_MODE", "false") == "true":
-        dialog = ui.dialog(
-            title="",
-            blocking=True,
-            closable=False,
-            items=[
-                ui.text_xl("<center>This app is under maintenance!</center>"),
-                ui.text(
-                    "<center>Please come back soon to create your 2024 Holiday Bingo card.</center>"
-                ),
-            ],
-        )
-    else:
-        dialog = bingo_game_inputs(q, True)
-
     q.page["meta"] = ui.meta_card(
         box="",
-        dialog=dialog,
         title="Holiday Bingo | H2O.ai",
+        dialog=bingo_game_inputs(q, True),
         layouts=[
             ui.layout(
                 breakpoint="xs",
@@ -188,6 +174,9 @@ def initialize_browser(q):
         caption="Made with [Wave](https://wave.h2o.ai), [h2oGPTe](https://h2o.ai/platform/enterprise-h2ogpte), and 💛 by the Makers at H2O.ai.<br />Find more in the [H2O GenAI App Store](https://genai.h2o.ai).",
     )
 
+    client = connect_to_h2ogpte(q.auth.refresh_token)
+    q.client.chat_session_id = client.create_chat_session()  # Set up a single chat session ahead of time so users can look in the h2ogpte UI
+
     q.client.initialized = True
 
 
@@ -210,7 +199,7 @@ async def generate_bingo_card(q: Q):
     q.page["header_desktop"].edit_mode.disabled = True
     q.page["header_desktop"].regenerate.disabled = True
 
-    q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.goals)
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.goals, chat_session_id=q.client.chat_session_id)
 
     q.page["mobile_bingo_card"] = ui.form_card(box=ui.box("mobile", size="0"), items=[])
     q.page["desktop_bingo_card"] = ui.form_card(
@@ -224,7 +213,7 @@ async def generate_bingo_card(q: Q):
 
     # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
     update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
-    await q.run(chat, q.client.chatbot_interaction)
+    await q.run(chat, q.client.chatbot_interaction, q.auth.refresh_token)
     await update_ui
 
 
@@ -266,7 +255,7 @@ async def stream_updates_to_ui(q: Q):
     q.page["header_desktop"].regenerate.disabled = False
 
 
-def chat(chatbot_interaction):
+def chat(chatbot_interaction, refresh_token):
     """Send the user's message to the LLM and save the response"""
 
     def stream_response(message):
@@ -285,12 +274,9 @@ def chat(chatbot_interaction):
     else:
         message = f'Here is the user\'s goals in free text: """\n{chatbot_interaction.user_message}\n"""'
 
-    client = H2OGPTE(
-        address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN")
-    )
-    collection_id = client.create_collection("temp", "")
-    chat_session_id = client.create_chat_session(collection_id)
-    with client.connect(chat_session_id) as session:
+    client = connect_to_h2ogpte(refresh_token=refresh_token)
+
+    with client.connect(chatbot_interaction.chat_session_id) as session:
         session.query(
             system_prompt=(
                 "You are a friendly bot that turns a user's message containing goals for the New Year into a numbered list "
@@ -305,8 +291,6 @@ def chat(chatbot_interaction):
             rag_config={"rag_type": "llm_only"},
             llm_args={"do_sample": True, "temperature": 0.6},
         )
-    client.delete_collections([collection_id])
-    client.delete_chat_sessions([chat_session_id])
 
 
 def bingo_game_inputs(q, blocking):
@@ -449,8 +433,9 @@ def print_mode_ui(q: Q):
 
 
 class ChatBotInteraction:
-    def __init__(self, user_message) -> None:
+    def __init__(self, user_message, chat_session_id) -> None:
         self.user_message = user_message
+        self.chat_session_id = chat_session_id
         self.responding = True
 
         self.llm_response = ""
@@ -473,6 +458,21 @@ class ChatBotInteraction:
             for line in lines
             if pattern.match(line)
         ]
+
+
+def connect_to_h2ogpte(refresh_token):
+
+    if refresh_token is None:
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+    else:
+        token_provider = h2o_authn.TokenProvider(
+            refresh_token=refresh_token,
+            token_endpoint_url=f"{os.getenv('H2O_WAVE_OIDC_PROVIDER_URL')}/protocol/openid-connect/token",
+            client_id=os.getenv("H2O_WAVE_OIDC_CLIENT_ID"),
+            client_secret=os.getenv("H2O_WAVE_OIDC_CLIENT_SECRET"),
+        )
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), token_provider=token_provider)
+    return client
 
 
 def heap_analytics(userid) -> ui.inline_script:
