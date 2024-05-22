@@ -1,16 +1,22 @@
 [App]
 Name = "ai.h2o.wave.template.chatbot"
-Version = "0.0.4"
-Title = "Chatbot Template"
-Description = "H2O Wave Template for Chatbot Applications"
-Tags = ["GENERATIVE_AI", "OSS"]
+Version = "0.0.5"
+Title = "Starter Chatbot"
+Description = "Basic chatbot with h2oGPTe"
+Tags = ["OSS", "LEARNING"]
 LongDescription = "LongDescription.md"
 
 [Runtime]
 Module = "app"
+RuntimeVersion = "deb11_py310_wlatest"
 EnableOIDC = true
 
 [[Env]]
 Name = "H2OGPTE_URL"
 Secret = "h2ogpte-shared"
 SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"

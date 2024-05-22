@@ -1,18 +1,18 @@
-# Wave Chatbot Template
+# Wave Chatbot
 
-## Overview
+This template H2O Wave App is your starting point for chatbots on top of h2oGPTe. Easily customize the Prompts, 
+LLMs, and Look and Feel of this app to make your own Chatbots. 
 
-This template application can be your starter code for chatbots that use H2O Wave and h2oGPTe.
 
 ![](static/screenshot-1.png)
 
 ## Features
 1. Interact with an LLM using the h2oGPTe API
-2. Parameterize the System Prompt and LLM in your app code
-3. Stream the response to the end user
-4. Gracefully handle authentication errors
-5. Gracefully handle h2oGPTe API errors
-6. Layout that looks nice on desktop and mobile
+2. Easily parameterize the System Prompt and LLM in your app code
+3. Stream the response for improved UX
+4. Provide sample questions to help users get started
+5. Gracefully handle authentication and API errors
+6. Support for mobile and desktop
 
 ## Developing
 
@@ -57,12 +57,12 @@ This template application can be your starter code for chatbots that use H2O Wav
     * Create and save a new API Key
     * Set the variables in your local environment 
     
-        * On Windows
+        * On Unix or MacOS:
         ```shell script
         export H2OGPTE_URL="https://h2ogpte.genai.h2o.ai"
         export H2OGPTE_API_TOKEN="***"
         ```
-        * On Unix or MacOS:
+        * On Windows:
         ```
         $env:H2OGPTE_URL='https://h2ogpte.genai.h2o.ai/'
         $env:H2OGPTE_API_TOKEN='***'
@@ -75,7 +75,6 @@ This template application can be your starter code for chatbots that use H2O Wav
     wave run app.py
     ```
 2. Open your web browser and navigate to http://localhost:10101 to access the chatbot.
-
 
 ## Deploy
 
