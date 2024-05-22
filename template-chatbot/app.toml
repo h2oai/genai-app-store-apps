@@ -10,6 +10,8 @@ LongDescription = "LongDescription.md"
 Module = "app"
 RuntimeVersion = "deb11_py310_wlatest"
 EnableOIDC = true
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
 
 [[Env]]
 Name = "H2OGPTE_URL"
