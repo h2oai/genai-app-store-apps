@@ -1,0 +1,4 @@
+h2ogpte==1.4.10
+h2o-wave
+h2o-authn
+loguru

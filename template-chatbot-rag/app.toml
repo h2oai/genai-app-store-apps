@@ -1,0 +1,22 @@
+[App]
+Name = "ai.h2o.wave.template.chatbot-rag"
+Version = "0.0.5"
+Title = "Chat with Documents"
+Description = "Basic RAG chatbot with h2oGPTe"
+Tags = ["OSS", "LEARNING"]
+LongDescription = "LongDescription.md"
+
+[Runtime]
+Module = "app"
+RuntimeVersion = "deb11_py310_wlatest"
+EnableOIDC = true
+
+[[Env]]
+Name = "H2OGPTE_URL"
+Secret = "h2ogpte-shared"
+SecretKey = "h2ogpte-url"
+
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
