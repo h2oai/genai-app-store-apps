@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.ask_h2o"
-Version = "0.0.11"
+Version = "0.0.12"
 Title = "Ask H2O"
 Description = "Conversationally explore H2O.ai’s website, products, and more"
 Tags = ["GENERATIVE_AI", "OSS"]
@@ -9,7 +9,8 @@ InstanceLifecycle = "MANAGED"
 
 [Runtime]
 Module = "src.app"
-EnableOIDC = false
+RuntimeVersion = "deb11_py310_wlatest"
+EnableOIDC = true
 MemoryLimit = "16Gi"
 MemoryReservation = "16Gi"
 
@@ -39,8 +40,3 @@ SecretKey = "h2ogpte-url"
 Name = "HEAP_ID"
 Secret = "heap-analytics"
 SecretKey = "id"
-
-[[Env]]
-Name = "MAINTENANCE_MODE"
-Secret = "h2ogpte-maintenance"
-SecretKey = "show-maintenance-mode"

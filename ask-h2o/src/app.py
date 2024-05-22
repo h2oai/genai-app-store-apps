@@ -37,20 +37,6 @@ async def initialize_client(q: Q):
 
     logger.info(f"Initializing the app for a new session")
 
-    if os.getenv("MAINTENANCE_MODE", "false") == "true":
-        q.page["meta"].dialog = ui.dialog(
-            title="",
-            blocking=True,
-            closable=True,
-            items=[
-                ui.text_xl("<center>This app is under maintenance!</center>"),
-                ui.text(
-                    "<center>Please come back soon to chat with the H2O documentation.\n</center>"
-                ),
-            ],
-        )
-        return
-
     client = H2OGPTE(
         address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN")
     )
@@ -80,11 +66,11 @@ async def initialize_client(q: Q):
         )
         return
 
-    await selected_collection(q)
-
     q.page["chatbot_card"] = ui.chatbot_card(
         box="chat", data=data("content from_user", t="list"), name="chatbot"
     )
+
+    await selected_collection(q)
 
     q.client.initialized = True
 
@@ -239,15 +225,14 @@ async def selected_collection(q):
             width="1",
             columns=[
                 ui.table_column(
-                    name="Name", label="Name", link=False, min_width="400px"
+                    name="Page Name", label="Name", link=False, min_width="500px"
                 ),
-                ui.table_column(name="Type", label="Type"),
                 ui.table_column(name="Date", label="Date"),
             ],
             rows=[
                 ui.table_row(
                     name=d.id,
-                    cells=[d.name, d.type, d.updated_at.strftime("%Y-%m-%d %H:%M:%S")],
+                    cells=[d.name.strip(".pdf"), d.updated_at.strftime("%Y-%m-%d %H:%M:%S")],
                 )
                 for d in collection_documents
             ],
@@ -266,13 +251,19 @@ async def selected_collection(q):
     q.client.cards.append("collection-mobile")
 
     q.client.chat_session_id = h2ogpte.create_chat_session(q.client.selected_collection)
+    q.client.system_prompt = ("Hello! I am Ask H2O, a Retrieval Augmented Generation application here to help you "
+                              "understand H2O.ai products. Ask me any question or give me any direction about "
+                              f"the {collection.name}. I will find relevant content related to your input and use "
+                              f"that to respond. Ask away!")
+
+    q.page["chatbot_card"].data += [q.client.system_prompt, False]
 
 
 @on()
 async def chatbot(q):
     """Send a user's message to a Large Language Model and stream the response."""
 
-    q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.chatbot)
+    q.client.chatbot_interaction = ChatBotInteraction(user_message=q.args.chatbot, system_prompt=q.client.system_prompt)
 
     q.page["chatbot_card"].data += [q.args.chatbot, True]
     q.page["chatbot_card"].data += [q.client.chatbot_interaction.content_to_show, False]
@@ -323,43 +314,18 @@ def chat(chatbot_interaction, chat_session_id):
 
     with client.connect(chat_session_id) as session:
         session.query(
-            # system_prompt=SYSTEM_PROMPT,
+            system_prompt=chatbot_interaction.system_prompt,
             message=chatbot_interaction.user_message,
             timeout=60,
             callback=stream_response,
-            # rag_config={"rag_type": "llm_only"},
         )
-
-
-def llm_query_with_context(collection_id, user_message):
-    logger.info("")
-    try:
-        logger.debug(user_message)
-
-        h2ogpte = H2OGPTE(
-            address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN")
-        )
-        chat_session_id = h2ogpte.create_chat_session(collection_id=collection_id)
-
-        with h2ogpte.connect(chat_session_id) as session:
-            reply = session.query(
-                message=user_message,
-                timeout=16000,
-            )
-
-        response = reply.content
-        logger.debug(response)
-        return response.strip()
-
-    except Exception as e:
-        logger.error(e)
-        return ""
 
 
 class ChatBotInteraction:
-    def __init__(self, user_message) -> None:
+    def __init__(self, user_message, system_prompt) -> None:
         self.user_message = user_message
         self.responding = True
+        self.system_prompt = system_prompt
 
         self.llm_response = ""
         self.content_to_show = "🟡"
