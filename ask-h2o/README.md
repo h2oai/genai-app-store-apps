@@ -28,6 +28,7 @@ RAG-based model to refine queries and receive context-aware responses.
 ### Prerequisites
 * Python 3.7+ 
 * Pip (Python package installer)
+* H2O Wave (https://wave.h2o.ai/docs/installation)
 * Virtualenv (optional but recommended)
 
 ### Installation
@@ -81,7 +82,7 @@ RAG-based model to refine queries and receive context-aware responses.
 
 1. Run the application:
     ```
-    wave run app.py
+    wave run src/app.py
     ```
 2. Open your web browser and navigate to http://localhost:10101 to access the 
 Digital Asset Research Assistant.
