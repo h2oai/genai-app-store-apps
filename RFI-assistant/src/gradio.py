@@ -51,7 +51,7 @@ def get_sources(model_host: str = None, host_api: str = None, langchain_mode: st
     return sources
 
 def get_chat_session(model_client: H2OGPTE = None, collection_id: str = None):
-    res = model_client.create_chat_session(collection_id)
+    res = model_client.create_chat_session_on_default_collection()
     return res
 
 def ask_query(
