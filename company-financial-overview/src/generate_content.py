@@ -125,7 +125,7 @@ def chat(chatbot_interaction):
         client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
 
         collection_id = client.create_collection("Temp for Company Financial Overview", "")
-        chat_session_id = client.create_chat_session(collection_id)
+        chat_session_id = client.create_chat_session(collection_id=collection_id)
         print("USER MESSSAGEEEEE", chatbot_interaction.user_message)
         with client.connect(chat_session_id) as session:
             session.query(
