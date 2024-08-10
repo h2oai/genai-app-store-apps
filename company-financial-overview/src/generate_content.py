@@ -159,6 +159,6 @@ class ChatBotInteraction:
             self.content_to_show = message.content
             self.responding = False
         elif isinstance(message, PartialChatMessage):
-            if message.content != "#### LLM Only (no RAG):\n":
+            if message.content != "#### LLM Only:\n":
                 self.llm_response += message.content
                 self.content_to_show = self.llm_response + " 🟡"
