@@ -22,7 +22,7 @@ def llm_transcript_analysis(q, transcript):
     overall_sentiment = client.answer_question(
                                         question=q.app.h2ogpte["overall_sentiment_prompt"],
                                         text_context_list=[transcript],
-                                        llm=q.app.h2ogpte["llm"],
+                                        llm=client.get_llms()[0]['display_name'], #q.app.h2ogpte["llm"],
                                         system_prompt = q.app.h2ogpte["system_prompt"],
                                         llm_args=q.app.h2ogpte["llm_args"]).content.strip()
     log.info(f"overall_sentiment: {overall_sentiment}")
@@ -31,7 +31,7 @@ def llm_transcript_analysis(q, transcript):
         issue_resolution_outcome = client.answer_question(
                                         question= q.app.h2ogpte["issue_resolution_prompt"],
                                         text_context_list=[transcript],
-                                        llm=q.app.h2ogpte["llm"],
+                                        llm=client.get_llms()[0]['display_name'],
                                         system_prompt = q.app.h2ogpte["system_prompt"],
                                         llm_args=q.app.h2ogpte["llm_args"]).content.strip()
         # log.info(llm_validate_message(issue_resolution_outcome, client)) #TODO to review as too many false positive for now.
@@ -44,7 +44,7 @@ def llm_transcript_analysis(q, transcript):
         topics_associated_sentiment =  client.answer_question(
                                                 question=q.app.h2ogpte["topics_associated_prompt"],
                                                 text_context_list=[transcript],
-                                                llm=q.app.h2ogpte["llm"],
+                                                llm=client.get_llms()[0]['display_name'],
                                                 system_prompt = q.app.h2ogpte["system_prompt"],
                                                 llm_args=q.app.h2ogpte["llm_args"]).content.strip()
         log.info(f"1st topics_associated_sentiment: {topics_associated_sentiment}")
