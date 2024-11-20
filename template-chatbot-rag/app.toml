@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.template.chatbot-rag"
-Version = "0.0.5"
+Version = "0.0.6"
 Title = "Chat with Documents"
 Description = "Basic RAG chatbot with h2oGPTe"
 Tags = ["OSS", "LEARNING"]

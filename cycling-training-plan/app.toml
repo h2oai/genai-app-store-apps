@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.cycling_training_plan"
-Version = "0.0.6"
+Version = "0.0.7"
 Title = "Cycling Training Plan"
 Description = "Get personalized cycling instructions with AI"
 Tags = ["GENERATIVE_AI", "OSS", "DATA_SCIENCE"]
