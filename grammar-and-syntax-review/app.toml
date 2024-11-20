@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.grammar_and_syntax_review"
-Version = "0.0.5"
+Version = "0.0.6"
 Title = "Grammar and Syntax Review"
 Description = "Review and edit content quickly with AI"
 Tags = ["GENERATIVE_AI", "OSS"]

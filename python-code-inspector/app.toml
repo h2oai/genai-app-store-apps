@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.clean-code-inspector"
-Version = "0.0.6"
+Version = "0.0.7"
 Title = "Clean Code Inspector"
 Description = "Apply best practices to your Python code with AI"
 Tags = ["GENERATIVE_AI", "OSS", "DATA_SCIENCE"]

@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.company_info_at_a_glance"
-Version = "0.0.7"
+Version = "0.0.8"
 Title = "Company Information"
 Description = "Use AI to research companies and identify opportunities"
 Tags = ["GENERATIVE_AI", "DATA_SCIENCE", "OSS"]

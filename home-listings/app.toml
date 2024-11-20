@@ -1,6 +1,6 @@
 [App]
 Name = "ai.h2o.wave.make_home_listing"
-Version = "0.0.6"
+Version = "0.0.7"
 Title = "Make Your Own Home Listing"
 Description = "Generate a stellar home listing with AI"
 Tags = ["GENERATIVE_AI", "AI_FOR_LIFE", "OSS", "DATA_SCIENCE"]
