@@ -2,6 +2,7 @@ from h2o_wave import main, app, Q, ui, run_on, copy_expando, on
 import os
 import toml
 import asyncio
+import h2o_authn
 
 from loguru import logger
 
@@ -9,6 +10,7 @@ from src.wave_utils import heap_analytics
 
 from h2ogpte import H2OGPTE
 from h2ogpte.types import ChatMessage, PartialChatMessage
+
 
 
 @app('/')
@@ -36,20 +38,6 @@ async def initialize_session(q: Q):
     q.client.children = '2'
 
     landing_page_layout(q)
-
-    if os.getenv("MAINTENANCE_MODE", "false") == "true":
-        q.page["meta"].dialog = ui.dialog(
-            title="",
-            blocking=True,
-            closable=True,
-            items=[
-                ui.text_xl("<center>This app is under maintenance!</center>"),
-                ui.text("<center>Please come back soon for meal planning assistance.</center>")
-
-            ],
-        )
-        return
-
     prompt_generating_form(q)
     await generate_prompt(q)
     q.client.initialized = True
@@ -299,7 +287,7 @@ async def generate_plan(q: Q):
 
     # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
     update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
-    await q.run(chat, q.client.chatbot_interaction)
+    await q.run(chat, q.client.chatbot_interaction, q.auth.refresh_token)
     await update_ui
 
 
@@ -320,7 +308,7 @@ async def stream_updates_to_ui(q: Q):
     await q.page.save()
 
 
-def chat(chatbot_interaction):
+def chat(chatbot_interaction, token):
     """
     Send the user's message to the LLM and save the response
     :param chatbot_interaction: Details about the interaction between the user and the LLM
@@ -335,12 +323,9 @@ def chat(chatbot_interaction):
         chatbot_interaction.update_response(message)
 
     try:
-        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+        client = connect_to_h2ogpte(refresh_token=token)
 
-        collection_id = client.create_collection("temp", "")
-        chat_session_id = client.create_chat_session(collection_id)
-
-        with client.connect(chat_session_id) as session:
+        with client.connect(client.create_chat_session()) as session:
             session.query(
                 system_prompt="You are an expert at quick and easy meal planning. Do not explain yourself, "
                               "just return the text of the meal plan.",
@@ -350,13 +335,25 @@ def chat(chatbot_interaction):
                 callback=stream_response,
             )
 
-        client.delete_collections([collection_id])
-        client.delete_chat_sessions([chat_session_id])
 
     except Exception as e:
         logger.error(e)
         return f""
 
+def connect_to_h2ogpte(refresh_token):
+
+    if refresh_token is None:
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN"))
+    else:
+
+        token_provider = h2o_authn.TokenProvider(
+            refresh_token=refresh_token,
+            token_endpoint_url=f"{os.getenv('H2O_WAVE_OIDC_PROVIDER_URL')}/protocol/openid-connect/token",
+            client_id=os.getenv("H2O_WAVE_OIDC_CLIENT_ID"),
+            client_secret=os.getenv("H2O_WAVE_OIDC_CLIENT_SECRET"),
+        )
+        client = H2OGPTE(address=os.getenv("H2OGPTE_URL"), token_provider=token_provider)
+    return client
 
 class ChatBotInteraction:
     def __init__(self, user_message) -> None:
