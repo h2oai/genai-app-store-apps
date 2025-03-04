@@ -70,7 +70,7 @@ def initialize_client(q):
 
     q.page["header_card"] = ui.header_card(
         box="header",
-        title="Starter Chatbot",
+        title="Chatbot",
         subtitle="Basic chatbot with h2oGPTe",
         image="https://h2o.ai/company/brand-kit/_jcr_content/root/container/section/par/advancedcolumncontro/columns1/advancedcolumncontro/columns0/image.coreimg.svg/1697220254347/h2o-logo.svg",
         items=[
