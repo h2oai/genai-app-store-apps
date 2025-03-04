@@ -2,10 +2,14 @@
 
 ## Overview
 
-The Holiday Bingo Generator is a Python web application built with [H2O Wave](https://wave.h2o.ai) that serves as a user-friendly interface for creating personalized Bingo Cards based on free-text descriptions of users' 2024 goals. The idea is to make the process of tracking and achieving goals more engaging by presenting them in a fun and interactive way. Users can generate a printable Bingo Card, hang it on their wall, and mark off accomplished goals as they progress throughout the year.
+The Holiday Bingo Generator is a Python web application built with [H2O Wave](https://wave.h2o.ai) that serves as a user-friendly 
+interface for creating personalized Bingo Cards based on free-text descriptions of users' goals. The idea is to 
+make the process of tracking and achieving goals more engaging by presenting them in a fun and interactive way. 
+Users can generate a printable Bingo Card, hang it on their wall, and mark off accomplished goals as they progress
+throughout the year.
 
 You can try the app out yourself for free using your Gmail or Github account at 
-https://2024-bingo.genai.h2o.ai. 
+https://goals.genai.h2o.ai. 
 
 Developers can use this app as a template of a custom UI on top of any collections 
 of data in h2oGPTe. Try making an app with your own special Bingo theme such 

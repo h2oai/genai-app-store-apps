@@ -30,7 +30,7 @@ async def serve(q: Q):
             items=[
                 ui.text_xl("<center>Something went wrong!</center>"),
                 ui.text(
-                    "<center>Please come back soon to create your 2024 Holiday Bingo card.</center>"
+                    "<center>Please come back soon to create your Bingo Goals card.</center>"
                 ),
             ],
         )
@@ -78,25 +78,12 @@ def initialize_browser(q):
     }
     """
 
-    if os.getenv("MAINTENANCE_MODE", "false") == "true":
-        dialog = ui.dialog(
-            title="",
-            blocking=True,
-            closable=False,
-            items=[
-                ui.text_xl("<center>This app is under maintenance!</center>"),
-                ui.text(
-                    "<center>Please come back soon to create your 2024 Holiday Bingo card.</center>"
-                ),
-            ],
-        )
-    else:
-        dialog = bingo_game_inputs(q, True)
+    dialog = bingo_game_inputs(q, True)
 
     q.page["meta"] = ui.meta_card(
         box="",
         dialog=dialog,
-        title="Holiday Bingo | H2O.ai",
+        title="Bingo Goals | H2O.ai",
         layouts=[
             ui.layout(
                 breakpoint="xs",
@@ -135,7 +122,7 @@ def initialize_browser(q):
 
     q.page["header_mobile"] = ui.header_card(
         box="header_mobile",
-        title="HOLIDAY BINGO",
+        title="BINGO GOALS",
         subtitle="",
         image="https://h2o.ai/company/brand-kit/_jcr_content/root/container/section/par/advancedcolumncontro/columns1/advancedcolumncontro/columns0/image.coreimg.svg/1697220254347/h2o-logo.svg",
         items=[
@@ -218,13 +205,13 @@ async def generate_bingo_card(q: Q):
     )
 
     if q.args.name is None or q.args.name == "":
-        q.client.bingo_card_title = "Your 2024 Bingo Card!"
+        q.client.bingo_card_title = "Your Bingo Goals card!"
     else:
-        q.client.bingo_card_title = f"{q.args.name}'s 2024 Bingo Card!"
+        q.client.bingo_card_title = f"{q.args.name}'s Bingo Goals card!"
 
     # Prepare our UI-Streaming function so that it can run while the blocking LLM message interaction runs
     update_ui = asyncio.ensure_future(stream_updates_to_ui(q))
-    await q.run(chat, q.client.chatbot_interaction)
+    await q.run(chat, q.client.chatbot_interaction, q.auth.refresh_token)
     await update_ui
 
 
@@ -266,7 +253,7 @@ async def stream_updates_to_ui(q: Q):
     q.page["header_desktop"].regenerate.disabled = False
 
 
-def chat(chatbot_interaction):
+def chat(chatbot_interaction, token):
     """Send the user's message to the LLM and save the response"""
 
     def stream_response(message):
@@ -285,44 +272,39 @@ def chat(chatbot_interaction):
     else:
         message = f'Here is the user\'s goals in free text: """\n{chatbot_interaction.user_message}\n"""'
 
-    client = H2OGPTE(
-        address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN")
-    )
-    collection_id = client.create_collection("temp", "")
-    chat_session_id = client.create_chat_session(collection_id)
-    with client.connect(chat_session_id) as session:
+    client = connect_to_h2ogpte(refresh_token=token)
+    with client.connect(client.create_chat_session()) as session:
         session.query(
             system_prompt=(
-                "You are a friendly bot that turns a user's message containing goals for the New Year into a numbered list "
+                "You are a friendly bot that turns a user's message containing goals for the New Year into a numbered "
+                "list "
                 "of 25 fun, short tasks to accomplish throughout the year that will help them with their goals. "
                 "Your content will be turned into a 2024 Bingo Card. "
                 "Each line item should be in the format 'n. emoji text' with n being a number and the 13th item "
                 "should be a free space for having a birthday. Each item should be no more than 10 words. "
+                "If the input from the user is not very helpful you must make up generic goals on their behalf."
             ),
             message=message,
             timeout=60,
             callback=stream_response,
-            rag_config={"rag_type": "llm_only"},
+            llm="meta-llama/Meta-Llama-3.1-8B-Instruct",
             llm_args={"do_sample": True, "temperature": 0.6},
         )
-    client.delete_collections([collection_id])
-    client.delete_chat_sessions([chat_session_id])
 
 
 def bingo_game_inputs(q, blocking):
     return ui.dialog(
-        title="Generate your 2024 bingo resolution card!",
+        title="Generate your Bingo Goals card!",
         blocking=blocking,
         closable=not blocking,
         items=[
             ui.textbox(name="name", label="Your name", value=q.client.name),
             ui.textbox(
                 name="goals",
-                label="Goals for 2024",
+                label="Goals",
                 multiline=True,
                 value=q.client.goals,
-                placeholder="Use free text to write as much or little about what you want to accomplish "
-                "throughout the next year...",
+                placeholder="Use free text to write as much or little about what you want to accomplish...",
             ),
             ui.buttons(
                 items=[
@@ -473,6 +455,26 @@ class ChatBotInteraction:
             for line in lines
             if pattern.match(line)
         ]
+
+
+def connect_to_h2ogpte(refresh_token):
+
+    if refresh_token is None:
+        client = H2OGPTE(
+            address=os.getenv("H2OGPTE_URL"), api_key=os.getenv("H2OGPTE_API_TOKEN")
+        )
+    else:
+
+        token_provider = h2o_authn.TokenProvider(
+            refresh_token=refresh_token,
+            token_endpoint_url=f"{os.getenv('H2O_WAVE_OIDC_PROVIDER_URL')}/protocol/openid-connect/token",
+            client_id=os.getenv("H2O_WAVE_OIDC_CLIENT_ID"),
+            client_secret=os.getenv("H2O_WAVE_OIDC_CLIENT_SECRET"),
+        )
+        client = H2OGPTE(
+            address=os.getenv("H2OGPTE_URL"), token_provider=token_provider
+        )
+    return client
 
 
 def heap_analytics(userid) -> ui.inline_script:
