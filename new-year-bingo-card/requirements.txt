@@ -1,3 +1,4 @@
 h2o_wave
 h2ogpte
 loguru
+h2o_authn

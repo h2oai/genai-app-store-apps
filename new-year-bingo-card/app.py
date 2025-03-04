@@ -6,6 +6,7 @@ from h2o_wave import Q, app, data, main, on, run_on, ui
 from h2ogpte import H2OGPTE
 from h2ogpte.types import ChatMessage, PartialChatMessage
 from loguru import logger
+import h2o_authn
 
 
 @app("/")
