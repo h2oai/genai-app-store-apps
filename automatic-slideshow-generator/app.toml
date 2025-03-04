@@ -1,0 +1,30 @@
+[App]
+Name = "ai.h2o.wave.slideshow_creator"
+Version = "0.0.2"
+Title = "Automatic Slideshow Generator"
+LongDescription = "LongDesc.md"
+Description = "Creates an AI-generated powerpoint using h2oGPTe!"
+Tags = ["GENERATIVE_AI"]
+InstanceLifecycle = "MANAGED" 
+
+[Runtime]
+RuntimeVersion = "deb11_py310_wlatest"
+Module = "app"
+EnableOIDC = false
+MemoryLimit = "16Gi"
+MemoryReservation = "16Gi"
+
+[[Env]]
+Name = "h2ogpte_key"
+Secret = "h2o-slideshow"
+SecretKey = "h2ogpte_key"
+
+[[Env]]
+Name = "h2ogpte_url"
+Secret = "h2o-slideshow"
+SecretKey = "h2ogpte_url"
+  
+[[Env]]
+Name = "HEAP_ID"
+Secret = "heap-analytics"
+SecretKey = "id"
