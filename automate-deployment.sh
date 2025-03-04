@@ -56,7 +56,7 @@ update() {
  update "ai.h2o.link.h2ogpte" "" "h2ogpte-link";
  update "ai.h2o.wave.make_home_listing" "make-home-listing" "home-listings";
  update "ai.h2o.wave.legal_process_summarizer" "leagal-process-summarizer" "legal_process_summarizer_app"
- update "ai.h2o.wave.bingo_new_years_cards" "2024-bingo" "new-year-bingo-card";
+ update "ai.h2o.wave.bingo_new_years_cards" "goals" "new-year-bingo-card";
  update "ai.h2o.wave.clean-code-inspector" "python" "python-code-inspector";
  update "ai.h2o.wave.h2o-demo-rfi" "rfi-assistant" "RFI-assistant";
  update "ai.h2o.wave.study_partner" "study" "study-partner";

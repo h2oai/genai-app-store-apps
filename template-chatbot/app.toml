@@ -1,7 +1,7 @@
 [App]
 Name = "ai.h2o.wave.template.chatbot"
-Version = "0.0.6"
-Title = "Starter Chatbot"
+Version = "0.0.9"
+Title = "Chat"
 Description = "Basic chatbot with h2oGPTe"
 Tags = ["OSS", "LEARNING"]
 LongDescription = "LongDescription.md"
