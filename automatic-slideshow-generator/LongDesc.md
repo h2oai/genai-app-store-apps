@@ -1,0 +1,2 @@
+## About the Automatic Slideshow Generator
+Wave goodbye to hours of tedious manual edits and hello to effortless brilliance! With the Automatic Slideshow Generator, transform any topic into a polished, comprehensive slideshow in just seconds. Plus, you can tailor your presentation with your choice of bullet points and slides, ensuring it fits your exact needs.

@@ -1,0 +1,4 @@
+h2o_wave==1.0.1
+h2ogpte==1.5.10
+python-pptx
+ftfy
