@@ -1,0 +1,11 @@
+[App]
+Name = "ai.h2o.link.h2ogpte"
+Version = "1.6.26"
+Title = "Enterprise h2oGPTe"
+Description = "Agentic AI converges generative AI and predictive with purpose-built SLMs."
+InstanceLifecycle = "LINK"
+Tags = ["GENERATIVE_AI"]
+LongDescription = "LongDescription.md"
+
+[Link]
+Address = "https://h2ogpte.genai.h2o.ai"

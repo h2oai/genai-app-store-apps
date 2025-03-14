@@ -1,0 +1,11 @@
+[App]
+Name = "ai.h2o.link.evalStudio"
+Version = "1.0.1"
+Title = "Eval Studio"
+Description = "Model risk management for enhanced compliance and interpretability."
+InstanceLifecycle = "LINK"
+Tags = ["GENERATIVE_AI", "CORE_SERVICES", "BUSINESS", "AI_FOR_GOOD", "FINSERV"]
+LongDescription = "LongDescription.md"
+
+[Link]
+Address = "https://eval-studio.genai.h2o.ai/"
